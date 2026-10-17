@@ -24,6 +24,7 @@ header{padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center
 h1{font-size:20px;margin:0;font-weight:700}
 .brand-link{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;color:inherit}
 .brand-icon{width:24px;height:24px;color:var(--hole)}
+.brand-logo-img{width:24px;height:24px;border-radius:6px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 
 /* Nav Links for Views */
 .nav-links{display:flex;gap:6px;align-items:center}

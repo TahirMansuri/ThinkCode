@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/icon.svg" width="96" height="96" alt="ThinkCode Logo" style="border-radius:20px; box-shadow: 0 8px 24px rgba(142,91,214,0.3);" />
+
 # ⚡ ThinkCode
 ### Interactive Data Structures & Algorithms Visualizer & Dual-Engine Code Tracer
 
