@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ThinkCode — Interactive Data Structures & Algorithms</title>
+  <meta name="description"
+    content="ThinkCode: Interactive step-by-step Data Structures and Algorithms visualizer with real-world code tracing in C, C++, Java, and Python.">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/visualizer.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/tracer.css">
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js" async></script>
+</head>
+
+<body>
+
+  <!-- ==================== VIEW 1: HOMEPAGE ==================== -->
+  <div id="home" class="view">
+    <!-- Top Theme & Sound Controls -->
+    <div class="home-theme-bar">
+      <select class="lang theme-select" aria-label="Theme">
+        <option value="auto">🌓 Auto</option>
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+        <option value="midnight">🌌 Midnight</option>
+        <option value="paper">📜 Paper</option>
+      </select>
+      <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+    </div>
+
+    <!-- ==================== TECH CYBER HERO ==================== -->
+    <div class="home-hero tech-hero">
+      <div class="tech-glow-orb glow-left"></div>
+      <div class="tech-glow-orb glow-right"></div>
+
+      <div class="hero-content">
+        <div class="terminal-badge">
+          <span class="pulse-dot"></span>
+          <span class="mono-tag">THINKCODE::ENGINE_ACTIVE</span>
+          <span class="badge-divider">/</span>
+          <span class="badge-sub">v2.4 Interactive</span>
+        </div>
+
+        <h1 class="hero-title">
+          Watch Algorithms<br>
+          <span class="cyber-gradient" data-text="Think & Execute.">Think & Execute.</span>
+        </h1>
+
+        <p class="hero-sub">
+          A real-time visual simulation playground dissecting pointer states, memory mutation, and recursion stacks
+          across runtime compilers.
+        </p>
+
+        <!-- Interactive Complexity Pill Matrix -->
+        <div class="tech-metrics-matrix">
+          <div class="metric-chip">
+            <span class="chip-label">TOPICS</span>
+            <span class="chip-val">08</span>
+          </div>
+          <div class="metric-chip">
+            <span class="chip-label">ALGORITHMS</span>
+            <span class="chip-val">24+</span>
+          </div>
+          <div class="metric-chip">
+            <span class="chip-label">LATENCY</span>
+            <span class="chip-val text-neon">&lt;1ms</span>
+          </div>
+          <div class="metric-chip">
+            <span class="chip-label">COMPLEXITY</span>
+            <span class="chip-val text-purple">O(n log n)</span>
+          </div>
+        </div>
+
+        <div class="hero-cta-group">
+          <button class="tech-btn-primary" data-nav="app">
+            <span class="btn-shimmer"></span>
+            <span class="btn-text">⚡ Initialize Visualizer</span>
+          </button>
+          <button class="tech-btn-ghost" data-nav="tracer" data-lang="cpp" style="border-color:var(--ok);color:var(--ok)">
+            <span>[ ⚡ C++ Tracer ]</span>
+          </button>
+          <button class="tech-btn-ghost" data-nav="tracer" data-lang="python">
+            <span>[ 🐍 Python Tracer ]</span>
+          </button>
+          <button class="tech-btn-ghost" data-nav="about">
+            <span>[ View Source &amp; Theory ]</span>
+          </button>
+          <button class="tech-btn-ghost" data-nav="contact">
+            <span>[ ✉️ Contact ]</span>
+          </button>
+        </div>
+
+        <div class="hero-engine-status">
+          <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+        </div>
+      </div>
+
+      <!-- Interactive 3D Holographic Card -->
+      <div class="tech-preview-container" id="hero3DWrapper">
+        <div class="holo-card" id="holoCard">
+          <!-- HUD Header -->
+          <div class="holo-header">
+            <div class="holo-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="holo-title-bar">
+              <span class="icon-tree">⌥</span> ALGO_SIMULATION_VIEWPORT.bin
+            </div>
+            <div class="holo-status">
+              <span class="status-live"></span> RUNNING
+            </div>
+          </div>
+
+          <!-- Hero Visual Viewport with Scanline & Live Bar Animation -->
+          <div class="holo-screen" data-nav="app" role="button" tabindex="0" title="Launch Visualizer">
+            <img src="assets/hero-banner.png" alt="ThinkCode Algorithm Visualizer" class="holo-img" />
+            <div class="cyber-scanline"></div>
+
+            <!-- Simulated Live Floating Array Visualizer Overlay -->
+            <div class="holo-floating-widget">
+              <div class="widget-label">LIVE BUFFER SORT</div>
+              <div class="sim-bars">
+                <span class="bar" style="--h:40%; --delay:0.1s"></span>
+                <span class="bar active" style="--h:75%; --delay:0.3s"></span>
+                <span class="bar target" style="--h:30%; --delay:0.2s"></span>
+                <span class="bar" style="--h:90%; --delay:0.5s"></span>
+                <span class="bar active" style="--h:60%; --delay:0.4s"></span>
+                <span class="bar target" style="--h:80%; --delay:0.15s"></span>
+                <span class="bar" style="--h:50%; --delay:0.35s"></span>
+              </div>
+            </div>
+
+            <div class="holo-prompt">
+              <span class="mono-key">PRESS [SPACE] OR CLICK TO LAUNCH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-grid" id="homeGrid">
+      <!-- tiles injected by js/ui/home.js -->
+    </div>
+
+    <div class="home-langs">
+      <span class="lang-chip">C</span>
+      <span class="lang-chip">C++</span>
+      <span class="lang-chip">Java</span>
+      <span class="lang-chip">Python</span>
+      <span class="lang-chip muted">more soon</span>
+    </div>
+
+    <div class="home-quick">
+      <button class="quick-btn" data-quick="bubble">🎲 Random array → Bubble Sort</button>
+      <button class="quick-btn" data-quick="bfs">🧭 Run BFS from A</button>
+      <button class="quick-btn" data-quick="tree">🌿 Tree Level-Order (BFS)</button>
+      <button class="quick-btn" data-quick="tracer-cpp">⚡ C++ Code Tracer (Instant)</button>
+      <button class="quick-btn" data-quick="tracer-python">🐍 Python Code Tracer &amp; Compiler</button>
+    </div>
+
+    <footer class="home-footer site-foot">
+      <div class="home-foot-tagline">Built for learners — pick a topic above to begin.</div>
+      <div class="home-foot-byline">
+        <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== VIEW 2: VISUALIZER (APP) ==================== -->
+  <div id="app" class="view" hidden>
+    <header>
+      <div class="hd">
+        <h1 id="goHome" role="button" tabindex="0" title="Back to home">ThinkCode</h1>
+
+        <nav class="nav-links">
+          <button class="nav-btn" data-nav="home">Home</button>
+          <button class="nav-btn active nav-app-btn" data-nav="app">Visualizer</button>
+          <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="about">About</button>
+          <button class="nav-btn" data-nav="contact">Contact</button>
+        </nav>
+
+        <select class="lang" id="cat" aria-label="Category">
+          <option value="sorting">Sorting</option>
+          <option value="searching">Searching</option>
+          <option value="stack">Stack</option>
+          <option value="queue">Queue</option>
+          <option value="linkedlist">Linked List</option>
+          <option value="dll">Doubly LL</option>
+          <option value="recursion">Recursion</option>
+          <option value="tree">Tree</option>
+          <option value="graph">Graph</option>
+        </select>
+        <select class="lang" id="lang" aria-label="Language">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="mr">मराठी</option>
+        </select>
+        <select class="lang theme-select" id="theme" aria-label="Theme">
+          <option value="auto">🌓 Auto</option>
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="paper">📜 Paper</option>
+        </select>
+        <button class="sbtn snd-btn" id="snd" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </header>
+
+    <main>
+      <section>
+        <div class="card" id="c-about">
+          <details id="ab">
+            <summary id="abS"></summary>
+            <div id="ib"></div>
+          </details>
+        </div>
+        <div class="card" id="c-code">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <h2 data-i="codeH" class="chip"></h2>
+            <select class="lang" id="plang" aria-label="Programming language" hidden>
+              <option value="pseudo">Pseudo</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+              <option value="python">Python</option>
+            </select>
+          </div>
+          <div id="code"></div>
+          <div id="msg"></div>
+        </div>
+      </section>
+
+      <section>
+        <!-- Data Structures Card -->
+        <div class="card" id="c-ds" hidden>
+          <h2 id="dsT"></h2>
+          <div class="inp">
+            <input type="text" id="dv" inputmode="numeric" placeholder="0–9999" aria-label="Value">
+            <span id="trow2" style="display:contents" hidden><input type="text" id="tg2" inputmode="numeric"
+                placeholder="target" aria-label="Target value"></span>
+            <span id="dsb" style="display:contents"></span>
+          </div>
+          <div id="szrow" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0 0">
+            <label style="display:flex;gap:8px;align-items:center;color:var(--mute)"><span>Size</span><input
+                type="range" id="dsz" min="3" max="10" value="5"></label>
+            <b id="szv" class="chip"></b>
+          </div>
+          <div id="maxn" style="font-size:12.5px;color:var(--mute);margin-top:6px"></div>
+          <div id="dsv" class="ds"></div>
+          <div id="dsm"></div>
+          <div class="ctl" id="tbar" hidden>
+            <button id="tprev" data-i="back"></button>
+            <button class="main" id="tplay"></button>
+            <button id="tnext" data-i="next"></button>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 6px">
+            <h2 id="dsch" class="chip" style="margin:0"></h2>
+            <select class="lang" id="dlang" aria-label="Programming language">
+              <option value="pseudo">Pseudo</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+              <option value="python">Python</option>
+            </select>
+          </div>
+          <div id="dsc"></div>
+          <ul id="dsl"></ul>
+        </div>
+
+        <!-- Recursion Card -->
+        <div class="card" id="c-rec" hidden>
+          <h2 id="rT">Recursion</h2>
+          <div class="inp">
+            <label style="display:flex;gap:6px;align-items:center;color:var(--mute)">n <input type="text" id="rn"
+                inputmode="numeric" value="5" style="width:70px;flex:none"></label>
+            <button id="rgo" class="main">Run</button>
+          </div>
+          <div id="rwrap">
+            <div id="rphase"></div>
+            <h2 style="margin:0">Call stack (bottom → top)</h2>
+            <div id="rstack"></div>
+            <div id="rval">—</div>
+            <div id="rvar"></div>
+          </div>
+          <div class="stats"><span><span data-i="step"></span> <b id="rst">0/0</b></span></div>
+          <div class="ctl" id="rbar">
+            <button class="main" id="rplay">▶ Play</button>
+            <button id="rprev">◀ Back</button>
+            <button id="rnext">Next ▶</button>
+            <button id="rreset">Reset</button>
+          </div>
+          <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="rspd" min="1" max="10"
+                value="4"></label></div>
+        </div>
+
+        <!-- Graph Card -->
+        <div class="card" id="c-gr" hidden>
+          <h2 id="gT">Graph</h2>
+          <div class="inp"><label style="display:flex;gap:6px;align-items:center;color:var(--mute)">Start <select
+                id="gs" class="lang"></select></label><button id="gw">Random weights</button></div>
+          <div id="gwrap">
+            <svg id="gsvg" viewBox="0 0 340 250" style="width:100%;max-width:460px;display:block;margin:8px auto"></svg>
+            <div id="gpanel">
+              <div class="gp-title" id="gpTitle">Frontier</div>
+              <div class="gp-row" id="gpFrontier"></div>
+              <div class="gp-title" id="gpOrderTitle">Visit order</div>
+              <div class="gp-row" id="gpOrder"></div>
+              <div class="gp-note" id="gpNote"></div>
+            </div>
+          </div>
+          <div id="gds" style="font:600 13px 'JetBrains Mono',monospace;min-height:20px;word-break:break-word"></div>
+          <div class="stats"><span><span data-i="step"></span> <b id="gst">0/0</b></span></div>
+          <div class="ctl" id="gbar">
+            <button class="main" id="gplay" data-i="play">▶ Play</button>
+            <button id="gprev" data-i="back"></button>
+            <button id="gnext" data-i="next"></button>
+            <button id="greset" data-i="reset"></button>
+          </div>
+          <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="gspd" min="1" max="10"
+                value="4"></label></div>
+        </div>
+
+        <!-- Binary Tree Visualizer Card -->
+        <div class="card" id="c-tree" hidden>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <h2 id="treeT" style="margin:0">Binary Tree</h2>
+            <div class="inp" style="margin:0">
+              <label style="display:flex;gap:6px;align-items:center;color:var(--mute);font-size:13px">Preset
+                <select id="treePreset" class="lang">
+                  <option value="numbers">1 to 7 (Standard)</option>
+                  <option value="bst">BST (10 to 70)</option>
+                  <option value="alpha">A to G (Letters)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div id="treeWrap">
+            <svg id="treeSvg" viewBox="0 0 420 250" style="width:100%;max-width:480px;display:block;margin:6px auto"></svg>
+            <div id="treePanel">
+              <div class="tp-header">
+                <span class="tp-badge" id="tpBadge">QUEUE (FIFO)</span>
+                <span class="tp-sub" id="tpAction">Ready</span>
+              </div>
+              <div class="tp-container" id="tpContainer"></div>
+              <div class="tp-order-title">Traversal Visit Order</div>
+              <div class="tp-order-row" id="tpOrder"></div>
+              <div class="tp-note" id="tpNote"></div>
+            </div>
+          </div>
+
+          <div class="stats"><span><span data-i="step"></span> <b id="treeSt">0/0</b></span></div>
+
+          <div class="ctl" id="treeBar">
+            <button class="main" id="treePlay" data-i="play">▶ Play</button>
+            <button id="treePrev" data-i="back">◀ Back</button>
+            <button id="treeNext" data-i="next">Next ▶</button>
+            <button id="treeReset" data-i="reset">Reset</button>
+          </div>
+          <div class="ctl">
+            <label><span data-i="speed"></span> <input type="range" id="treeSpd" min="1" max="10" value="4"></label>
+          </div>
+        </div>
+
+        <!-- Array Visualizer Card -->
+        <div class="card" id="c-arr">
+          <h2 data-i="arrH"></h2>
+          <div class="inp">
+            <input type="text" id="custom" inputmode="text" autocomplete="off" aria-label="Numbers">
+            <button class="main" id="set"
+              style="border:1px solid var(--ok);background:var(--ok);color:#fff;border-radius:8px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer"
+              data-i="set"></button>
+          </div>
+          <div id="hint" data-i="hint"></div>
+          <div class="inp" id="trow" hidden><label
+              style="display:flex;gap:6px;align-items:center;color:var(--mute)"><span data-i="target"></span> <input
+                type="text" id="tg" inputmode="numeric" aria-label="Target"></label><button id="tgb"
+              data-i="search"></button></div>
+          <div id="key" style="margin-top:8px"></div>
+          <div id="wrap">
+            <div id="row"></div>
+          </div>
+          <div id="tmpl"></div>
+          <div class="legend">
+            <span><i style="background:var(--cmp)"></i><u data-i="lc" style="text-decoration:none"></u></span>
+            <span><i style="background:var(--wr)"></i><u data-i="lw" style="text-decoration:none"></u></span>
+            <span><i style="background:var(--hole)"></i><u data-i="lh" style="text-decoration:none"></u></span>
+            <span><i style="background:var(--ok)"></i><u data-i="lo" style="text-decoration:none"></u></span>
+          </div>
+          <div class="stats">
+            <span><span data-i="step"></span> <b id="st">0/0</b></span>
+            <span><span data-i="cmpN"></span> <b id="cm">0</b></span>
+            <span><span data-i="mvN"></span> <b id="mv">0</b></span>
+          </div>
+          <input type="range" id="scrub" min="0" max="1" value="0" style="width:100%;margin-top:10px" aria-label="Step">
+          <div class="ctl" id="bar">
+            <button class="main" id="play"></button>
+            <button id="prev" data-i="back"></button>
+            <button id="next" data-i="next"></button>
+            <button id="reset" data-i="reset"></button>
+          </div>
+          <div class="ctl">
+            <label><span data-i="speed"></span> <input type="range" id="spd" min="1" max="10" value="4"></label>
+            <label><span data-i="size"></span> <input type="range" id="size" min="4" max="14" value="8"></label>
+            <button id="rand" data-i="rand"></button>
+          </div>
+        </div>
+
+        <!-- Detail Card -->
+        <div class="card" id="dc">
+          <h2 data-i="detH"></h2>
+          <span class="bd" id="dt">—</span>
+          <div id="dm"></div>
+          <ul id="dx"></ul>
+          <h2 data-i="arrNow" style="margin:12px 0 0"></h2>
+          <div class="mt" id="mt"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+    </footer>
+  </div>
+
+  <!-- ==================== VIEW 3: PYTHON CODE TRACER & COMPILER ==================== -->
+  <div id="tracer" class="view" hidden>
+    <header>
+      <div class="hd">
+        <h1 data-nav="home" style="cursor:pointer">ThinkCode</h1>
+
+        <nav class="nav-links">
+          <button class="nav-btn" data-nav="home">Home</button>
+          <button class="nav-btn" data-nav="app">Visualizer</button>
+          <button class="nav-btn active" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="about">About</button>
+          <button class="nav-btn" data-nav="contact">Contact</button>
+        </nav>
+
+        <select class="lang theme-select" aria-label="Theme">
+          <option value="auto">🌓 Auto</option>
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="paper">📜 Paper</option>
+        </select>
+        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      </div>
+    </header>
+
+    <div class="tracer-container">
+      <div class="tracer-header-bar">
+        <div class="tracer-title-group">
+          <h2 id="tracerMainTitle"><span>🐍</span> Python Code Tracer & Execution Engine</h2>
+          <p id="tracerDescText">Inspect local variables, call stack frames, and output step-by-step in Python 3.12 (Pyodide).</p>
+        </div>
+        <div class="tracer-actions-group">
+          <label style="display:flex;align-items:center;gap:6px;font:700 13px 'JetBrains Mono',monospace;color:var(--ink);background:var(--code);padding:5px 12px;border-radius:8px;border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+            <span>Language:</span>
+            <select id="langSel" class="lang" style="padding:3px 8px;font-weight:700;font-size:13px;border-radius:6px;cursor:pointer;color:var(--ink)">
+              <option value="python">🐍 Python</option>
+              <option value="cpp">⚡ C++</option>
+            </select>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font:600 13px 'JetBrains Mono',monospace;color:var(--mute)">
+            Example:
+            <select id="pyPresetSelect" class="lang">
+              <option value="loop">1. Loop & Accumulator</option>
+              <option value="factorial">2. Recursion (Factorial)</option>
+              <option value="input">3. User input()</option>
+              <option value="bubble">4. Bubble Sort Simulation</option>
+              <option value="fib">5. Fibonacci Tree</option>
+            </select>
+          </label>
+          <div id="pyStatusBadge" class="tracer-status-badge loading clickable" title="Tap to retry if needed">
+            <span class="dot"></span> Initializing Python Engine...
+          </div>
+        </div>
+      </div>
+
+      <div class="tracer-grid">
+        <!-- Left Column: Source Code Editor & Controls -->
+        <div class="tracer-card">
+          <div class="tracer-card-title">
+            <span id="tracerSrcTitle">Source Code</span>
+            <span style="font-weight:400;text-transform:none">Tab key indents 4 spaces</span>
+          </div>
+          <div class="ed">
+            <pre id="pyHl" aria-hidden="true"></pre>
+            <textarea id="pySrc" spellcheck="false" autocapitalize="off" autocomplete="off">x = 0
+for i in range(3):
+    x += i
+    print("x =", x)</textarea>
+          </div>
+
+          <div class="tracer-card-title" style="margin-top:12px">
+            <span>Standard Input (stdin)</span>
+            <span style="font-weight:400;text-transform:none">Passed to input() calls</span>
+          </div>
+          <textarea id="pyStdin" rows="2" placeholder="input() values, one per line" class="tracer-textarea stdin-box"></textarea>
+
+          <div class="tracer-ctl">
+            <button class="main-run" id="pyRunBtn" disabled>▶ Run & Trace</button>
+            <button id="pyPrevBtn">◀ Back</button>
+            <button id="pyPlayBtn">▶ Play</button>
+            <button id="pyNextBtn">Next ▶</button>
+            <button id="pyResetBtn">Reset</button>
+          </div>
+
+          <div class="tracer-progress-row">
+            <span class="tracer-step-counter" id="pyStepCounter">0 / 0</span>
+            <input type="range" id="pyScrub" min="-1" max="0" value="-1" aria-label="Step Scrubber">
+            <label style="display:flex;align-items:center;gap:6px;font:600 12px 'JetBrains Mono',monospace;color:var(--mute)">
+              Speed <input type="range" id="pySpd" min="1" max="10" value="4" style="width:70px">
+            </label>
+          </div>
+        </div>
+
+        <!-- Right Column: Step Inspection, Variables, Call Stack, & Output -->
+        <div class="tracer-card">
+          <div id="pyInfo" class="tracer-info-banner">Click [Run & Trace] to compile and analyze code.</div>
+
+          <div class="tracer-card-title">Live Execution Trace</div>
+          <div id="pyCodeView" class="code-view-container"></div>
+
+          <div class="tracer-card-title">Variables Watch Table</div>
+          <div class="vars-table-wrapper">
+            <table id="pyVars" class="vars-table">
+              <tr><td colspan="2" class="var-empty-text">Variables will appear here during execution.</td></tr>
+            </table>
+          </div>
+
+          <div class="tracer-card-title">Call Stack (Active Frames)</div>
+          <div id="pyStack" class="stack-container">
+            <span class="tp-empty">(Call Stack is empty — press Next or Play to begin)</span>
+          </div>
+
+          <div class="tracer-card-title">Standard Output (Console)</div>
+          <div class="terminal-window">
+            <div class="terminal-titlebar">
+              <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+              </div>
+              <span id="tracerTerminalLabel" class="terminal-label">python3 - stdout</span>
+            </div>
+            <pre id="pyOut" class="terminal-body"></pre>
+          </div>
+
+          <div id="pyErr" class="tracer-error-banner"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-foot">
+      <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+    </footer>
+  </div>
+
+  <!-- ==================== VIEW 4: ABOUT PAGE ==================== -->
+  <div id="about" class="view" hidden>
+    <header>
+      <div class="hd">
+        <h1 data-nav="home" style="cursor:pointer">ThinkCode</h1>
+
+        <nav class="nav-links">
+          <button class="nav-btn" data-nav="home">Home</button>
+          <button class="nav-btn" data-nav="app">Visualizer</button>
+          <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn active" data-nav="about">About</button>
+          <button class="nav-btn" data-nav="contact">Contact</button>
+        </nav>
+
+        <select class="lang theme-select" aria-label="Theme">
+          <option value="auto">🌓 Auto</option>
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="paper">📜 Paper</option>
+        </select>
+        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      </div>
+    </header>
+
+    <div class="page-container">
+      <!-- Section Header -->
+      <div class="page-header">
+        <div class="badge-role"><span class="pulse-dot"></span> MISSION :: ALGORITHMIC COGNITION &amp; MASTERY</div>
+        <h1 style="font-size:34px;letter-spacing:-.02em;margin-top:6px">About ThinkCode</h1>
+        <p style="font-size:16px;line-height:1.65;max-width:700px;margin:0 auto">
+          An enterprise-grade, zero-dependency interactive learning environment engineered to demystify complex
+          computational algorithms through micro-step tracing, dynamic memory visualization, and polyphonic auditory feedback.
+        </p>
+
+        <!-- Feature Badges Pill Row -->
+        <div class="about-pill-row">
+          <span class="about-pill">⚡ 100% Zero Runtime Dependencies</span>
+          <span class="about-pill">🖥️ C &amp; C++ In-Browser AST Interpreters</span>
+          <span class="about-pill">🔬 Dynamic RAM &amp; Call-Stack Watch</span>
+          <span class="about-pill">🌐 English · हिन्दी · मराठी</span>
+          <span class="about-pill">🔊 Web Audio Oscillator Feedback</span>
+        </div>
+      </div>
+
+      <!-- Executive Author Showcase Card -->
+      <div class="author-card-pro">
+        <div class="author-avatar-wrap">
+          <div class="author-avatar-lg">TM</div>
+          <div class="author-status-dot" title="Active Lead Developer"></div>
+        </div>
+        <div class="author-content">
+          <div class="badge-role" style="align-self:flex-start;margin-bottom:0">ARCHITECT &amp; LEAD DEVELOPER</div>
+          <div class="author-header-line">
+            <h2 class="author-name-lg">Tahir Mansuri</h2>
+            <span class="author-designation">Lead System Engineer &amp; HOD, IMRD College</span>
+          </div>
+          <div class="author-experience">
+            <span>💼</span> With 8+ years of experience in IT and Software Development
+          </div>
+          <p class="author-bio">
+            Academic leader, systems engineer, and passionate educator focused on bridging the pedagogical gap in computer
+            science education. Designed and architected <strong>ThinkCode</strong> from the ground up to transition learners
+            from rote memorization to profound, intuitive understanding of data structures, pointer mechanics, and algorithmic efficiency.
+          </p>
+          <div class="author-chips">
+            <span class="chip">🎓 Head of Department (HOD)</span>
+            <span class="chip">⚙️ Lead System Engineer</span>
+            <span class="chip">💻 Systems Architecture &amp; C/C++</span>
+            <span class="chip">🧠 CS Pedagogy &amp; Education Tech</span>
+            <span class="chip">🚀 Full-Stack Engineering</span>
+          </div>
+          <div class="author-links">
+            <a href="#" class="badge-link" data-nav="contact">✉️ Contact Author</a>
+            <a href="https://github.com/TahirMansuri/ThinkCode" target="_blank" rel="noopener noreferrer" class="badge-link">⭐ View on GitHub</a>
+            <a href="#" class="badge-link" data-nav="app">🚀 Launch Visualizer</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Educational Philosophy Callout -->
+      <div class="about-quote-box">
+        <div class="quote-icon">“</div>
+        <p class="quote-text">
+          Computer science education should not be confined to static textbook diagrams and chalkboard dry-runs.
+          ThinkCode turns abstract Big-O theory into a multi-sensory interactive reality: students can watch pointers hop,
+          inspect live memory mutations inside RAM, and hear the harmonic cadence of algorithmic convergence.
+        </p>
+        <p class="quote-author">— Tahir Mansuri, Lead Developer &amp; HOD</p>
+      </div>
+
+      <!-- Core Engineering Pillars -->
+      <div class="section-subheading">
+        <h2>🛠️ Core Engineering Pillars</h2>
+        <span class="section-tag">ENGINEERED FOR PRECISION</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">EXECUTION ENGINE</div>
+          <h3><span class="card-icon">⚡</span> Dual In-Browser AST Interpreters</h3>
+          <p>
+            Custom tokenizers and recursive-descent AST evaluators for both <strong>C and C++</strong> run natively inside
+            the browser client. Zero server trips, instantaneous step-by-step diagnostic execution, and safe sandboxing.
+          </p>
+        </div>
+
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">MEMORY VISIBILITY</div>
+          <h3><span class="card-icon">🔬</span> Micro-Step Memory &amp; Stack Watch</h3>
+          <p>
+            Inspect the virtual memory model in real time. Watch variable values mutate, track array cell access states
+            (compare, swap, sorted), and explore recursive call stack frames as they push and pop.
+          </p>
+        </div>
+
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">POLYGLOT CODE</div>
+          <h3><span class="card-icon">💻</span> Synchronized Multi-Language Panes</h3>
+          <p>
+            Switch seamlessly between <strong>C, C++, Java, Python, and Pseudocode</strong>. The active line of code lights
+            up in lockstep with every array swap, pointer traverse, and binary partition.
+          </p>
+        </div>
+
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">ACOUSTIC SENSORY</div>
+          <h3><span class="card-icon">🔊</span> Polyphonic Audio Synthesis</h3>
+          <p>
+            Harnesses the Web Audio API to map numerical data values to precise musical frequencies. Sorting and traversal
+            routines produce unique auditory signatures, fostering intuitive pattern recognition.
+          </p>
+        </div>
+
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">ACCESSIBILITY</div>
+          <h3><span class="card-icon">🌐</span> Trilingual Native Inclusivity</h3>
+          <p>
+            Native terminology explanations, time-complexity breakdowns, and user interfaces available in
+            <strong>English, हिन्दी (Hindi), and मराठी (Marathi)</strong>, welcoming students across linguistic backgrounds.
+          </p>
+        </div>
+
+        <div class="info-card pillar-card">
+          <div class="pillar-badge">PERFORMANCE</div>
+          <h3><span class="card-icon">🛡️</span> Zero-Dependency Pure Web Architecture</h3>
+          <p>
+            Engineered exclusively with clean ES6+ JavaScript modules, modern CSS variables, and HTML5. No bloated
+            frameworks, no telemetry, and instant sub-second cold starts on any modern browser.
+          </p>
+        </div>
+      </div>
+
+      <!-- Technical System Specifications -->
+      <div class="section-subheading">
+        <h2>📊 System Specifications</h2>
+        <span class="section-tag">SYS::SPEC_MATRIX</span>
+      </div>
+
+      <div class="specs-card">
+        <div class="specs-header">
+          <span>THINKCODE RUNTIME ARCHITECTURE</span>
+          <span>BUILD: PRODUCTION v2.4.0</span>
+        </div>
+        <div class="specs-grid">
+          <div class="spec-item">
+            <span class="spec-label">Interpreter Engines</span>
+            <span class="spec-val">C &amp; C++ Recursive-Descent AST In-Browser</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Audio Subsystem</span>
+            <span class="spec-val">Web Audio API Polyphonic Oscillator Bank</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Rendering Pipeline</span>
+            <span class="spec-val">Vanilla DOM Hardware-Accelerated CSS Transforms</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Localization Matrix</span>
+            <span class="spec-val">English · Hindi (हिन्दी) · Marathi (मराठी)</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Data Structures Covered</span>
+            <span class="spec-val">Arrays, Stacks, Queues, Linked Lists, BST, Graphs</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Source Repository</span>
+            <span class="spec-val"><a href="https://github.com/TahirMansuri/ThinkCode" target="_blank" rel="noopener noreferrer" style="color:var(--hole);text-decoration:none">github.com/TahirMansuri/ThinkCode</a></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Call to Action -->
+      <div class="about-cta">
+        <h3>Ready to master algorithms in action?</h3>
+        <p>Explore algorithmic workflows visually with sound and memory tracking, or run custom C &amp; C++ programs step-by-step.</p>
+        <div class="about-cta-btns">
+          <button class="tech-btn-primary" data-nav="app" style="cursor:pointer">🚀 Launch Interactive Visualizer</button>
+          <button class="tech-btn-ghost" data-nav="tracer" style="cursor:pointer">⚡ Open C/C++ Code Tracer</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-foot">
+      <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+    </footer>
+  </div>
+
+  <!-- ==================== VIEW 4: CONTACT PAGE ==================== -->
+  <div id="contact" class="view" hidden>
+    <header>
+      <div class="hd">
+        <h1 data-nav="home" style="cursor:pointer">ThinkCode</h1>
+
+        <nav class="nav-links">
+          <button class="nav-btn" data-nav="home">Home</button>
+          <button class="nav-btn" data-nav="app">Visualizer</button>
+          <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="about">About</button>
+          <button class="nav-btn active" data-nav="contact">Contact</button>
+        </nav>
+
+        <select class="lang theme-select" aria-label="Theme">
+          <option value="auto">🌓 Auto</option>
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="paper">📜 Paper</option>
+        </select>
+        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      </div>
+    </header>
+
+    <div class="page-container">
+      <div class="page-header">
+        <h1>Contact & Feedback</h1>
+        <p>Have an idea for a new algorithm, found a bug, or want to collaborate? Send a message below!</p>
+      </div>
+
+      <form class="contact-form" id="contactForm">
+        <div id="formStatus" class="form-status"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cName">Your Name *</label>
+            <input type="text" id="cName" placeholder="e.g. Alex Sharma" required>
+          </div>
+          <div class="form-group">
+            <label for="cEmail">Email Address *</label>
+            <input type="email" id="cEmail" placeholder="e.g. alex@example.com" required
+              style="border:1px solid var(--line);background:var(--code);color:var(--ink);padding:10px 14px;border-radius:10px;font:inherit">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cTopic">Topic</label>
+          <select id="cTopic"
+            style="border:1px solid var(--line);background:var(--code);color:var(--ink);padding:10px 14px;border-radius:10px;font:inherit">
+            <option value="feedback">General Feedback & Suggestion</option>
+            <option value="algo_request">Request New Algorithm / Language</option>
+            <option value="bug_report">Report an Issue or Bug</option>
+            <option value="collab">Collaboration & Project Query</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cMsg">Message *</label>
+          <textarea id="cMsg" placeholder="Write your feedback, questions, or ideas here..." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">✉️ Send Message</button>
+      </form>
+    </div>
+
+    <footer class="site-foot">
+      <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+    </footer>
+  </div>
+
+  <!-- ==================== MODULAR JAVASCRIPT BUNDLE ==================== -->
+  <!-- 1. Data & Dictionaries -->
+  <script src="js/data/i18n.js"></script>
+  <script src="js/data/info.js"></script>
+  <script src="js/data/languages.js"></script>
+
+  <!-- 2. Audio Engine -->
+  <script src="js/audio.js"></script>
+
+  <!-- 3. Algorithm Step Engines -->
+  <script src="js/engines/sorting.js"></script>
+  <script src="js/engines/recursion.js"></script>
+  <script src="js/engines/graph.js"></script>
+  <script src="js/engines/tree.js"></script>
+  <script src="js/engines/ds.js"></script>
+
+  <!-- 4. Visual Renderers -->
+  <script src="js/renderers/arrayRenderer.js"></script>
+  <script src="js/renderers/dsRenderer.js"></script>
+  <script src="js/renderers/recRenderer.js"></script>
+  <script src="js/renderers/graphRenderer.js"></script>
+  <script src="js/renderers/treeRenderer.js"></script>
+
+  <!-- 5. UI Views & Main Application Controller -->
+  <script src="js/ui/home.js"></script>
+  <script src="js/ui/pages.js"></script>
+  <script src="cpp-tracer.js"></script>
+  <script src="js/tracer.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
