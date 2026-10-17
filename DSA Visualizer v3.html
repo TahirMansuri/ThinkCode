@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DSA Visualizer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--bg:#f3f1ec;--panel:#fff;--ink:#1d2433;--mute:#6b7385;--line:#d9d6cd;--bar:#8aa0c8;--cmp:#f2a93b;--wr:#e4572e;--hole:#8e5bd6;--ok:#1f9d8a;--code:#f7f6f2;--act:#fff0c9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme]){--bg:#0f1420;--panel:#171e2e;--ink:#e8ecf5;--mute:#8d97ad;--line:#2a3348;--bar:#4d6592;--code:#121827;--act:#3a3216}}
+:root[data-theme="dark"]{--bg:#0f1420;--panel:#171e2e;--ink:#e8ecf5;--mute:#8d97ad;--line:#2a3348;--bar:#4d6592;--code:#121827;--act:#3a3216}
+/* explicit light override — wins over the dark media query */
+:root[data-theme="light"]{--bg:#f3f1ec;--panel:#fff;--ink:#1d2433;--mute:#6b7385;--line:#d9d6cd;--bar:#8aa0c8;--cmp:#f2a93b;--wr:#e4572e;--hole:#8e5bd6;--ok:#1f9d8a;--code:#f7f6f2;--act:#fff0c9}
+/* Midnight — deeper contrast, less blue, good for projectors */
+:root[data-theme="midnight"]{--bg:#070a12;--panel:#0e1420;--ink:#f1f5ff;--mute:#8b96b3;--line:#222c44;--bar:#5b78b8;--cmp:#ffb347;--wr:#ff6b47;--hole:#a97bff;--ok:#2fd6b6;--code:#0a0f1a;--act:#3d2f0e}
+/* Paper — warm, low-glare light */
+:root[data-theme="paper"]{--bg:#f4ecd8;--panel:#fbf6e9;--ink:#2b2a26;--mute:#7a7364;--line:#ddcfb0;--bar:#9a8fb5;--cmp:#e0982b;--wr:#c74a2b;--hole:#7d5bbd;--ok:#1f8f7c;--code:#f7f0dd;--act:#fbe9b8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans Devanagari",system-ui,sans-serif}
+
+/* --- homepage --- */
+.view{min-height:100vh}
+#home{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:26px;padding:56px 20px 40px;position:relative;overflow:hidden}
+#home::before{content:"";position:absolute;inset:-40% -20% auto -20%;height:70%;background:radial-gradient(60% 70% at 50% 0%,color-mix(in srgb,var(--ok) 22%,transparent),transparent 70%),radial-gradient(50% 60% at 80% 10%,color-mix(in srgb,var(--hole) 18%,transparent),transparent 70%);pointer-events:none;z-index:0;animation:heroDrift 14s ease-in-out infinite alternate}
+@keyframes heroDrift{from{transform:translateX(-3%)}to{transform:translateX(3%)}}
+.home-hero{position:relative;z-index:1;text-align:center;max-width:640px}
+.hero-title{font-size:38px;margin:0 0 6px;letter-spacing:.01em}
+.hero-sub{margin:0 0 10px;color:var(--mute);font-size:16px}
+.hero-stats{margin:0 0 14px;color:var(--mute);font-size:14px}
+.hero-stats b{color:var(--ink);font-family:"JetBrains Mono",monospace}
+.hero-byline{font-size:13px;color:var(--mute)}
+.home-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;width:100%;max-width:820px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:transform .18s ease,box-shadow .2s ease,border-color .2s ease}
+.tile:hover{transform:translateY(-3px);border-color:var(--hole);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.tile:focus-visible{outline:2px solid var(--hole);outline-offset:2px}
+.tile .ti{width:36px;height:36px;color:var(--hole);flex:none}
+.tile .ti svg{width:100%;height:100%;display:block}
+.tile .tn{font-weight:700;font-size:15px;margin-top:2px}
+.tile .ts{font-size:12px;color:var(--mute);line-height:1.35;min-height:32px}
+.tile .tb{font:600 11px "JetBrains Mono",monospace;color:var(--ok);letter-spacing:.02em}
+.tile.soon{opacity:.55;cursor:default;pointer-events:none}
+.tile.soon .tb{color:var(--mute)}
+.home-langs{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.lang-chip{border:1px solid var(--line);background:var(--panel);padding:4px 12px;border-radius:999px;font:600 12px "JetBrains Mono",monospace;color:var(--ink)}
+.lang-chip.muted{color:var(--mute)}
+.home-quick{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.quick-btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:10px;font:inherit;cursor:pointer;transition:transform .15s ease,border-color .2s ease}
+.quick-btn:hover{transform:translateY(-2px);border-color:var(--ok)}
+.home-foot{position:relative;z-index:1;color:var(--mute);font-size:12px;margin-top:8px}
+#goHome{cursor:pointer;transition:color .2s ease}
+#goHome:hover,#goHome:focus-visible{color:var(--hole);outline:none}
+@media(max-width:820px){
+  #home{padding:34px 14px 30px;gap:20px}
+  .hero-title{font-size:28px}
+  .hero-sub{font-size:14px}
+  .home-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .tile{padding:12px}
+  .tile .ts{min-height:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  #home::before{animation:none}
+  .tile,.quick-btn{transition:none}
+}
+header{padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+h1{font-size:20px;margin:0;font-weight:700}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:8px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:16px;padding:16px 20px;max-width:1300px;margin:0 auto}
+@media(max-width:820px){main{grid-template-columns:1fr;padding:12px}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card h2{font-size:14px;margin:0 0 8px;color:var(--mute);font-weight:600}
+#code,#dsc{font:13px/1.7 "JetBrains Mono",ui-monospace,monospace;background:var(--code);border-radius:10px;padding:8px 0;overflow-x:auto;border:1px solid var(--line);position:relative}
+.ln{white-space:pre;padding:0 14px 0 46px;border-left:3px solid transparent;position:relative}
+.ln::before{content:attr(data-ln);position:absolute;left:0;top:0;width:34px;text-align:right;color:var(--mute);font-weight:400;opacity:.7;border-right:1px solid var(--line);padding-right:6px;margin-right:8px}
+.ln.on{background:linear-gradient(90deg,var(--act),transparent 90%);border-left-color:var(--cmp);font-weight:600;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+.ln.on::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cmp);animation:lnGlow 1.2s ease-in-out infinite alternate}
+@keyframes lnGlow{from{box-shadow:0 0 4px var(--cmp)}to{box-shadow:0 0 12px var(--cmp)}}
+.tk-kw{color:var(--hole);font-weight:700}
+.tk-fn{color:var(--ok);font-weight:600}
+.tk-num{color:#3a6ea5;font-weight:600}
+.tk-op{color:var(--wr)}
+.tk-cm{color:var(--mute);font-style:italic}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .tk-num{color:#7fb3e8}}
+:root[data-theme="dark"] .tk-num,:root[data-theme="midnight"] .tk-num{color:#7fb3e8}
+:root[data-theme="paper"] .tk-num{color:#3a6ea5}
+#msg{margin-top:12px;min-height:48px;padding:10px 12px;border-radius:8px;background:var(--code);font-weight:600}
+#info{color:var(--mute);font-size:13px;margin-top:10px}
+#wrap{overflow-x:auto;padding-bottom:6px}
+#row{position:relative;height:244px}
+.cell{position:absolute;top:92px;width:56px;height:56px;border:2px solid var(--line);border-radius:10px;background:var(--code);transition:background .2s,border-color .2s,opacity .2s}
+.cell.cmp{border-color:var(--cmp);background:var(--act)}.cell.wr{border-color:var(--wr)}.cell.hole{border-color:var(--hole)}.cell.ok{border-color:var(--ok)}.cell.dim{opacity:.35}
+.idx{position:absolute;top:152px;width:56px;text-align:center;font:12px "JetBrains Mono",monospace;color:var(--mute)}
+.tok{position:absolute;left:0;top:0;width:56px;height:56px;border-radius:10px;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;font:700 20px "JetBrains Mono",monospace;box-shadow:0 3px 8px rgba(0,0,0,.25);transition:background .2s;z-index:2}
+.tok.cmp{background:var(--cmp);color:#1d2433}.tok.wr{background:var(--wr)}.tok.hole{background:var(--hole)}.tok.ok{background:var(--ok)}
+#key{min-height:20px;font:600 13px "JetBrains Mono",monospace;color:var(--hole)}
+#tmpl{font-size:12px;color:var(--mute);min-height:18px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.ctl button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.ctl button.main{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
+.ctl button:focus-visible,.tabs button:focus-visible,input:focus-visible{outline:2px solid var(--hole);outline-offset:2px}
+.ctl label{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:6px}
+input[type=text]{border:1px solid var(--line);background:var(--code);color:var(--ink);padding:7px 10px;border-radius:8px;font:13px "JetBrains Mono",monospace;width:210px;max-width:100%}
+.stats{display:flex;gap:18px;margin-top:10px;font-size:13px;color:var(--mute)}
+.stats b{color:var(--ink);font-family:"JetBrains Mono",monospace}
+@media(prefers-reduced-motion:reduce){.bar{transition:none}}
+@media(prefers-reduced-motion:reduce){.cell,.tok{transition:none}}
+.lang{display:flex;gap:4px}.lang button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 10px;border-radius:8px;font:inherit;cursor:pointer}.lang button.on{background:var(--hole);border-color:var(--hole);color:#fff}
+.hd{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+/* --- developer signature with auto glow --- */
+.byline{display:flex;gap:6px;align-items:baseline;font-size:12.5px;color:var(--mute);white-space:nowrap}
+.byline-label{opacity:.8}
+.byline-name{
+  font-weight:700;font-size:14px;letter-spacing:.02em;
+  background:linear-gradient(90deg,var(--ok),var(--hole),var(--ok));
+  background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:hue 6s linear infinite, glow 3.4s ease-in-out infinite alternate;
+}
+@keyframes glow{
+  from{filter:drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 2px color-mix(in srgb,var(--ok) 45%,transparent))}
+  to  {filter:drop-shadow(0 0 6px color-mix(in srgb,var(--hole) 75%,transparent)) drop-shadow(0 0 14px color-mix(in srgb,var(--ok) 60%,transparent))}
+}
+@keyframes hue{from{background-position:0% 50%}to{background-position:200% 50%}}
+.site-foot{
+  text-align:center;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid var(--line);margin-top:24px;
+  font-size:13px;color:var(--mute);
+}
+.foot-name{font-size:16px}
+@media(prefers-reduced-motion:reduce){
+  .byline-name{animation:none;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--hole) 55%,transparent))}
+}
+@media(max-width:820px){
+  .byline{width:100%;justify-content:flex-end;order:3}
+}
+#ib h3{margin:0 0 6px;font-size:17px}#ib p{margin:0 0 10px}
+.cx{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center;font-size:12px;color:var(--mute)}
+.cx div{background:var(--code);border-radius:8px;padding:6px 2px}.cx b{display:block;color:var(--ink);font:600 13px "JetBrains Mono",monospace}
+.inp{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}.inp input[type=text]{flex:1;min-width:200px;width:auto}
+#hint{font-size:12px;color:var(--mute);margin-top:4px}
+.bd{display:inline-block;background:linear-gradient(135deg,var(--hole),#6a3fb0);color:#fff;border-radius:999px;padding:3px 12px;font-weight:700;font-size:12px;letter-spacing:.02em;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#dm{font:600 15px "JetBrains Mono",monospace;margin:10px 0;word-break:break-word;padding:10px 12px;border-radius:10px;background:var(--code);border-left:3px solid var(--ok)}
+#dx{margin:0;padding-left:0;list-style:none;color:var(--mute);font:13px/1.7 "JetBrains Mono",monospace}
+#dx li{position:relative;padding:4px 0 4px 22px;border-bottom:1px dashed var(--line)}
+#dx li:last-child{border-bottom:none}
+#dx li::before{content:"▸";position:absolute;left:6px;color:var(--cmp);font-weight:700}
+.chip{display:inline-block;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:3px 10px;font:600 12px "Noto Sans Devanagari",sans-serif;color:var(--ink)}
+.mt{display:flex;gap:4px;overflow-x:auto;margin-top:12px;padding-bottom:4px}
+.mt div{min-width:44px;text-align:center;border:1px solid var(--line);border-radius:6px;font:600 14px "JetBrains Mono",monospace;padding:0 4px 4px;background:var(--code)}
+.mt u{display:block;text-decoration:none;font:11px "JetBrains Mono",monospace;color:var(--mute);border-bottom:1px solid var(--line);margin-bottom:3px}
+.mt .ch{background:var(--act);border-color:var(--cmp)}
+html{-webkit-text-size-adjust:100%}button{touch-action:manipulation}
+main>section{display:flex;flex-direction:column;gap:16px;min-width:0}
+#row{--tk:56px;--base:86px;margin:0 auto}
+.cell{top:calc(var(--base) + 6px);width:var(--tk);height:var(--tk)}
+.idx{top:calc(var(--base) + var(--tk) + 10px);width:var(--tk)}
+.tok{width:var(--tk);height:var(--tk)}
+.cx{grid-template-columns:repeat(auto-fit,minmax(86px,1fr))}
+.ctl button{min-height:40px}
+@media(max-width:820px){
+ main{display:flex;flex-direction:column;gap:12px;padding:10px 10px 96px}
+ main>section{display:contents}
+ #c-arr,#c-ds,#c-gr{order:1}#c-code{order:2}#dc{order:3}#c-about{order:4}
+ header{padding:10px 12px;gap:8px}
+ h1{font-size:17px}
+ .tabs{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}
+ .tabs button,.lang button{white-space:nowrap;min-height:40px}
+ .card{padding:12px}
+ #bar{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:1px solid var(--line);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}
+ #bar button{min-height:48px;padding:0 4px}
+ #code{font-size:12px}
+ input[type=text]{font-size:16px}
+ .stats{flex-wrap:wrap;gap:6px 16px}
+}
+select.lang{display:inline-block;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 10px;border-radius:8px;font:inherit;min-height:40px;cursor:pointer}
+#ab summary{cursor:pointer;font-weight:600;color:var(--ink);padding:4px 0;min-height:32px}
+#ab[open] summary{margin-bottom:8px}
+@media(max-width:820px){
+ .hd{width:100%;justify-content:space-between;flex-wrap:wrap}
+ .tabs{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;gap:4px}
+ .tabs button{padding:6px 2px;font-size:13px}.sf{display:none}
+}
+[hidden]{display:none!important}
+.inp button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px;border-radius:8px;font:inherit;cursor:pointer;min-height:40px}
+#dv,#tg{flex:none!important;width:96px;min-width:0!important}
+/* --- recursion visualizer --- */
+#rwrap{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+#rphase{font:600 12px "JetBrains Mono",monospace;padding:6px 10px;border-radius:8px;background:var(--code);color:var(--mute);transition:background .3s,color .3s}
+#rphase.down{color:var(--cmp);background:var(--act)}
+#rphase.up{color:var(--ok)}
+#rstack{display:flex;flex-direction:column-reverse;gap:6px;min-height:80px;border:2px dashed var(--line);border-radius:12px;padding:10px;background:var(--code)}
+.rframe{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:var(--bar);color:#fff;font:600 14px "JetBrains Mono",monospace;transition:background .3s,transform .3s,opacity .3s}
+.rframe.active{background:var(--cmp);color:#1d2433;transform:translateX(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.rframe.computing{background:var(--hole);color:#fff;transform:translateX(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.rframe.returning{background:var(--ok)}
+.rframe.entering{animation:rIn .35s ease-out}
+.rframe.leaving{animation:rOut .3s ease-in forwards}
+@keyframes rIn{from{transform:translateX(-40px);opacity:0}}
+@keyframes rOut{to{transform:translateX(40px);opacity:0}}
+.rframe .rn{font-weight:700}
+.rframe .rc{color:rgba(255,255,255,.8);font-size:12px}
+.rframe.active .rc,.rframe.returning .rc{color:rgba(29,36,51,.7)}
+.rempty{color:var(--mute);font:12px "JetBrains Mono",monospace;text-align:center;padding:8px}
+#rval{margin-top:6px;font:600 15px "JetBrains Mono",monospace;padding:10px 12px;border-radius:10px;background:var(--code);border-left:3px solid var(--ok);min-height:44px}
+#rvar{margin-top:4px;font:12px "JetBrains Mono",monospace;color:var(--mute)}
+@media(max-width:820px){#rstack{padding:8px}.rframe{padding:6px 10px;font-size:13px}}
+.ds{margin:14px auto;min-height:120px}
+.ds .nd{position:relative;min-width:52px;height:44px;padding:0 8px;border-radius:10px;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;font:700 19px "JetBrains Mono",monospace;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.ds .nd em{position:absolute;font:700 10px "JetBrains Mono",monospace;color:var(--hole);white-space:nowrap}
+.nd.cmp{background:var(--cmp);color:#1d2433}.nd.ok{background:var(--ok)}
+.ds .emp{color:var(--mute);font-size:28px;margin:auto}
+.ds.stack{display:flex;flex-direction:column-reverse;align-items:center;gap:6px;width:150px;border:3px solid var(--line);border-top:none;border-radius:0 0 12px 12px;padding:8px}
+.stack .nd{width:100%}.stack .nd em{left:100%;margin-left:10px}
+.ds.queue{display:flex;gap:6px;overflow-x:auto;padding:12px 6px 30px;align-items:center;border-top:3px solid var(--line);border-bottom:3px solid var(--line)}
+.queue .nd{flex:none}.queue .nd em{top:100%;margin-top:6px}
+.ds.linkedlist{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:26px 6px 8px}
+.linkedlist .nd{flex:none}.linkedlist .nd em{top:-16px}
+.ar{color:var(--mute);font:600 15px "JetBrains Mono",monospace}
+.stack .pop{animation:dIn .4s}.queue .pop{animation:rIn .4s}.linkedlist .pop{animation:gIn .4s}
+.stack .out,.linkedlist .out{animation:oUp .3s forwards}.queue .out{animation:oL .3s forwards}
+@keyframes dIn{from{transform:translateY(-60px);opacity:0}}@keyframes rIn{from{transform:translateX(60px);opacity:0}}@keyframes gIn{from{transform:scale(.2);opacity:0}}
+@keyframes oUp{to{transform:translateY(-40px);opacity:0}}@keyframes oL{to{transform:translateX(-50px);opacity:0}}
+#dsm{margin-top:12px;min-height:44px;padding:10px 12px;border-radius:8px;background:var(--code);font:600 14px "JetBrains Mono",monospace;word-break:break-word}
+#dsl{margin:8px 0 0;padding-left:18px;color:var(--mute);font:12px/1.7 "JetBrains Mono",monospace}
+@media(prefers-reduced-motion:reduce){.ds .nd{animation:none!important}}
+.pt{position:absolute;transform:translateX(-50%);background:var(--code);border:1.5px solid currentColor;border-radius:6px;padding:0 7px;font:700 12px "JetBrains Mono",monospace;white-space:nowrap;transition:left .45s ease,top .45s ease,opacity .2s;z-index:3}
+.sk{position:relative;width:280px;height:352px;margin:14px auto 46px}
+.sk .sl{position:absolute;left:40px;width:110px;height:38px}
+.sk .sl i{position:absolute;left:-30px;top:10px}
+.sk .ptr{left:162px}
+.qu{--qp:min(54px,calc((100vw - 150px)/var(--n,8)));--qs:calc(var(--qp) - 6px);position:relative;height:150px;width:calc(var(--qp)*var(--n,8) + 90px);margin:14px auto}
+.qu .sl{position:absolute;top:40px;width:var(--qs);height:44px;font-size:15px}
+.qu .sl i{position:absolute;top:100%;left:0;right:0;margin-top:2px;text-align:center}
+.sl{border:2px solid var(--line);border-radius:8px;background:var(--code);display:flex;align-items:center;justify-content:center;font:700 18px "JetBrains Mono",monospace;transition:background .25s,border-color .25s,color .25s}
+.sl i{font:12px "JetBrains Mono",monospace;font-style:normal;color:var(--mute)}
+.sl.f{background:var(--bar);border-color:var(--bar);color:#fff}
+.sl.gh{color:var(--mute);border-style:dashed;opacity:.55}
+.sl.hl{background:var(--cmp);border-color:var(--cmp);color:#1d2433;opacity:1}
+.sl.pop{animation:gIn .45s}
+.ptr{position:absolute;font:700 13px "JetBrains Mono",monospace;color:var(--hole);white-space:nowrap;transition:bottom .5s ease,left .5s ease}
+.sk .ptr::before{content:"◀ "}.qu .ptr{display:flex;flex-direction:column;align-items:center;line-height:16px;transform:translateX(-50%)}.qu .ptr::before,.qu .ptr::after{font-size:16px;line-height:16px}.qu .ptr .d{position:absolute;left:100%;top:0;margin:0 0 0 4px}.qu .ptr[data-k=rear]{top:0;color:var(--wr)}.qu .ptr[data-k=rear]::after{content:"▼"}
+.qu .ptr[data-k=front]{top:104px;color:var(--ok)}.qu .ptr[data-k=front]::before{content:"▲"}
+.ptr .d{opacity:0;margin-left:4px}
+.ptr.inc .d{color:var(--ok);animation:fl 1.4s}.ptr.dec .d{color:var(--wr);animation:fl 1.4s}
+@keyframes fl{0%,70%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
+#gsvg circle{transition:fill .35s}#gsvg line{transition:stroke .35s,stroke-width .35s}#gsvg text{font:700 13px "JetBrains Mono",monospace;pointer-events:none}
+#gwrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(150px,.85fr);gap:12px;align-items:start}
+@media(max-width:820px){#gwrap{grid-template-columns:1fr}}
+#gpanel{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:10px}
+.gp-title{font:600 11px "JetBrains Mono",monospace;color:var(--mute);text-transform:uppercase;letter-spacing:.04em;margin:2px 0 6px}
+.gp-row{display:flex;flex-wrap:wrap;gap:5px;min-height:30px;margin-bottom:10px;align-items:center}
+.gp-box{min-width:30px;height:28px;padding:0 7px;border-radius:7px;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px "JetBrains Mono",monospace;transition:background .3s,transform .3s}
+.gp-box.front{background:var(--ok)}
+.gp-box.rear{background:var(--hole)}
+.gp-box.top{background:var(--wr)}
+.gp-box.muted{background:var(--code);color:var(--mute);border:1px dashed var(--line)}
+.gp-box.order{background:var(--line);color:var(--ink)}
+.gp-tag{font:600 10px "JetBrains Mono",monospace;color:var(--mute);margin-left:2px;align-self:center}
+.gp-note{font:12px/1.5 "JetBrains Mono",monospace;color:var(--mute);min-height:16px}
+.gp-empty{color:var(--mute);font:12px "JetBrains Mono",monospace}
+@media(max-width:820px){#gbar{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:1px solid var(--line);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}#gbar button{min-height:48px;padding:0 4px}}
+.sbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 10px;border-radius:8px;font:inherit;min-height:40px;cursor:pointer}
+@media(max-width:820px){#tbar{position:fixed;left:0;right:0;bottom:0;z-index:30;margin:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px}#tbar button{min-height:48px;padding:0 4px}}
+#tbar button:disabled{opacity:.4}
+.dlnode{width:104px;min-width:104px}
+.dlnode .pv{width:22px;height:100%;display:flex;align-items:center;justify-content:center;border-right:2px solid rgba(255,255,255,.6)}
+.dlnode .pv i{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:8px solid currentColor;display:block}
+.dlnode .nx{width:22px;border-left:2px solid rgba(255,255,255,.6)}
+.lnode{padding:0!important;width:86px;min-width:86px}
+.lnode .dt{flex:1;text-align:center;font:inherit}
+.lnode .nx{width:30px;height:100%;display:flex;align-items:center;justify-content:center;border-left:2px solid rgba(255,255,255,.6)}
+.lnode .nx i{width:10px;height:10px;border-radius:50%;background:currentColor;display:block}
+.lnode u{position:absolute;top:100%;left:0;right:0;margin-top:3px;text-align:center;font:10px "JetBrains Mono",monospace;color:var(--mute);text-decoration:none}
+.nul{border:2px dashed var(--mute);color:var(--mute);border-radius:8px;padding:8px 10px;font:700 13px "JetBrains Mono",monospace}
+.hd0{font:700 12px "JetBrains Mono",monospace;color:var(--hole)}
+.lgd{flex-basis:100%;font:12px "JetBrains Mono",monospace;color:var(--mute);margin-top:20px}
+.ds.linkedlist{padding-bottom:26px;row-gap:34px}
+</style>
+</head>
+<body>
+<div id="home" class="view">
+  <div class="home-hero">
+    <h1 class="hero-title">DSA Visualizer</h1>
+    <p class="hero-sub">See every algorithm run, step by step.</p>
+    <p class="hero-stats"><b>8</b> topics · <b>20+</b> algorithms · <b>4</b> code languages</p>
+    <div class="hero-byline">Developed by <span class="byline-name">Tahir Mansuri</span></div>
+  </div>
+
+  <div class="home-grid" id="homeGrid">
+    <!-- tiles injected by JS -->
+  </div>
+
+  <div class="home-langs">
+    <span class="lang-chip">C</span>
+    <span class="lang-chip">C++</span>
+    <span class="lang-chip">Java</span>
+    <span class="lang-chip">Python</span>
+    <span class="lang-chip muted">more soon</span>
+  </div>
+
+  <div class="home-quick">
+    <button class="quick-btn" data-quick="bubble">🎲 Random array → Bubble Sort</button>
+    <button class="quick-btn" data-quick="bfs">🧭 Run BFS from A</button>
+    <button class="quick-btn" data-quick="factorial">🧮 Factorial(5)</button>
+  </div>
+
+  <div class="home-foot">Built for learners — pick a topic above to begin.</div>
+</div>
+
+<div id="app" class="view" hidden>
+<header>
+  <div class="hd"><h1 id="goHome" role="button" tabindex="0" title="Back to home">DSA Visualizer</h1>
+    <div class="byline"><span class="byline-label">Developed by</span> <span class="byline-name">Tahir Mansuri</span></div>
+    <select class="lang" id="cat" aria-label="Category"><option value="sorting">Sorting</option><option value="searching">Searching</option><option value="stack">Stack</option><option value="queue">Queue</option><option value="linkedlist">Linked List</option><option value="dll">Doubly LL</option><option value="recursion">Recursion</option><option disabled>Tree (soon)</option><option value="graph">Graph</option></select>
+  <select class="lang" id="lang" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select><select class="lang" id="theme" aria-label="Theme"><option value="auto">🌓 Auto</option><option value="light">☀️ Light</option><option value="dark">🌙 Dark</option><option value="midnight">🌌 Midnight</option><option value="paper">📜 Paper</option></select><button class="sbtn" id="snd" aria-label="Sound on/off" title="Sound on/off">🔊</button></div>
+  <div class="tabs" id="tabs"></div>
+</header>
+<main>
+  <section>
+    <div class="card" id="c-about"><details id="ab"><summary id="abS"></summary><div id="ib"></div></details></div>
+    <div class="card" id="c-code">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <h2 data-i="codeH" class="chip"></h2>
+        <select class="lang" id="plang" aria-label="Programming language" hidden>
+          <option value="pseudo">Pseudo</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+          <option value="java">Java</option>
+          <option value="python">Python</option>
+        </select>
+      </div>
+      <div id="code"></div>
+      <div id="msg"></div>
+    </div>
+  </section>
+  <section>
+    <div class="card" id="c-ds" hidden>
+      <h2 id="dsT"></h2>
+      <div class="inp"><input type="text" id="dv" inputmode="numeric" placeholder="0–9999" aria-label="Value"><span id="trow2" style="display:contents" hidden><input type="text" id="tg2" inputmode="numeric" placeholder="target" aria-label="Target value"></span><span id="dsb" style="display:contents"></span></div>
+      <div id="szrow" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0 0"><label style="display:flex;gap:8px;align-items:center;color:var(--mute)"><span>Size</span><input type="range" id="dsz" min="3" max="10" value="5"></label><b id="szv" class="chip"></b></div><div id="maxn" style="font-size:12.5px;color:var(--mute);margin-top:6px"></div><div id="dsv" class="ds"></div><div id="dsm"></div><div class="ctl" id="tbar" hidden><button id="tprev" data-i="back"></button><button class="main" id="tplay"></button><button id="tnext" data-i="next"></button></div><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 6px"><h2 id="dsch" class="chip" style="margin:0"></h2><select class="lang" id="dlang" aria-label="Programming language"><option value="pseudo">Pseudo</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option><option value="python">Python</option></select></div><div id="dsc"></div><ul id="dsl"></ul>
+    </div>
+    <div class="card" id="c-rec" hidden>
+      <h2 id="rT">Recursion</h2>
+      <div class="inp">
+        <label style="display:flex;gap:6px;align-items:center;color:var(--mute)">n <input type="text" id="rn" inputmode="numeric" value="5" style="width:70px;flex:none"></label>
+        <button id="rgo" class="main">Run</button>
+      </div>
+      <div id="rwrap">
+        <div id="rphase"></div>
+        <h2 style="margin:0">Call stack (bottom → top)</h2>
+        <div id="rstack"></div>
+        <div id="rval">—</div>
+        <div id="rvar"></div>
+      </div>
+      <div class="stats"><span><span data-i="step"></span> <b id="rst">0/0</b></span></div>
+      <div class="ctl" id="rbar">
+        <button class="main" id="rplay">▶ Play</button>
+        <button id="rprev">◀ Back</button>
+        <button id="rnext">Next ▶</button>
+        <button id="rreset">Reset</button>
+      </div>
+      <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="rspd" min="1" max="10" value="4"></label></div>
+    </div>
+    <div class="card" id="c-gr" hidden>
+      <h2 id="gT">Graph</h2>
+      <div class="inp"><label style="display:flex;gap:6px;align-items:center;color:var(--mute)">Start <select id="gs" class="lang"></select></label><button id="gw">Random weights</button></div>
+      <div id="gwrap">
+        <svg id="gsvg" viewBox="0 0 340 250" style="width:100%;max-width:460px;display:block;margin:8px auto"></svg>
+        <div id="gpanel">
+          <div class="gp-title" id="gpTitle">Frontier</div>
+          <div class="gp-row" id="gpFrontier"></div>
+          <div class="gp-title" id="gpOrderTitle">Visit order</div>
+          <div class="gp-row" id="gpOrder"></div>
+          <div class="gp-note" id="gpNote"></div>
+        </div>
+      </div>
+      <div id="gds" style="font:600 13px 'JetBrains Mono',monospace;min-height:20px;word-break:break-word"></div>
+      <div class="stats"><span><span data-i="step"></span> <b id="gst">0/0</b></span></div>
+      <div class="ctl" id="gbar"><button class="main" id="gplay"></button><button id="gprev" data-i="back"></button><button id="gnext" data-i="next"></button><button id="greset" data-i="reset"></button></div>
+      <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="gspd" min="1" max="10" value="4"></label></div>
+    </div>
+    <div class="card" id="c-arr">
+      <h2 data-i="arrH"></h2>
+      <div class="inp">
+        <input type="text" id="custom" inputmode="text" autocomplete="off" aria-label="Numbers">
+        <button class="main" id="set" style="border:1px solid var(--ok);background:var(--ok);color:#fff;border-radius:8px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer" data-i="set"></button>
+      </div>
+      <div id="hint" data-i="hint"></div>
+      <div class="inp" id="trow" hidden><label style="display:flex;gap:6px;align-items:center;color:var(--mute)"><span data-i="target"></span> <input type="text" id="tg" inputmode="numeric" aria-label="Target"></label><button id="tgb" data-i="search"></button></div>
+      <div id="key" style="margin-top:8px"></div><div id="wrap"><div id="row"></div></div><div id="tmpl"></div>
+      <div class="legend">
+        <span><i style="background:var(--cmp)"></i><u data-i="lc" style="text-decoration:none"></u></span>
+        <span><i style="background:var(--wr)"></i><u data-i="lw" style="text-decoration:none"></u></span>
+        <span><i style="background:var(--hole)"></i><u data-i="lh" style="text-decoration:none"></u></span>
+        <span><i style="background:var(--ok)"></i><u data-i="lo" style="text-decoration:none"></u></span>
+      </div>
+      <div class="stats"><span><span data-i="step"></span> <b id="st">0/0</b></span><span><span data-i="cmpN"></span> <b id="cm">0</b></span><span><span data-i="mvN"></span> <b id="mv">0</b></span></div>
+      <input type="range" id="scrub" min="0" max="1" value="0" style="width:100%;margin-top:10px" aria-label="Step">
+      <div class="ctl" id="bar">
+        <button class="main" id="play"></button>
+        <button id="prev" data-i="back"></button>
+        <button id="next" data-i="next"></button>
+        <button id="reset" data-i="reset"></button>
+      </div>
+      <div class="ctl">
+        <label><span data-i="speed"></span> <input type="range" id="spd" min="1" max="10" value="4"></label>
+        <label><span data-i="size"></span> <input type="range" id="size" min="4" max="14" value="8"></label>
+        <button id="rand" data-i="rand"></button>
+      </div>
+    </div>
+    <div class="card" id="dc">
+      <h2 data-i="detH"></h2>
+      <span class="bd" id="dt">—</span>
+      <div id="dm"></div>
+      <ul id="dx"></ul>
+      <h2 data-i="arrNow" style="margin:12px 0 0"></h2>
+      <div class="mt" id="mt"></div>
+    </div>
+  </section>
+</main>
+<footer class="site-foot">
+  <span class="byline-label">Developed by</span> <span class="byline-name foot-name">Tahir Mansuri</span>
+</footer>
+</div><!-- /#app -->
+<script>
+const CODE={
+bubble:["for i = 0 to n-2","  for j = 0 to n-i-2","    if a[j] > a[j+1]","      swap(a[j], a[j+1])","  // a[n-i-1] is now in place"],
+selection:["for i = 0 to n-2","  min = i","  for j = i+1 to n-1","    if a[j] < a[min]: min = j","  swap(a[i], a[min])"],
+insertion:["for i = 1 to n-1","  key = a[i]","  j = i - 1","  while j >= 0 and a[j] > key","    a[j+1] = a[j]; j = j - 1","  a[j+1] = key"],
+linear:["for i = 0 to n-1","  if a[i] == target","    return i","return -1  // not found"],
+binary:["lo = 0; hi = n-1","while lo <= hi","  mid = (lo + hi) / 2","  if a[mid] == target: return mid","  else if a[mid] < target: lo = mid + 1","  else: hi = mid - 1","return -1  // not found"],
+merge:["mergeSort(l, r)","  if l >= r: return","  m = (l + r) / 2","  mergeSort(l, m); mergeSort(m+1, r)","  merge(l, m, r)","    temp = copy of a[l..r]; compare temp[i], temp[j]","    write the smaller one into a[k]"]};
+// Recursion pseudo-code (one action per line)
+const RCODE={
+factorial:[
+  "factorial(n):",
+  "  if n <= 1:              // base case?",
+  "    return 1",
+  "  sub = factorial(n - 1)  // go deeper, wait",
+  "  result = n * sub        // multiply on the way back",
+  "  return result"
+],
+fib:["fib(n):","  if n <= 1: return n","  return fib(n-1) + fib(n-2)"],
+hanoi:["hanoi(n, from, to, via):","  if n == 1: move disk 1 from→to; return","  hanoi(n-1, from, via, to)","  move disk n from→to","  hanoi(n-1, via, to, from)"],
+nqueens:["solve(row):","  if row == N: record solution; return","  for col = 0..N-1:","    if safe(row, col):","      place queen at (row, col)","      solve(row + 1)","      remove queen  // backtrack"]};
+// Real-language source for sorting algorithms, plus mapping pseudo-line → real-line.
+// `src`  : the code lines (rendered in the code panel)
+// `map`  : index = pseudo-line, value = real-line index (into src), or -1 if N/A
+const REAL={
+  bubble:{
+    c:{src:[
+      "void bubbleSort(int a[], int n) {",
+      "    for (int i = 0; i < n - 1; i++) {",
+      "        for (int j = 0; j < n - i - 1; j++) {",
+      "            if (a[j] > a[j + 1]) {",
+      "                int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;",
+      "            }",
+      "        }",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,-1]},
+    cpp:{src:[
+      "void bubbleSort(vector<int>& a) {",
+      "    for (size_t i = 0; i + 1 < a.size(); ++i)",
+      "        for (size_t j = 0; j + 1 < a.size() - i; ++j)",
+      "            if (a[j] > a[j + 1])",
+      "                swap(a[j], a[j + 1]);",
+      "}"
+    ],map:[1,2,3,4,-1]},
+    java:{src:[
+      "void bubbleSort(int[] a) {",
+      "    for (int i = 0; i < a.length - 1; i++) {",
+      "        for (int j = 0; j < a.length - i - 1; j++) {",
+      "            if (a[j] > a[j + 1]) {",
+      "                int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;",
+      "            }",
+      "        }",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,-1]},
+    python:{src:[
+      "def bubble_sort(a):",
+      "    n = len(a)",
+      "    for i in range(n - 1):",
+      "        for j in range(n - i - 1):",
+      "            if a[j] > a[j + 1]:",
+      "                a[j], a[j + 1] = a[j + 1], a[j]",
+    ],map:[2,3,4,5,-1]}
+  },
+  selection:{
+    c:{src:[
+      "void selectionSort(int a[], int n) {",
+      "    for (int i = 0; i < n - 1; i++) {",
+      "        int min = i;",
+      "        for (int j = i + 1; j < n; j++)",
+      "            if (a[j] < a[min]) min = j;",
+      "        int t = a[i]; a[i] = a[min]; a[min] = t;",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5]},
+    cpp:{src:[
+      "void selectionSort(vector<int>& a) {",
+      "    for (size_t i = 0; i + 1 < a.size(); ++i) {",
+      "        size_t mn = i;",
+      "        for (size_t j = i + 1; j < a.size(); ++j)",
+      "            if (a[j] < a[min]) min = j;",
+      "        swap(a[i], a[mn]);",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5]},
+    java:{src:[
+      "void selectionSort(int[] a) {",
+      "    for (int i = 0; i < a.length - 1; i++) {",
+      "        int min = i;",
+      "        for (int j = i + 1; j < a.length; j++)",
+      "            if (a[j] < a[min]) min = j;",
+      "        int t = a[i]; a[i] = a[min]; a[min] = t;",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5]},
+    python:{src:[
+      "def selection_sort(a):",
+      "    for i in range(len(a) - 1):",
+      "        mn = i",
+      "        for j in range(i + 1, len(a)):",
+      "            if a[j] < a[mn]:",
+      "                mn = j",
+      "        a[i], a[mn] = a[mn], a[i]"
+    ],map:[1,2,3,4,6]}
+  },
+  insertion:{
+    c:{src:[
+      "void insertionSort(int a[], int n) {",
+      "    for (int i = 1; i < n; i++) {",
+      "        int key = a[i];",
+      "        int j = i - 1;",
+      "        while (j >= 0 && a[j] > key) {",
+      "            a[j + 1] = a[j];",
+      "            j--;",
+      "        }",
+      "        a[j + 1] = key;",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5,8]},
+    cpp:{src:[
+      "void insertionSort(vector<int>& a) {",
+      "    for (size_t i = 1; i < a.size(); ++i) {",
+      "        int key = a[i];",
+      "        int j = int(i) - 1;",
+      "        while (j >= 0 && a[j] > key) {",
+      "            a[j + 1] = a[j];",
+      "            --j;",
+      "        }",
+      "        a[j + 1] = key;",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5,8]},
+    java:{src:[
+      "void insertionSort(int[] a) {",
+      "    for (int i = 1; i < a.length; i++) {",
+      "        int key = a[i];",
+      "        int j = i - 1;",
+      "        while (j >= 0 && a[j] > key) {",
+      "            a[j + 1] = a[j];",
+      "            j--;",
+      "        }",
+      "        a[j + 1] = key;",
+      "    }",
+      "}"
+    ],map:[1,2,3,4,5,8]},
+    python:{src:[
+      "def insertion_sort(a):",
+      "    for i in range(1, len(a)):",
+      "        key = a[i]",
+      "        j = i - 1",
+      "        while j >= 0 and a[j] > key:",
+      "            a[j + 1] = a[j]",
+      "            j -= 1",
+      "        a[j + 1] = key"
+    ],map:[1,2,3,4,5,7]}
+  },
+  merge:{
+    c:{src:[
+      "void mergeSort(int a[], int l, int r) {",
+      "    if (l >= r) return;",
+      "    int m = (l + r) / 2;",
+      "    mergeSort(a, l, m);",
+      "    mergeSort(a, m + 1, r);",
+      "    merge(a, l, m, r);",
+      "}",
+      "// merge copies a[l..r] into temp, then writes back in order"
+    ],map:[0,1,2,3,-1]},
+    cpp:{src:[
+      "void mergeSort(vector<int>& a, int l, int r) {",
+      "    if (l >= r) return;",
+      "    int m = (l + r) / 2;",
+      "    mergeSort(a, l, m);",
+      "    mergeSort(a, m + 1, r);",
+      "    merge(a, l, m, r);",
+      "}",
+      "// merge copies a[l..r] into temp, then writes back in order"
+    ],map:[0,1,2,3,-1]},
+    java:{src:[
+      "void mergeSort(int[] a, int l, int r) {",
+      "    if (l >= r) return;",
+      "    int m = (l + r) / 2;",
+      "    mergeSort(a, l, m);",
+      "    mergeSort(a, m + 1, r);",
+      "    merge(a, l, m, r);",
+      "}",
+      "// merge copies a[l..r] into temp, then writes back in order"
+    ],map:[0,1,2,3,-1]},
+    python:{src:[
+      "def merge_sort(a, l, r):",
+      "    if l >= r: return",
+      "    m = (l + r) // 2",
+      "    merge_sort(a, l, m)",
+      "    merge_sort(a, m + 1, r)",
+      "    merge(a, l, m, r)",
+      "",
+      "# merge copies a[l..r] into temp, then writes back in order"
+    ],map:[0,1,2,3,-1]}
+  },
+  factorial:{
+    c:{src:[
+      "int factorial(int n) {",
+      "    if (n <= 1) return 1;",
+      "    int sub = factorial(n - 1);",
+      "    int result = n * sub;",
+      "    return result;",
+      "}"
+    ],map:[0,1,2,3,4,-1]},
+    cpp:{src:[
+      "int factorial(int n) {",
+      "    if (n <= 1) return 1;",
+      "    int sub = factorial(n - 1);",
+      "    int result = n * sub;",
+      "    return result;",
+      "}"
+    ],map:[0,1,2,3,4,-1]},
+    java:{src:[
+      "int factorial(int n) {",
+      "    if (n <= 1) return 1;",
+      "    int sub = factorial(n - 1);",
+      "    int result = n * sub;",
+      "    return result;",
+      "}"
+    ],map:[0,1,2,3,4,-1]},
+    python:{src:[
+      "def factorial(n):",
+      "    if n <= 1:",
+      "        return 1",
+      "    sub = factorial(n - 1)",
+      "    result = n * sub",
+      "    return result"
+    ],map:[0,1,2,3,4,5]}
+  }
+};
+const INFO={
+bubble:{c:["O(n)","O(n²)","O(n²)","O(1)"],st:1,d:{en:"Repeatedly compares neighbouring elements and swaps them if they are in the wrong order. After each pass the largest remaining element bubbles up to the end. Simple, but slow for large arrays.",hi:"पास-पास के दो elements को बार-बार compare करता है और क्रम गलत हो तो swap कर देता है। हर pass के बाद बचा हुआ सबसे बड़ा element अंत में पहुँच जाता है। सरल है, पर बड़े arrays के लिए धीमा।",mr:"शेजारच्या दोन elements ची वारंवार तुलना करतो आणि क्रम चुकीचा असल्यास अदलाबदल करतो. प्रत्येक pass नंतर उरलेला सर्वात मोठा element शेवटी पोहोचतो. सोपा आहे, पण मोठ्या arrays साठी हळू."}},
+selection:{c:["O(n²)","O(n²)","O(n²)","O(1)"],st:0,d:{en:"Finds the smallest element in the unsorted part and swaps it into the next position of the sorted part. Makes very few swaps, but always needs about n²/2 comparisons.",hi:"unsorted हिस्से में सबसे छोटा element ढूँढता है और उसे sorted हिस्से की अगली जगह पर swap करता है। swaps बहुत कम होते हैं, पर comparisons हमेशा लगभग n²/2 होते हैं।",mr:"unsorted भागातील सर्वात लहान element शोधतो आणि sorted भागाच्या पुढच्या जागी swap करतो. swaps खूप कमी होतात, पण comparisons नेहमी सुमारे n²/2 लागतात."}},
+insertion:{c:["O(n)","O(n²)","O(n²)","O(1)"],st:1,d:{en:"Takes one element (the key) at a time and inserts it into its correct place in the already sorted left part, shifting larger elements to the right. Great for small or nearly sorted arrays.",hi:"एक-एक element (key) उठाकर उसे बाईं तरफ़ के sorted हिस्से में सही जगह डालता है, बड़े elements को दायें खिसकाते हुए। छोटे या लगभग sorted arrays के लिए बढ़िया।",mr:"एकेक element (key) उचलून तो डावीकडील sorted भागात योग्य जागी ठेवतो, मोठे elements उजवीकडे सरकवत. लहान किंवा जवळजवळ sorted arrays साठी उत्तम."}},
+merge:{c:["O(n log n)","O(n log n)","O(n log n)","O(n)"],st:1,d:{en:"Divide and conquer: splits the array into halves, sorts each half recursively, then merges the two sorted halves using a temporary array. Fast and stable, but needs extra memory.",hi:"Divide and conquer: array को आधा-आधा बाँटता है, हर हिस्से को recursively sort करता है, फिर temporary array से दोनों sorted हिस्सों को merge करता है। तेज़ और stable, पर extra memory चाहिए।",mr:"Divide and conquer: array अर्धा-अर्धा विभागतो, प्रत्येक भाग recursively sort करतो, मग temporary array वापरून दोन sorted भाग merge करतो. वेगवान आणि stable, पण अतिरिक्त memory लागते."}}};
+const NAMES={bubble:"Bubble Sort",selection:"Selection Sort",insertion:"Insertion Sort",merge:"Merge Sort",linear:"Linear Search",binary:"Binary Search",stack:"Stack",queue:"Queue",linkedlist:"Linked List",dll:"Doubly Linked List",factorial:"Factorial",fib:"Fibonacci",hanoi:"Towers of Hanoi",nqueens:"N-Queens"};
+const CATS={sorting:["bubble","selection","insertion","merge"],searching:["linear","binary"],stack:[],queue:[],linkedlist:[],dll:[],recursion:["factorial"],graph:["bfs","dfs","dijkstra","prim","kruskal"]};
+
+// --- Homepage ---
+const HOMETILES=[
+  {k:"sorting",   n:"Sorting",        t:"Bubble, Selection, Insertion, Merge",       b:"4 algorithms",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>'},
+  {k:"searching", n:"Searching",      t:"Linear and Binary search",                  b:"2 algorithms",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>'},
+  {k:"stack",     n:"Stack",          t:"LIFO — push, pop, peek",                    b:"3 operations",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="14" width="14" height="4" rx="1"/><rect x="5" y="9" width="14" height="4" rx="1"/><rect x="5" y="4" width="14" height="4" rx="1"/></svg>'},
+  {k:"queue",     n:"Queue / Deque",  t:"FIFO, plus push/pop at both ends",          b:"5 operations",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="4" height="6" rx="1"/><rect x="10" y="9" width="4" height="6" rx="1"/><rect x="17" y="9" width="4" height="6" rx="1"/></svg>'},
+  {k:"linkedlist",n:"Linked List",    t:"Singly linked — nodes and pointers",        b:"5 operations",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M9 12h6"/></svg>'},
+  {k:"dll",       n:"Doubly Linked",  t:"prev and next pointers on every node",      b:"7 operations",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M9 12h6"/><path d="M9 10l-2 2 2 2"/><path d="M15 10l2 2-2 2"/></svg>'},
+  {k:"graph",     n:"Graph",          t:"BFS, DFS, Dijkstra, Prim, Kruskal",         b:"5 algorithms",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7l3 9M16 7l-3 9M8.5 6h7"/></svg>'},
+  {k:"recursion", n:"Recursion",      t:"Call stack, frame-by-frame execution",      b:"1 algorithm",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20c4 0 4-16 8-16 3 0 4 3 4 6"/><circle cx="20" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>'},
+  {k:"tree",      n:"Tree",           t:"BST, traversals, and more",                 b:"coming soon",soon:true,
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M11 7l-4 9M13 7l4 9"/></svg>'}
+];
+function buildHome(){
+  const g=$("homeGrid");if(!g)return;
+  g.innerHTML=HOMETILES.map(T=>`<button class="tile${T.soon?" soon":""}" data-k="${T.k}" ${T.soon?'disabled aria-disabled="true"':''}>
+    <span class="ti">${T.svg}</span>
+    <span class="tn">${T.n}</span>
+    <span class="ts">${T.t}</span>
+    <span class="tb">${T.b}</span>
+  </button>`).join("");
+  g.querySelectorAll(".tile").forEach(b=>{
+    if(b.disabled)return;
+    b.onclick=()=>{showView("app");setCat(b.dataset.k)};
+  });
+  document.querySelectorAll(".quick-btn").forEach(q=>{
+    q.onclick=()=>runQuick(q.dataset.quick);
+  });
+}
+function showView(v){
+  const home=$("home"),app=$("app");
+  if(!home||!app)return;
+  if(v==="app"){home.hidden=true;app.hidden=false;window.scrollTo({top:0,behavior:RM?"auto":"smooth"})}
+  else{app.hidden=true;home.hidden=false;window.scrollTo({top:0,behavior:RM?"auto":"smooth"})}
+}
+function runQuick(k){
+  if(k==="bubble"){showView("app");setCat("sorting");arr=rand(8);load();play();return}
+  if(k==="bfs"){showView("app");setCat("graph");const s=$("gs");if(s)s.value="0";gload();return}
+  if(k==="factorial"){showView("app");setCat("recursion");const rn=$("rn");if(rn)rn.value="5";rload();return}
+}
+const OPS={stack:[["Push",1],["Pop"],["Peek"]],queue:[["Enqueue",1],["Dequeue"],["Push Front",1],["Pop Back"],["Peek"]],linkedlist:[["Insert Head",1],["Insert Tail",1],["Delete Head"],["Delete Tail"],["Search",1]],dll:[["Insert Head",1],["Insert Tail",1],["Insert Before",2],["Insert After",2],["Delete Head"],["Delete Tail"],["Search",1]]};
+Object.assign(INFO,{
+linear:{cl:[["Best","O(1)"],["Average","O(n)"],["Worst","O(n)"],["Sorted?","No"]],d:{en:"Checks every element one by one from the start until the target is found or the array ends. Works on any array, sorted or not, but is slow for large arrays.",hi:"शुरू से एक-एक element देखता है, जब तक target न मिले या array खत्म न हो जाए। sorted हो या न हो, हर array पर चलता है, पर बड़े arrays में धीमा।",mr:"सुरुवातीपासून एकेक element तपासतो, target सापडेपर्यंत किंवा array संपेपर्यंत. sorted असो वा नसो, कोणत्याही array वर चालतो, पण मोठ्या arrays मध्ये हळू."}},
+binary:{cl:[["Best","O(1)"],["Average","O(log n)"],["Worst","O(log n)"],["Sorted?","Yes"]],d:{en:"Works only on a sorted array. Looks at the middle element and throws away the half where the target cannot be, so each step halves the search range.",hi:"सिर्फ़ sorted array पर चलता है। बीच का element देखकर वह आधा हिस्सा छोड़ देता है जहाँ target हो ही नहीं सकता, इसलिए हर step में search आधी हो जाती है।",mr:"फक्त sorted array वर चालतो. मधला element पाहून target असू न शकणारा अर्धा भाग सोडून देतो, म्हणून प्रत्येक step मध्ये शोध निम्मा होतो."}},
+stack:{cl:[["Push","O(1)"],["Pop","O(1)"],["Peek","O(1)"],["Order","LIFO"]],d:{en:"A pile where you can only add or remove at the top: Last In, First Out (LIFO). Think of plates stacked on each other. Used for undo, bracket matching and function calls.",hi:"ऐसा ढेर जिसमें element सिर्फ़ ऊपर (top) से जोड़ा या हटाया जाता है: Last In, First Out (LIFO)। जैसे एक के ऊपर एक रखी प्लेटें। undo, brackets match करने और function calls में काम आता है।",mr:"असा ढीग ज्यात element फक्त वरून (top) टाकता किंवा काढता येतो: Last In, First Out (LIFO). एकावर एक ठेवलेल्या ताटांसारखा. undo, brackets जुळवणे आणि function calls मध्ये वापर."}},
+queue:{cl:[["Enqueue","O(1)"],["Dequeue","O(1)"],["Peek","O(1)"],["Order","FIFO"]],d:{en:"A line where elements join at the rear and leave from the front: First In, First Out (FIFO), like people waiting at a ticket counter. Used in scheduling and BFS.",hi:"कतार जिसमें element पीछे (rear) से जुड़ता है और आगे (front) से निकलता है: First In, First Out (FIFO), जैसे टिकट खिड़की की लाइन। scheduling और BFS में काम आती है।",mr:"रांग ज्यात element मागून (rear) जोडला जातो आणि पुढून (front) निघतो: First In, First Out (FIFO), तिकीट खिडकीच्या रांगेसारखी. scheduling आणि BFS मध्ये वापर."}},
+linkedlist:{cl:[["Insert Head","O(1)"],["Insert Tail","O(n)"],["Delete Head","O(1)"],["Search","O(n)"]],d:{en:"A chain of nodes. Each node stores a value and a pointer to the next node; the last one points to NULL. Changing the head is O(1), but reaching any other node means walking from the head.",hi:"nodes की एक श्रृंखला। हर node में value और अगले node का pointer होता है; आख़िरी node NULL की तरफ़ इशारा करता है। head बदलना O(1) है, पर किसी और node तक पहुँचने के लिए head से चलना पड़ता है।",mr:"nodes ची साखळी. प्रत्येक node मध्ये value आणि पुढच्या node चा pointer असतो; शेवटचा NULL कडे निर्देश करतो. head बदलणे O(1) आहे, पण इतर node पर्यंत पोहोचायला head पासून चालावे लागते."}},
+dll:{cl:[["Insert Head","O(1)"],["Insert Tail","O(n)"],["Delete Head","O(1)"],["Search","O(n)"]],d:{en:"A sequence of nodes where each node points to both its predecessor and successor. Enables bidirectional traversal and O(1) insertion/deletion given a node reference.",hi:"nodes की ऐसी श्रृंखला जिसमें हर node अपने पिछले और अगले दोनों nodes की तरफ़ इशारा करता है। दोनों दिशाओं में चलना और किसी node के आगे-पीछे जोड़ना आसान होता है।",mr:"प्रत्येक node मागील आणि पुढील दोन्ही nodes कडे निर्देश करणारी साखळी. दोन्ही बाजूंनी प्रवास शक्य होतो."}}});
+Object.assign(INFO,{
+factorial:{cl:[["Time","O(n)"],["Space","O(n)"],["Base case","n ≤ 1"],["Type","Linear"]],d:{en:"Factorial multiplies n × (n−1) × … × 1. Each call waits for the next, so the call stack grows to depth n, then the values multiply on the way back up. The simplest example of linear recursion.",hi:"Factorial, n × (n−1) × … × 1 को गुणा करता है। हर call अगली call का इंतज़ार करती है, इसलिए call stack n तक गहरा होता है, और लौटते समय values गुणा होती हैं। Linear recursion का सबसे सरल उदाहरण।",mr:"Factorial, n × (n−1) × … × 1 गुणतो. प्रत्येक call पुढच्या call ची वाट पाहते, म्हणून call stack n पर्यंत खोल जातो, आणि परत येताना values गुणल्या जातात. Linear recursion चे सर्वात सोपे उदाहरण."}},
+fib:{cl:[["Time","O(2ⁿ)"],["Space","O(n)"],["Base case","n ≤ 1"],["Type","Tree"]],d:{en:"Naive Fibonacci calls fib(n−1) and fib(n−2) separately, so the same subproblem is recomputed over and over. The call tree grows exponentially — this is why memoization matters.",hi:"Naive Fibonacci, fib(n−1) और fib(n−2) को अलग-अलग call करता है, इसलिए एक ही subproblem बार-बार दोबारा हल होती है। Call tree exponentially बढ़ता है — इसीलिए memoization ज़रूरी है।",mr:"Naive Fibonacci, fib(n−1) आणि fib(n−2) वेगवेगळे call करतो, म्हणून तीच subproblem पुन्हा पुन्हा सोडवली जाते. Call tree exponentially वाढतो — म्हणूनच memoization महत्त्वाचे."}},
+hanoi:{cl:[["Time","O(2ⁿ)"],["Space","O(n)"],["Moves","2ⁿ − 1"],["Type","Divide"]],d:{en:"Move n disks from one peg to another, one at a time, never placing a larger disk on a smaller one. The trick: move n−1 disks out of the way, move the biggest, then move n−1 back.",hi:"n disks को एक peg से दूसरे पर ले जाइए, एक बार में एक, और बड़ी disk को छोटी पर कभी न रखिए। तरीका: n−1 disks हटाइए, सबसे बड़ी को ले जाइए, फिर n−1 को वापस लाइए।",mr:"n disks एका peg वरून दुसऱ्यावर हलवा, एका वेळी एक, आणि मोठी disk लहानीवर कधीही ठेवू नका. युक्ती: n−1 disks बाजूला करा, सर्वात मोठी हलवा, मग n−1 परत आणा."}},
+nqueens:{cl:[["Time","O(N!)"],["Space","O(N)"],["Base case","row == N"],["Type","Backtracking"]],d:{en:"Place N queens on an N×N board so that no two attack each other. Try a column, recurse to the next row; if no column works, remove the queen and try the next — that removal is the backtrack.",hi:"N queens को N×N board पर रखिए ताकि कोई दो एक-दूसरे पर attack न करें। एक column आज़माइए, अगली row पर recurse कीजिए; अगर कोई column काम न करे तो queen हटाइए और अगला आज़माइए — यही backtrack है।",mr:"N queens N×N board वर ठेवा जेणेकरून कोणत्याही दोन एकमेकांवर attack करणार नाहीत. एक column वापरून पहा, पुढच्या row वर recurse करा; कोणताही column चालत नसेल तर queen काढा आणि पुढचा वापरून पहा — हाच backtrack."}}});
+const L={
+en:{aboutH:"About this algorithm",codeH:"Algorithm (current line is highlighted)",arrH:"Array in memory (index below each cell)",set:"Apply",hint:"Type numbers separated by comma or space (0–9999, up to 50 numbers). Example: 5, 3, 8, 1",lc:"comparing",lw:"swap / write",lh:"min / key / hole",lo:"sorted",step:"Step",cmpN:"Comparisons",mvN:"Moves",play:"▶ Play",pause:"⏸ Pause",back:"◀ Back",next:"Next ▶",reset:"Reset",speed:"Speed",size:"Size",rand:"New random array",ph:"e.g. 5, 3, 8, 1, 9, 2",tmpl:"↓ lower row = temporary array (for merge)",lifted:"(lifted up)",init:"Press Play, or use Next to go step by step.",bad:"Enter at least 2 numbers (0–9999, max 50).",cx:["Best","Average","Worst","Space","Stable"],yn:["Yes","No"],yes:"yes",no:"no",
+m:{pass:i=>`Pass ${i} starts`,swap:"Swapped the two elements",place:x=>`${x} reached its final place`,min0:(i,x)=>`min = a[${i}] = ${x} for now`,newmin:x=>`New min = ${x}`,selsw:i=>`Swap a[${i}] with the min`,key:x=>`key = ${x} (lifted up)`,shift:"yes, shift right",stop:"no, stop",shifted:(i,x)=>`a[${i}] = ${x}`,put:(x,i)=>`Placed key ${x} at index ${i}`,base:"Single element, already sorted",mid:m=>`Middle index m = ${m}`,halves:(l,m,r)=>`Left [${l}..${m}], right [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): elements moved down to temp`,wr:(x,k)=>`Wrote ${x} into a[${k}]`,rest:(x,k)=>`Remaining ${x} → a[${k}]`,done:"✔ Array is sorted!"}},
+hi:{aboutH:"इस algorithm के बारे में",codeH:"Algorithm (चल रही line highlight होती है)",arrH:"Memory में Array (हर खाने के नीचे index)",set:"लागू करें",hint:"नंबर comma या space से अलग करके लिखिए (0–9999, ज़्यादा से ज़्यादा 50)। उदाहरण: 5, 3, 8, 1",lc:"compare हो रहा है",lw:"swap / write",lh:"min / key / खाली जगह",lo:"sorted",step:"Step",cmpN:"Comparisons",mvN:"Moves",play:"▶ Play",pause:"⏸ Pause",back:"◀ पीछे",next:"आगे ▶",reset:"Reset",speed:"Speed",size:"Size",rand:"नया random array",ph:"जैसे: 5, 3, 8, 1, 9, 2",tmpl:"↓ नीचे की row = temporary array (merge के लिए)",lifted:"(ऊपर उठा हुआ)",init:"Play दबाइए या आगे बटन से एक-एक step चलाइए।",bad:"कम से कम 2 नंबर डालिए (0–9999, अधिकतम 50)।",cx:["Best","Average","Worst","Space","Stable"],yn:["हाँ","नहीं"],yes:"हाँ",no:"नहीं",
+m:{pass:i=>`Pass ${i} शुरू`,swap:"दोनों elements की जगह बदली",place:x=>`${x} अपनी सही जगह पहुँच गया`,min0:(i,x)=>`अभी min = a[${i}] = ${x}`,newmin:x=>`नया min = ${x}`,selsw:i=>`a[${i}] और min की अदला-बदली`,key:x=>`key = ${x} (ऊपर उठा लिया)`,shift:"हाँ, दायें खिसकाओ",stop:"नहीं, रुको",shifted:(i,x)=>`a[${i}] = ${x}`,put:(x,i)=>`key ${x} को index ${i} पर रखा`,base:"एक ही element है, पहले से sorted",mid:m=>`बीच का index m = ${m}`,halves:(l,m,r)=>`बायाँ [${l}..${m}], दायाँ [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): elements नीचे temp में उतारे`,wr:(x,k)=>`${x} को a[${k}] में लिखा`,rest:(x,k)=>`बचा हुआ ${x} → a[${k}]`,done:"✔ Array sorted हो गया!"}},
+mr:{aboutH:"या algorithm बद्दल",codeH:"Algorithm (सुरू असलेली line highlight होते)",arrH:"Memory मधील Array (प्रत्येक खान्याखाली index)",set:"लागू करा",hint:"संख्या comma किंवा space ने वेगळ्या लिहा (0–9999, जास्तीत जास्त 50). उदाहरण: 5, 3, 8, 1",lc:"तुलना सुरू",lw:"swap / write",lh:"min / key / रिकामी जागा",lo:"sorted",step:"Step",cmpN:"Comparisons",mvN:"Moves",play:"▶ Play",pause:"⏸ Pause",back:"◀ मागे",next:"पुढे ▶",reset:"Reset",speed:"Speed",size:"Size",rand:"नवीन random array",ph:"उदा. 5, 3, 8, 1, 9, 2",tmpl:"↓ खालची row = temporary array (merge साठी)",lifted:"(वर उचललेला)",init:"Play दाबा किंवा पुढे बटणाने एकेक step चालवा.",bad:"किमान 2 संख्या टाका (0–9999, कमाल 50).",cx:["Best","Average","Worst","Space","Stable"],yn:["होय","नाही"],yes:"होय",no:"नाही",
+m:{pass:i=>`Pass ${i} सुरू`,swap:"दोन्ही elements ची जागा बदलली",place:x=>`${x} आपल्या योग्य जागी पोहोचला`,min0:(i,x)=>`सध्या min = a[${i}] = ${x}`,newmin:x=>`नवीन min = ${x}`,selsw:i=>`a[${i}] आणि min ची अदलाबदल`,key:x=>`key = ${x} (वर उचलला)`,shift:"होय, उजवीकडे सरकवा",stop:"नाही, थांबा",shifted:(i,x)=>`a[${i}] = ${x}`,put:(x,i)=>`key ${x} index ${i} वर ठेवला`,base:"एकच element आहे, आधीच sorted",mid:m=>`मधला index m = ${m}`,halves:(l,m,r)=>`डावा [${l}..${m}], उजवा [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): elements खाली temp मध्ये उतरवले`,wr:(x,k)=>`${x} a[${k}] मध्ये लिहिला`,rest:(x,k)=>`उरलेला ${x} → a[${k}]`,done:"✔ Array sorted झाला!"}}};
+let lang=(()=>{try{return localStorage.getItem("dsa-lang")||"en"}catch(e){return "en"}})();
+const T=k=>L[lang][k],M=(k,...a)=>{const v=L[lang].m[k];return typeof v==="function"?v(...a):v};
+
+const L2={
+en:{t_cmp:"Compare",t_swap:"Swap",t_shift:"Shift right",t_place:"Final position",t_pass:"New pass",t_key:"Pick key",t_min:"Minimum",t_split:"Divide",t_merge:"Merge",t_write:"Write",t_done:"Finished",
+passx:"Compare neighbours from the left; the largest bubbles to the end.",bY:"left is bigger → wrong order → swap",bN:"already in order → no swap",sY:"smaller than current min → new min",sN:"not smaller → min stays",iY:"bigger than key → shift it right",iN:"not bigger → key's place found",mL:"left ≤ right → take from the left run",mR:"left > right → take from the right run",
+minStart:i=>`Assume a[${i}] is the minimum for now`,keyPick:"Key is taken out (lifted) so the others can shift",self:"min is already in place → nothing to swap",base:"One element → already sorted",halves:(l,m,r)=>`Left [${l}..${m}], right [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): both runs copied to temp (lower row)`,rest:"Rest of one run is copied as it is",placeIt:(x,i)=>`a[${i}] = ${x} is in its final place`,done:"✔ Array is sorted!"},
+hi:{t_cmp:"Compare",t_swap:"Swap",t_shift:"दायें खिसकाना",t_place:"सही जगह",t_pass:"नया Pass",t_key:"Key उठाना",t_min:"Minimum",t_split:"बाँटना",t_merge:"Merge",t_write:"Write",t_done:"पूरा हुआ",
+passx:"बाईं तरफ़ से पास-पास के जोड़े compare होते हैं; सबसे बड़ा अंत में पहुँचता है।",bY:"बायाँ बड़ा है → क्रम गलत → swap",bN:"पहले से क्रम में → swap नहीं",sY:"मौजूदा min से छोटा → नया min",sN:"छोटा नहीं → min वही रहेगा",iY:"key से बड़ा है → दायें खिसकाओ",iN:"बड़ा नहीं → key की जगह मिल गई",mL:"बायाँ ≤ दायाँ → बाएँ हिस्से से लो",mR:"बायाँ > दायाँ → दाएँ हिस्से से लो",
+minStart:i=>`अभी a[${i}] को min मान लिया`,keyPick:"key को बाहर (ऊपर) उठा लिया ताकि बाकी खिसक सकें",self:"min पहले से सही जगह पर है → swap की ज़रूरत नहीं",base:"एक ही element → पहले से sorted",halves:(l,m,r)=>`बायाँ [${l}..${m}], दायाँ [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): दोनों हिस्से temp (नीचे की row) में उतारे`,rest:"एक हिस्से के बचे elements जस के तस कॉपी",placeIt:(x,i)=>`a[${i}] = ${x} अपनी सही जगह पर है`,done:"✔ Array sorted हो गया!"},
+mr:{t_cmp:"Compare",t_swap:"Swap",t_shift:"उजवीकडे सरकवणे",t_place:"योग्य जागा",t_pass:"नवीन Pass",t_key:"Key उचलणे",t_min:"Minimum",t_split:"विभागणे",t_merge:"Merge",t_write:"Write",t_done:"पूर्ण",
+passx:"डावीकडून शेजारच्या जोड्यांची तुलना; सर्वात मोठा शेवटी जातो.",bY:"डावा मोठा आहे → क्रम चुकीचा → swap",bN:"आधीच क्रमात → swap नाही",sY:"सध्याच्या min पेक्षा लहान → नवीन min",sN:"लहान नाही → min तोच",iY:"key पेक्षा मोठा → उजवीकडे सरकवा",iN:"मोठा नाही → key ची जागा मिळाली",mL:"डावा ≤ उजवा → डाव्या भागातून घ्या",mR:"डावा > उजवा → उजव्या भागातून घ्या",
+minStart:i=>`सध्या a[${i}] ला min माना`,keyPick:"key बाहेर (वर) काढला म्हणजे बाकीचे सरकवता येतील",self:"min आधीच योग्य जागी → swap नाही",base:"एकच element → आधीच sorted",halves:(l,m,r)=>`डावा [${l}..${m}], उजवा [${m+1}..${r}]`,tmp:(l,m,r)=>`merge(${l}, ${m}, ${r}): दोन्ही भाग temp (खालची row) मध्ये`,rest:"एका भागातील उरलेले elements जसेच्या तसे कॉपी",placeIt:(x,i)=>`a[${i}] = ${x} आपल्या योग्य जागी आहे`,done:"✔ Array sorted झाला!"}};
+L.en.detH="Step details";L.hi.detH="इस step का विवरण";L.mr.detH="या step चा तपशील";
+L.en.arrNow="Array now (index on top, changed cells highlighted)";L.hi.arrNow="अभी का Array (ऊपर index, बदले खाने highlight)";L.mr.arrNow="आताचा Array (वर index, बदललेले खाने highlight)";
+Object.assign(L.en,{target:"Search for",search:"Search",needv:"Enter a number (0–9999) first.",full:"is full (overflow)",empty:"is empty (underflow)",dsInit:"Use the buttons above to operate on the structure."});
+Object.assign(L.hi,{target:"खोजना है",search:"खोजें",needv:"पहले एक number (0–9999) डालिए।",full:"भरा हुआ है (overflow)",empty:"खाली है (underflow)",dsInit:"ऊपर के बटन से structure पर operations चलाइए।"});
+Object.assign(L.mr,{target:"शोधायचा",search:"शोधा",needv:"आधी एक संख्या (0–9999) टाका.",full:"भरलेले आहे (overflow)",empty:"रिकामे आहे (underflow)",dsInit:"वरील बटणांनी structure वर operations चालवा."});
+Object.assign(L2.en,{t_found:"Found",t_nf:"Not found",t_mid:"Middle",eq:"equal → target found",ne:"not equal → check the next one",fnd:(x,i)=>`✔ ${x} found at index ${i}`,nf:x=>`✘ ${x} is not in the array`,sorted:"Binary Search needs a sorted array (sorted automatically)",goR:"a[mid] < target → target can only be in the right half",goL:"a[mid] > target → target can only be in the left half"});
+Object.assign(L2.hi,{t_found:"मिल गया",t_nf:"नहीं मिला",t_mid:"बीच का",eq:"बराबर → target मिल गया",ne:"बराबर नहीं → अगला देखो",fnd:(x,i)=>`✔ ${x} index ${i} पर मिल गया`,nf:x=>`✘ ${x} array में नहीं है`,sorted:"Binary Search के लिए array sorted चाहिए (अपने-आप sort किया गया)",goR:"a[mid] < target → target सिर्फ़ दाएँ हिस्से में हो सकता है",goL:"a[mid] > target → target सिर्फ़ बाएँ हिस्से में हो सकता है"});
+Object.assign(L2.mr,{t_found:"सापडला",t_nf:"सापडला नाही",t_mid:"मधला",eq:"समान → target सापडला",ne:"समान नाही → पुढचा पहा",fnd:(x,i)=>`✔ ${x} index ${i} वर सापडला`,nf:x=>`✘ ${x} array मध्ये नाही`,sorted:"Binary Search साठी array sorted हवा (आपोआप sort केला)",goR:"a[mid] < target → target फक्त उजव्या भागात असू शकतो",goL:"a[mid] > target → target फक्त डाव्या भागात असू शकतो"});
+const W=(k,...a)=>{const v=L2[lang][k];return typeof v==="function"?v(...a):v};
+
+function run(name,arr){
+  const n=arr.length,a=arr.slice(),d=arr.map((_,i)=>i),S=[],ok=Array(n).fill(false),lv=Array(n).fill(0);let cmp=0,mv=0,mp=null;
+  const yn=r=>r?T("yes"):T("no");
+  const sw=(i,j)=>{[a[i],a[j]]=[a[j],a[i]];[d[i],d[j]]=[d[j],d[i]]};
+  const P=(l,o={})=>{const p=Array(n);if(mp)mp.forEach((x,i)=>p[i]=x);else d.forEach((id,i)=>p[id]=i);
+    if(o.kid!==undefined)p[o.kid]=o.kat;
+    const v=Array(n).fill(null);for(let id=0;id<n;id++)if(lv[id]===0)v[p[id]]=arr[id];
+    S.push({l,p,v,y:lv.slice(),s:ok.slice(),c:o.c||[],w:o.w||[],h:o.h??-1,r:o.r||null,k:o.kid!==undefined?arr[o.kid]:null,t:o.t||null,pt:o.pt||null,m:o.m||"",x:o.x||[],cmp,mv})};
+  if(name==="linear"||name==="binary"){const g=TG;
+    if(name==="linear"){
+      for(let i=0;i<n;i++){const e=a[i]===g;cmp++;P(0,{c:[i],pt:{i},t:"cmp",m:`i = ${i}`});
+        P(1,{c:[i],pt:{i},t:"cmp",m:`a[${i}] == ${g}  →  ${a[i]} == ${g} ? ${yn(e)}`,x:[W(e?"eq":"ne")]});
+        if(e){ok[i]=true;P(2,{pt:{i},t:"found",m:W("fnd",g,i)});return S}}
+      P(3,{t:"nf",m:W("nf",g)});return S}
+    let lo=0,hi=n-1;P(0,{r:[0,n-1],pt:{lo,hi},t:"split",m:`lo = ${lo}, hi = ${hi}`,x:[W("sorted")]});
+    while(lo<=hi){const mid=(lo+hi)>>1;P(1,{r:[lo,hi],pt:{lo,hi},t:"split",m:`lo = ${lo} ≤ hi = ${hi}`});
+      P(2,{r:[lo,hi],h:mid,pt:{lo,mid,hi},t:"mid",m:`mid = (${lo} + ${hi}) / 2 = ${mid}`,x:[`a[mid] → a[${mid}] = ${a[mid]}`]});cmp++;
+      if(a[mid]===g){ok[mid]=true;P(3,{r:[lo,hi],pt:{lo,mid,hi},t:"found",m:W("fnd",g,mid)});return S}
+      const lt=a[mid]<g;P(3,{r:[lo,hi],h:mid,c:[mid],pt:{lo,mid,hi},t:"cmp",m:`a[${mid}] == ${g} ? ${yn(false)}  (${a[mid]} ${lt?"<":">"} ${g})`,x:[W(lt?"goR":"goL")]});
+      if(lt){lo=mid+1;P(4,{r:[lo,hi],pt:{lo,hi},t:"split",m:`lo = mid + 1 = ${lo}`})}else{hi=mid-1;P(5,{r:[lo,hi],pt:{lo,hi},t:"split",m:`hi = mid - 1 = ${hi}`})}}
+    P(6,{t:"nf",m:W("nf",g)});return S}
+  if(name==="bubble"){
+    for(let i=0;i<n-1;i++){P(0,{t:"pass",m:`i = ${i}`,x:[W("passx")]});
+      for(let j=0;j<n-i-1;j++){P(1,{c:[j,j+1],t:"cmp",m:`j = ${j}`,x:[`a[j]   → a[${j}] = ${a[j]}`,`a[j+1] → a[${j+1}] = ${a[j+1]}`]});cmp++;
+        const r=a[j]>a[j+1];P(2,{c:[j,j+1],t:"cmp",m:`a[${j}] > a[${j+1}]  →  ${a[j]} > ${a[j+1]} ? ${yn(r)}`,x:[W(r?"bY":"bN")]});
+        if(r){const x=a[j],y=a[j+1];sw(j,j+1);mv++;P(3,{w:[j,j+1],t:"swap",m:`a[${j}] ↔ a[${j+1}]`,x:[`a[${j}] : ${x} → ${y}`,`a[${j+1}] : ${y} → ${x}`]});}}
+      ok[n-i-1]=true;P(4,{t:"place",m:W("placeIt",a[n-i-1],n-i-1)});}
+  }else if(name==="selection"){
+    for(let i=0;i<n-1;i++){P(0,{t:"pass",m:`i = ${i}`});let mn=i;P(1,{h:mn,t:"min",m:W("minStart",i),x:[`min = ${mn} → a[${mn}] = ${a[mn]}`]});
+      for(let j=i+1;j<n;j++){cmp++;const r=a[j]<a[mn];P(2,{c:[j],h:mn,t:"cmp",m:`j = ${j}`,x:[`a[j]   → a[${j}] = ${a[j]}`,`a[min] → a[${mn}] = ${a[mn]}`]});
+        P(3,{c:[j,mn],h:mn,t:"cmp",m:`a[${j}] < a[${mn}]  →  ${a[j]} < ${a[mn]} ? ${yn(r)}`,x:[W(r?"sY":"sN")]});
+        if(r){mn=j;P(3,{h:mn,t:"min",m:`min = ${mn}`,x:[`a[${mn}] = ${a[mn]}`]});}}
+      const x=a[i],y=a[mn];if(mn!==i){sw(i,mn);mv++;}
+      ok[i]=true;P(4,{w:[i,mn],t:"swap",m:`a[${i}] ↔ a[${mn}]`,x:mn!==i?[`a[${i}] : ${x} → ${y}`,`a[${mn}] : ${y} → ${x}`]:[W("self")]});}
+  }else if(name==="insertion"){
+    ok[0]=true;
+    for(let i=1;i<n;i++){const key=a[i],kid=d[i];lv[kid]=-1;const K=(h,x)=>({h,kid,kat:h,...x});
+      P(0,K(i,{t:"key",m:`i = ${i}`}));P(1,K(i,{t:"key",m:`key = a[${i}] = ${key}`,x:[W("keyPick")]}));let j=i-1;P(2,K(i,{t:"key",m:`j = ${j}`}));
+      while(j>=0){cmp++;const r=a[j]>key;P(3,K(j+1,{c:[j],t:"cmp",m:`a[${j}] > key  →  ${a[j]} > ${key} ? ${yn(r)}`,x:[W(r?"iY":"iN")]}));
+        if(r){a[j+1]=a[j];d[j+1]=d[j];mv++;P(4,K(j,{w:[j+1],t:"shift",m:`a[${j+1}] = a[${j}]`,x:[`a[${j+1}] ← ${a[j+1]}  (a[${j}] is now empty)`]}));j--;}else break;}
+      a[j+1]=key;d[j+1]=kid;lv[kid]=0;mv++;for(let t=0;t<=i;t++)ok[t]=true;P(5,{w:[j+1],t:"place",m:`a[${j+1}] = key = ${key}`});}
+  }else{
+    const rec=(l,r)=>{P(0,{r:[l,r],t:"split",m:`mergeSort(${l}, ${r})`,x:[`range a[${l}..${r}]`]});
+      if(l>=r){P(1,{r:[l,r],t:"split",m:`l = ${l}, r = ${r}`,x:[W("base")]});return;}
+      const m=(l+r)>>1;P(2,{r:[l,r],t:"split",m:`m = (${l} + ${r}) / 2 = ${m}`});
+      P(3,{r:[l,r],t:"split",m:W("halves",l,m,r)});rec(l,m);rec(m+1,r);
+      mp=Array(n);d.forEach((id,i)=>mp[id]=i);const t=d.slice(l,r+1);t.forEach(id=>lv[id]=1);
+      P(4,{r:[l,r],t:"merge",m:W("tmp",l,m,r),x:[`temp = [${t.map(id=>arr[id]).join(", ")}]`]});
+      let i=l,j=m+1,k=l;
+      const put=(id,ti,x)=>{d[k]=id;mp[id]=k;lv[id]=0;mv++;P(6,{r:[l,r],w:[k],t:"write",m:`a[${k}] = ${arr[id]}`,x:[`← temp[${ti}]`,...x]});k++};
+      while(i<=m&&j<=r){cmp++;const A=t[i-l],B=t[j-l],c=arr[A]<=arr[B];P(5,{r:[l,r],c:[i,j],t:"cmp",m:`temp[${i-l}] ≤ temp[${j-l}]  →  ${arr[A]} ≤ ${arr[B]} ? ${yn(c)}`,x:[W(c?"mL":"mR")]});
+        if(c){put(A,i-l,[]);i++}else{put(B,j-l,[]);j++}}
+      while(i<=m){put(t[i-l],i-l,[W("rest")]);i++}
+      while(j<=r){put(t[j-l],j-l,[W("rest")]);j++}
+      mp=null;};
+    rec(0,n-1);
+  }
+  ok.fill(true);P(-1,{t:"done",m:W("done")});
+  return S;
+}
+
+// --- Recursion step engine ---
+// Each step: {stack:[frames], active, ret, line, msg, tag, var:{...}}
+// A frame: {n, label, state:"wait"|"active"|"return"}
+function rgen(name,arg){
+  const S=[];
+  // snapshot helper: freeze the frame list at this moment
+  const snap=(frames,active,phase,line,msg,tag)=>S.push({
+    stack:frames.map(f=>({...f})),
+    active, phase, line, msg, tag
+  });
+
+  if(name==="factorial"){
+    const F=[];   // call stack of frames
+    // A frame: {n, state:"wait"|"compute"|"ret", waiting:null|"factorial(k)", sub:null, pending:null|"n × ?", result:null}
+    const rec=(n)=>{
+      // entering the function
+      F.push({n,state:"wait",waiting:null,sub:null,pending:null,result:null});
+      snap(F,F.length-1,"down",0,`entered factorial(${n})`,"call");
+
+      // base check
+      snap(F,F.length-1,"down",1,`is n = ${n} ≤ 1 ?`,"check");
+      if(n<=1){
+        F[F.length-1].state="ret";
+        F[F.length-1].result=1;
+        snap(F,F.length-1,"up",2,`yes — base case, return 1`,"base");
+        return 1;
+      }
+
+      // before recursing, remember what we're waiting for
+      F[F.length-1].waiting=`factorial(${n-1})`;
+      snap(F,F.length-1,"down",3,`n = ${n} > 1 → call factorial(${n-1}) and wait`,"call");
+
+      const sub=rec(n-1);
+
+      // the child has returned — now compute
+      F[F.length-1].waiting=null;
+      F[F.length-1].sub=sub;
+      F[F.length-1].pending=`${n} × ${sub}`;
+      F[F.length-1].state="compute";
+      snap(F,F.length-1,"up",4,`back in factorial(${n}): ${n} × ${sub} = ${n*sub}`,"compute");
+
+      const v=n*sub;
+      F[F.length-1].result=v;
+      F[F.length-1].state="ret";
+      F[F.length-1].pending=null;
+      snap(F,F.length-1,"up",5,`factorial(${n}) returns ${v}`,"ret");
+      return v;
+    };
+    const final=rec(arg);
+    snap([],-1,"up",-1,`✔ factorial(${arg}) = ${final}  — the whole stack has unwound`,"done");
+    return S;
+  }
+  return [];
+}
+
+let RSTEPS=[],RPOS=-1,RTIMER=null;
+function rrender(p){
+  const host=$("rstack"),valEl=$("rval"),varEl=$("rvar"),phaseEl=$("rphase");
+  if(!host)return;
+  const s=(p<0||!RSTEPS.length)
+    ? {stack:[],active:-1,phase:"down",line:-1,msg:T("init"),tag:null}
+    : RSTEPS[p];
+
+  // phase banner
+  if(phaseEl){
+    phaseEl.textContent = s.phase==="down" ? "▼ Descending — calls stack up, nothing computed yet"
+                        : s.phase==="up" ? "▲ Ascending — values return, multiplications resolve"
+                        : "";
+    phaseEl.className = "rphase " + (s.phase||"");
+  }
+
+  // call stack
+  host.innerHTML="";
+  if(!s.stack.length){
+    const e=document.createElement("div");e.className="rempty";e.textContent="(stack is empty)";host.appendChild(e);
+  }else{
+    s.stack.forEach((f,i)=>{
+      const e=document.createElement("div");
+      let c="rframe";
+      if(i===s.active){
+        c += f.state==="ret" ? " returning" : f.state==="compute" ? " computing" : " active";
+      }
+      e.className=c;
+      // build the frame's body: factorial(n)   n=5   waiting: ...   pending: 5 × ?   → result
+      let right="";
+      if(f.state==="wait" && f.waiting) right=`waiting for ${f.waiting}`;
+      else if(f.state==="wait") right=`n = ${f.n}`;
+      else if(f.state==="compute") right=`computing ${f.pending}`;
+      else if(f.state==="ret") right=`→ ${f.result}`;
+      e.innerHTML=`<span class="rn">factorial(${f.n})</span><span class="rc">${right}</span>`;
+      host.appendChild(e);
+    });
+  }
+
+  // the "what just happened" line
+  valEl.textContent=s.msg;
+
+  // live variable readout of the active frame
+  const a=s.active>=0?s.stack[s.active]:null;
+  if(a){
+    const bits=[`n = ${a.n}`];
+    if(a.waiting)bits.push(`waiting → ${a.waiting}`);
+    if(a.sub!==null)bits.push(`sub = ${a.sub}`);
+    if(a.pending)bits.push(`pending: ${a.pending}`);
+    if(a.result!==null)bits.push(`result = ${a.result}`);
+    varEl.textContent=bits.join("    ");
+  } else {
+    varEl.textContent="";
+  }
+
+  // code highlight — one line per step, no repeats
+  codeEl.querySelectorAll(".ln").forEach(e=>e.classList.remove("on"));
+  let realL=s.line;
+  if(CMAP&&s.line>=0){const m=CMAP[s.line];realL=(m===undefined||m<0)?-1:m}
+  const ln=$("L"+realL);if(ln)ln.classList.add("on");
+
+  // detail box
+  const TAGS={call:"Call",check:"Check",base:"Base case",compute:"Compute",ret:"Return",done:"Finished"};
+  if($("dt"))$("dt").textContent=s.tag?(TAGS[s.tag]||s.tag):"—";
+  if($("dm"))$("dm").textContent=s.msg;
+
+  if(p>=0)rsfx(s);
+  if($("rst"))$("rst").textContent=`${Math.max(p+1,0)}/${RSTEPS.length}`;
+  if($("st"))$("st").textContent=`${Math.max(p+1,0)}/${RSTEPS.length}`;
+}
+function rsfx(s){
+  if(s.tag==="call")tone(392+Math.min(6,s.stack.length)*30,.1,"sine",.11);
+  else if(s.tag==="check")tone(300,.06,"sine",.06);
+  else if(s.tag==="base")OKS();
+  else if(s.tag==="compute")tone(523,.12,"triangle",.13);
+  else if(s.tag==="ret")tone(659,.13,"triangle",.13);
+  else if(s.tag==="done")FAN();
+}
+function rstop(){clearTimeout(RTIMER);RTIMER=null;if($("rplay"))$("rplay").textContent=T("play");if($("play"))$("play").textContent=T("play")}
+function rplay(){if(RTIMER){rstop();return}if(RPOS>=RSTEPS.length-1){RPOS=-1;rrender(-1)}if($("rplay"))$("rplay").textContent=T("pause");if($("play"))$("play").textContent=T("pause");rtick()}
+function rtick(){if(RPOS>=RSTEPS.length-1){rstop();return}RPOS++;rrender(RPOS);RTIMER=setTimeout(rtick,rdelay())}
+function rdelay(){return Math.round(1500/Math.pow(1.35,$("rspd").value-1))+80}
+
+function rload(){
+  rstop();RPOS=-1;
+  const n=Math.max(1,Math.min(12,parseInt($("rn").value||"5",10)||5));
+  $("rn").value=n;
+  // code panel
+  let src=RCODE[algo]||[],CM=null;
+  if(plang!=="pseudo"&&REAL[algo]&&REAL[algo][plang]){src=REAL[algo][plang].src;CM=REAL[algo][plang].map}
+  CMAP=CM;
+  codeEl.innerHTML=src.map((t,i)=>`<div class="ln" id="L${i}" data-ln="${i+1}">${hl(t,plang)}</div>`).join("");
+  info();
+  RSTEPS=rgen(algo,n);
+  $("rT").textContent=NAMES[algo]+"   n = "+n;
+  rrender(-1);
+}
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+const KW_COMMON="for|while|if|else|return|break|continue|new|void|null|true|false|int|float|double|char|bool|size_t|string";
+const KW_PSEUDO="swap|mergeSort|merge|dfs|push|pop|enqueue|dequeue|peek|mark|visit|relax|union|find|insert|delete|search|free|sort|add|remove|start|end|head|tail|front|rear|top|to";
+const KW_C="void|int|float|double|char|long|short|unsigned|signed|struct|typedef|const|static|return|if|else|for|while|do|break|continue|switch|case|sizeof|NULL";
+const KW_CPP=KW_C+"|auto|class|public|private|protected|template|typename|namespace|using|vector|bool|true|false|nullptr|size_t|swap|std";
+const KW_JAVA="public|private|protected|class|static|void|int|float|double|char|long|short|boolean|String|return|if|else|for|while|do|break|continue|new|true|false|null|this";
+const KW_PY="def|return|if|elif|else|for|while|in|range|len|break|continue|and|or|not|True|False|None|print|is|None|lambda|pass";
+function kwset(plang){
+  if(plang==="c")return new RegExp("\\b("+KW_C+")\\b");
+  if(plang==="cpp")return new RegExp("\\b("+KW_CPP+")\\b");
+  if(plang==="java")return new RegExp("\\b("+KW_JAVA+")\\b");
+  if(plang==="python")return new RegExp("\\b("+KW_PY+")\\b");
+  return new RegExp("\\b("+KW_COMMON+"|"+KW_PSEUDO+")\\b");
+}
+function hl(line,plang){
+  const isPy=plang==="python";
+  const cm=isPy?/#.*$/:/\/\/.*$/;
+  const KW=kwset(plang);
+  const NUM=/\b\d+(?:\.\d+)?\b/;
+  const OP=/(?:↔|→|≤|≥|<=|>=|==|!=|&&|\|\||<<|>>|[<>]=?|[=+\-*/%])/;
+  const out=[];let i=0;
+  while(i<line.length){
+    const rest=line.slice(i);
+    const mc=rest.match(cm);
+    if(mc&&mc.index===0){out.push(`<span class="tk-cm">${esc(rest)}</span>`);break}
+    let done=false;
+    const mn=rest.match(NUM);if(mn&&mn.index===0){out.push(`<span class="tk-num">${esc(mn[0])}</span>`);i+=mn[0].length;done=true}
+    if(!done){const mk=rest.match(KW);if(mk&&mk.index===0){out.push(`<span class="tk-kw">${esc(mk[0])}</span>`);i+=mk[0].length;done=true}}
+    if(!done){
+      const mf=rest.match(/^[A-Za-z_]\w*(?=\s*\()/);
+      if(mf&&!/^(if|for|while|switch|return|sizeof)$/.test(mf[0])){out.push(`<span class="tk-fn">${esc(mf[0])}</span>`);i+=mf[0].length;done=true}
+    }
+    if(!done){const mo=rest.match(OP);if(mo&&mo.index===0){out.push(`<span class="tk-op">${esc(mo[0])}</span>`);i+=mo[0].length;done=true}}
+    if(!done){out.push(esc(line[i]));i++}
+  }
+  return out.join("")||" ";
+}
+let PTE={},TG=0,mode="arr",cat="sorting",algo="bubble",arr=[],steps=[],pos=-1,timer=null,cells=[],toks=[],prev=[];
+const $=id=>document.getElementById(id);
+let SND=true,AC=null;try{SND=localStorage.getItem("dsa-snd")!=="0"}catch(e){}
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==="suspended")AC.resume();return AC}
+function tone(f,d=.12,type="sine",vol=.12,at=0,slide=0){if(!SND)return;const c=ac();if(!c)return;const t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f*slide),t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.03)}
+const arp=(fs,type="triangle",vol=.13,gap=.085)=>fs.forEach((f,i)=>tone(f,.2,type,vol,i*gap));
+const FAN=()=>arp([523,659,784,1047,1319]),OKS=()=>arp([659,784,1047]);
+// soft "not found / empty" motif: gentle descending minor third (no sawtooth)
+const BAD=()=>{tone(392,.22,"sine",.11);tone(330,.30,"sine",.10,.10)};
+// per-algorithm pitch theme: multiply base frequency so each algorithm has a "key"
+const THEME={bubble:1,selection:1.122,insertion:1.189,merge:1.335,linear:1,binary:1.498,bfs:1,dfs:1.122,dijkstra:1.335,prim:1.26,kruskal:1.414};
+const th=k=>THEME[k]||1;
+function sndUI(){const b=$("snd");b.textContent=SND?"🔊":"🔇";b.setAttribute("aria-pressed",String(SND))}
+$("snd").onclick=()=>{SND=!SND;try{localStorage.setItem("dsa-snd",SND?"1":"0")}catch(e){}sndUI();if(SND)OKS()};sndUI();
+// --- theme switcher ---
+function applyTheme(v){
+  const root=document.documentElement;
+  if(v==="auto")root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme",v);
+  try{localStorage.setItem("dsa-theme",v)}catch(e){}
+  const sel=$("theme");if(sel)sel.value=v;
+}
+$("theme").onchange=e=>applyTheme(e.target.value);
+(function initTheme(){
+  let saved="auto";
+  try{saved=localStorage.getItem("dsa-theme")||"auto"}catch(e){}
+  applyTheme(saved);
+})();
+addEventListener("pointerdown",()=>ac(),{once:true});
+function pf(v){if(v==null)return 440;const lo=Math.min(...arr),hi=Math.max(...arr);return 220*Math.pow(2,2*(v-lo)/((hi-lo)||1))}
+function valAt(s,i){for(let id=0;id<arr.length;id++)if(s.p[id]===i)return arr[id];return null}
+function sfx(s){const t=s.t;if(!t)return;const f=a=>pf(valAt(s,a))*th(algo);
+  if(t==="cmp"){const q=s.c.length?s.c:[0];tone(q.map(f).reduce((x,y)=>x+y,0)/q.length,.1,"sine",.11)}
+  else if(t==="swap"){tone(f(s.w[0]),.12,"triangle",.14);if(s.w[1]!==undefined&&s.w[1]!==s.w[0])tone(f(s.w[1]),.12,"triangle",.14,.07)}
+  else if(t==="shift"||t==="write")tone(f(s.w[0]),.13,"triangle",.14);
+  else if(t==="place")tone(s.w&&s.w.length?Math.min(1500,f(s.w[0])*1.5):988,.18,"sine",.12);
+  else if(t==="pass")tone(170,.1,"sine",.08);
+  else if(t==="key")tone(f(s.h),.12,"sawtooth",.06);
+  else if(t==="min")tone(Math.min(1500,f(s.h)*1.5),.1,"square",.05);
+  else if(t==="split")tone(280,.06,"square",.04);
+  else if(t==="mid")tone(520,.12,"sine",.12);
+  else if(t==="merge")tone(330,.18,"triangle",.1,0,.7);
+  else if(t==="found")OKS();else if(t==="nf")BAD();else if(t==="done")FAN()}
+// op: operation name; also accepts legacy tick/add/rem/ok/nf/err for compatibility
+function dsSfx(op){
+  const mk=k=>({Push:"push",Enqueue:"enqueue",Pop:"pop",Dequeue:"dequeue",Peek:"peek",
+    "Push Front":"pushF","Pop Back":"popB",
+    "Insert Head":"insH","Insert Tail":"insT","Insert Before":"insB","Insert After":"insA","Delete Head":"delH","Delete Tail":"delT",Search:"search",
+    tick:"tick",add:"add",rem:"rem",ok:"ok",nf:"nf",err:"err"}[k]||k);
+  const k=mk(op);
+  switch(k){
+    case "push":      tone(392,.10,"triangle",.13); tone(523,.16,"triangle",.13,.07); break;
+    case "pop":       tone(523,.10,"triangle",.13); tone(392,.18,"triangle",.12,.07); break;
+    case "peek":      tone(659,.12,"sine",.10); break;
+    case "enqueue":   tone(330,.10,"triangle",.13); tone(494,.16,"triangle",.13,.07); break;
+    case "dequeue":   tone(494,.10,"triangle",.13); tone(330,.18,"triangle",.12,.07); break;
+    case "pushF":     tone(294,.10,"triangle",.13); tone(440,.16,"triangle",.13,.07); break;
+    case "popB":      tone(440,.10,"triangle",.13); tone(294,.18,"triangle",.12,.07); break;
+    case "insH":      tone(587,.10,"triangle",.14); break;
+    case "insT":      arp([392,494,587,698],"triangle",.11,.06); break;
+    case "insB":      tone(523,.10,"triangle",.13); tone(440,.14,"triangle",.12,.06); break;
+    case "insA":      tone(523,.10,"triangle",.13); tone(659,.14,"triangle",.12,.06); break;
+    case "delH":      tone(587,.10,"triangle",.14); tone(440,.12,"sine",.08,.06); break;
+    case "delT":      arp([698,587,494,392],"triangle",.11,.06); break;
+    case "search":    OKS(); break;
+    case "ok":        OKS(); break;
+    case "add":       tone(392,.10,"triangle",.14); tone(587,.16,"triangle",.14,.08); break;
+    case "rem":       tone(587,.10,"triangle",.14); tone(392,.18,"triangle",.14,.08); break;
+    case "tick":      tone(300,.06,"sine",.07); break;
+    case "nf":        BAD(); break;
+    case "err":       BAD(); break;
+    default:          tone(300,.06,"sine",.06);
+  }
+}
+const SEMI=[0,2,4,5,7,9,11],gf=i=>262*Math.pow(2,SEMI[i]/12);
+// motif per graph event; falls back to state-diff if event is unknown
+function gsfx(p){
+  if(p<0)return;
+  const s=GS[p], o=p>0?GS[p-1]:null;
+  const ev=s.ev || null;
+  if(ev){
+    switch(ev.t){
+      case "visit":    tone(ev.n?gf(ev.n):523,.14,"sine",.12); break;
+      case "frontier": tone(392,.10,"triangle",.12); tone(523,.14,"triangle",.12,.06); break;
+      case "process":  tone(ev.n?gf(ev.n):440,.12,"triangle",.11); break;
+      case "relax":    tone(659,.08,"square",.05); break;
+      case "accept":   tone(523,.14,"triangle",.13); tone(659,.18,"triangle",.13,.08); tone(784,.20,"triangle",.12,.16); break;
+      case "reject":   tone(196,.16,"sine",.09); break;
+      case "backtrack":tone(440,.12,"sine",.10); tone(330,.16,"sine",.09,.08); break;
+      case "done":     FAN(); break;
+      default:         break;
+    }
+    return;
+  }
+  // legacy state-diff (used by algorithms not yet emitting events)
+  if(s.l===-1){FAN();return}
+  const base=o||{ns:Array(7).fill(0),es:Array(GE.length).fill(0)};let k=0;
+  s.ns.forEach((v,i)=>{if(v!==base.ns[i]){if(v===1)tone(gf(i),.14,"sine",.12,k*.06);else if(v===2)tone(gf(i)*2,.12,"triangle",.1,k*.06);else if(v===3)tone(gf(i)/2,.2,"sine",.1,k*.06);else tone(gf(i)/2,.06,"sine",.05,k*.06);k++}});
+  s.es.forEach((v,i)=>{if(v!==base.es[i]){if(v===2)tone(784,.09,"square",.05,k*.06);else if(v===3)tone(150,.14,"sawtooth",.06,k*.06,.7);else if(v===1)tone(420,.05,"sine",.06,k*.06);k++}});
+  if(!k)tone(230,.05,"sine",.05)
+}
+let PITCH=64,TK=56,BASE=86,DROP=76;const row=$("row"),codeEl=$("code"),RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function rand(n){return Array.from({length:n},()=>Math.floor(Math.random()*90)+10)}
+function build(){
+  const WW=$("wrap").clientWidth||340;PITCH=Math.max(40,Math.min(64,Math.floor((WW-12)/arr.length)));TK=PITCH-8;BASE=algo==="insertion"?TK+24:algo==="merge"?8:Math.round(TK*.6)+4;DROP=algo==="merge"?TK+34:TK+20;
+  PTE={};row.innerHTML="";row.style.width=(arr.length*PITCH+12)+"px";row.style.height=((algo==="merge"?BASE+DROP+TK+8:BASE+TK+Math.max(34,Math.round(TK*.6)+8))+(cat==="searching"?58:0))+"px";
+  row.style.setProperty("--tk",TK+"px");row.style.setProperty("--base",BASE+"px");cells=[];toks=[];prev=[];
+  arr.forEach((v,i)=>{const c=document.createElement("div");c.className="cell";c.style.left=(i*PITCH+6)+"px";row.appendChild(c);cells.push(c);
+    const x=document.createElement("div");x.className="idx";x.style.left=(i*PITCH+6)+"px";x.textContent=i;row.appendChild(x);});
+  arr.forEach((v,i)=>{const t=document.createElement("div");t.className="tok";t.textContent=v;{const L=String(v).length;t.style.fontSize=Math.max(11,TK*(L>3?.26:L>2?.32:.4))+"px"}row.appendChild(t);toks.push(t);prev.push(null)});
+}
+function info(){const K=mode==="ds"?cat:algo,f=INFO[K],x=T("cx");$("abS").textContent=T("aboutH")+" — "+NAMES[K];
+  $("ib").innerHTML=`<h3>${NAMES[K]}</h3><p>${f.d[lang]}</p><div class="cx">${(f.cl||[...[0,1,2,3].map(i=>[x[i],f.c[i]]),[x[4],T("yn")[f.st?0:1]]]).map(q=>`<div>${q[0]}<b>${q[1]}</b></div>`).join("")}</div>`}
+function statics(){document.querySelectorAll("[data-i]").forEach(e=>e.textContent=T(e.dataset.i));$("custom").placeholder=T("ph");
+  $("lang").value=lang;document.documentElement.lang=lang;
+  try{$("theme").value=localStorage.getItem("dsa-theme")||"auto"}catch(e){}
+  $("plang").value=plang;
+  $("plang").hidden=!(cat==="sorting");
+  $("play").textContent=timer?T("pause"):T("play");info()}
+let CMAP=null; // pseudo-line → real-line map, or null for pseudo view
+function load(){stop();if(algo==="binary")arr=arr.slice().sort((a,b)=>a-b);steps=run(algo,arr);pos=-1;
+  let src=CODE[algo];CMAP=null;
+  if(cat==="sorting"&&plang!=="pseudo"&&REAL[algo]&&REAL[algo][plang]){
+    src=REAL[algo][plang].src;CMAP=REAL[algo][plang].map;
+  }
+  codeEl.innerHTML=src.map((t,i)=>`<div class="ln" id="L${i}" data-ln="${i+1}">${hl(t,plang)}</div>`).join("");
+  $("custom").value=arr.join(", ");info();build();show(-1,false)}
+const PC={lo:"var(--ok)",hi:"var(--wr)",mid:"var(--hole)",i:"var(--cmp)"};
+function tags(s){const c={};Object.keys(PTE).forEach(k=>PTE[k].style.opacity=0);if(!s.pt)return;
+  Object.entries(s.pt).forEach(([k,v])=>{let e=PTE[k];const sl=Math.max(0,Math.min(arr.length-1,v)),j=c[sl]=(c[sl]??-1)+1;
+    if(!e){e=document.createElement("div");e.className="pt";e.style.color=PC[k];e.style.left=(sl*PITCH+6+TK/2)+"px";e.style.top=(BASE+TK+32+j*20)+"px";row.appendChild(e);PTE[k]=e}
+    e.textContent=`${k} = ${v}`;e.style.opacity=1;e.style.left=(sl*PITCH+6+TK/2)+"px";e.style.top=(BASE+TK+32+j*20)+"px"})}
+function show(p,anim=true){
+  const n=arr.length;
+  const s=p<0?{v:arr.slice(),x:[],t:null,p:arr.map((_,i)=>i),y:Array(n).fill(0),s:[],c:[],w:[],h:-1,r:null,k:null,l:-2,m:T("init"),cmp:0,mv:0}:steps[p];
+  const dur=adur();
+  toks.forEach((el,id)=>{
+    const tx=s.p[id]*PITCH+6,ty=BASE+(s.y[id]<0?-(TK+20):s.y[id]*DROP),pv=prev[id],slot=s.p[id],low=s.y[id];
+    const moved = !pv || pv.x!==tx || pv.y!==ty;
+    if(anim && !RM && moved){
+      // current visual position (may be mid-animation from a previous frame)
+      const m=new DOMMatrix(getComputedStyle(el).transform);
+      const cx=m.m41||(pv?pv.x:tx), cy=m.m42||(pv?pv.y:ty);
+      const dy=ty-cy, dx=tx-cx;
+      // vertical moves (lift up, drop to temp row) get their own curve; horizontal moves arc
+      const lifted = (low===-1)||(pv&&pv.y!==ty&&Math.abs(dx)<1);
+      if(lifted){
+        // straight vertical, no arc, gentler scale
+        el.animate([
+          {transform:`translate(${cx}px,${cy}px) scale(1)`,opacity:1},
+          {transform:`translate(${cx}px,${(cy+ty)/2}px) scale(1.06)`,offset:.55,opacity:1},
+          {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}
+        ],{duration:dur,easing:"cubic-bezier(.4,.0,.2,1)"});
+      }else{
+        // horizontal (and diagonal) moves get a subtle arc so the eye can follow the token
+        const arc=pv&&pv.y===ty?Math.min(TK*.6,24+Math.abs(dx)/6)*(dx>0?-1:1):0;
+        el.animate([
+          {transform:`translate(${cx}px,${cy}px) scale(1)`},
+          {transform:`translate(${(cx+tx)/2}px,${(cy+ty)/2+arc}px) scale(1.12)`,offset:.5},
+          {transform:`translate(${tx}px,${ty}px) scale(1)`}
+        ],{duration:dur,easing:"cubic-bezier(.45,.05,.25,1)"});
+      }
+    } else if(anim && !RM && !pv){
+      // first paint after reset: settle in from a small lift rather than teleporting
+      el.animate([
+        {transform:`translate(${tx}px,${ty-14}px) scale(.92)`,opacity:.6},
+        {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}
+      ],{duration:220,easing:"cubic-bezier(.3,.7,.3,1)"});
+    }
+    el.style.transform=`translate(${tx}px,${ty}px)`;prev[id]={x:tx,y:ty};
+    let c="tok";
+    if(s.s[slot]&&low===0)c+=" ok";
+    else if(s.w.includes(slot)&&(!s.r||low===0))c+=" wr";
+    else if(s.c.includes(slot)&&(!s.r||low===1))c+=" cmp";
+    else if(s.k!==null&&low===-1)c+=" hole";
+    else if((algo==="selection"||algo==="binary")&&s.h===slot)c+=" hole";
+    el.className=c;});
+  cells.forEach((c,i)=>{let k="cell";if(s.s[i])k+=" ok";else if(s.w.includes(i))k+=" wr";else if(s.c.includes(i))k+=" cmp";else if(s.h===i)k+=" hole";
+    if(s.r&&(i<s.r[0]||i>s.r[1]))k+=" dim";c.className=k;});
+  tags(s);$("key").textContent=s.k!==null?`key = ${s.k}  ${T("lifted")}`:"";
+  $("tmpl").textContent=s.y.some(v=>v===1)?T("tmpl"):"";
+  codeEl.querySelectorAll(".ln").forEach(e=>e.classList.remove("on"));
+  let realL=s.l;
+  if(CMAP&&s.l>=0){const m=CMAP[s.l];realL=(m===undefined||m<0)?-1:m}
+  const ln=$("L"+realL);if(ln)ln.classList.add("on");
+  $("dt").textContent=s.t?W("t_"+s.t):"—";$("dm").textContent=s.m;
+  $("dx").innerHTML="";(s.x||[]).forEach(x=>{const li=document.createElement("li");li.textContent=x;$("dx").appendChild(li)});
+  const pv=p>0?steps[p-1].v:arr;$("mt").innerHTML=s.v.map((v,i)=>`<div class="${v!==pv[i]?"ch":""}"><u>${i}</u>${v===null?"_":v}</div>`).join("");
+  $("scrub").max=steps.length;$("scrub").value=Math.max(p+1,0);$("msg").textContent=s.m;$("st").textContent=`${Math.max(p+1,0)}/${steps.length}`;$("cm").textContent=s.cmp;$("mv").textContent=s.mv;if(anim&&p>=0)sfx(s);
+}
+function delay(){return Math.round(1400/Math.pow(1.3,$("spd").value-1))+60}
+// animation duration used by token moves; shorter when reduced-motion is on
+function adur(){return RM?90:Math.min(560,Math.max(140,delay()*.85))}
+function tick(){if(pos>=steps.length-1){stop();return}pos++;show(pos);timer=setTimeout(tick,delay())}
+function stop(){clearTimeout(timer);timer=null;$("play").textContent=T("play")}
+function play(){if(timer){stop();return}if(pos>=steps.length-1){pos=-1;show(-1,false)}$("play").textContent=T("pause");tick()}
+function apply(){const v=$("custom").value.split(/[\s,]+/).filter(Boolean).map(Number);
+  if(v.length<2||v.length>50||v.some(x=>!Number.isInteger(x)||x<0||x>9999)){$("msg").textContent=T("bad");return}arr=v;load()}
+$("custom").addEventListener("input",e=>{const el=e.target,p=el.selectionStart,b=el.value;el.value=b.replace(/[^0-9, ]/g,"");if(el.value!==b)el.setSelectionRange(p-1,p-1)});
+$("custom").addEventListener("keydown",e=>{if(e.key==="Enter")apply()});
+$("set").onclick=apply;
+$("play").onclick=play;
+$("next").onclick=()=>{stop();if(pos<steps.length-1)show(++pos)};
+$("prev").onclick=()=>{stop();if(pos>=0)show(--pos)};
+$("reset").onclick=()=>{stop();pos=-1;show(-1)};
+$("rand").onclick=()=>{arr=rand(+$("size").value);if(cat==="searching")pickTG();load()};
+$("size").oninput=()=>{arr=rand(+$("size").value);if(cat==="searching")pickTG();load()};
+$("lang").onchange=e=>{lang=e.target.value;try{localStorage.setItem("dsa-lang",lang)}catch(x){}statics();if(mode==="arr"){steps=run(algo,arr);show(pos,false)}else if(mode==="rec"){rload()}else if(mode==="ds"){dsLog(T("dsInit"));maxUI()}};
+// --- code language (sorting only) ---
+let plang=(()=>{try{return localStorage.getItem("dsa-plang")||"pseudo"}catch(e){return "pseudo"}})();
+$("plang").value=plang;
+$("plang").onchange=e=>{plang=e.target.value;try{localStorage.setItem("dsa-plang",plang)}catch(e){}if(mode==="rec")rload();else{load();show(pos,false)}};
+$("rgo").onclick=()=>rload();
+$("rn").addEventListener("input",e=>e.target.value=e.target.value.replace(/\D/g,""));
+$("rn").addEventListener("keydown",e=>{if(e.key==="Enter")rload()});
+$("rplay").onclick=rplay;
+$("rnext").onclick=()=>{rstop();if(RPOS<RSTEPS.length-1)rrender(++RPOS)};
+$("rprev").onclick=()=>{rstop();if(RPOS>=0)rrender(--RPOS)};
+$("rreset").onclick=()=>{rstop();RPOS=-1;rrender(-1)};
+$("scrub").oninput=e=>{stop();pos=+e.target.value-1;show(pos,true)};
+document.addEventListener("keydown",e=>{const t=e.target;if(mode!=="arr")return;if(t.tagName==="INPUT"&&t.type==="text")return;
+  if(e.code==="Space"&&t.tagName!=="BUTTON"){e.preventDefault();play()}else if(e.key==="ArrowRight"&&t.type!=="range")$("next").click();else if(e.key==="ArrowLeft"&&t.type!=="range")$("prev").click()});
+const tabs=$("tabs");
+//GG-start
+Object.assign(NAMES,{bfs:"BFS",dfs:"DFS",dijkstra:"Dijkstra",prim:"Prim (MST)",kruskal:"Kruskal (MST)"});
+Object.assign(CODE,{
+bfs:["queue = [start]; mark start visited","while queue is not empty:","  u = dequeue()","  for each neighbour v of u:","    if v not visited: mark it; enqueue(v)"],
+dfs:["dfs(u): mark u visited","  for each neighbour v of u:","    if v not visited: dfs(v)"],
+dijkstra:["dist[all] = ∞; dist[start] = 0","while unvisited nodes remain:","  u = unvisited node with smallest dist","  mark u as visited","  for each neighbour v of u (not visited):","    if dist[u] + w < dist[v]: dist[v] = dist[u] + w"],
+prim:["inTree = {start}","while the tree does not contain all nodes:","  find the lightest edge (u,v): u in tree, v not","  add v and edge (u,v) to the tree"],
+kruskal:["sort all edges by weight","for each edge (u, v, w) in that order:","  if find(u) != find(v):","    add edge to MST; union(u, v)","  else: skip it (it would make a cycle)"]});
+Object.assign(INFO,{
+bfs:{cl:[["Time","O(V+E)"],["Space","O(V)"],["Uses","Queue"],["Weights","Ignored"]],d:{en:"Explores the graph level by level: first the start node, then all its neighbours, then their neighbours. Uses a queue. Finds the path with the fewest edges in an unweighted graph.",hi:"graph को level-by-level घूमता है: पहले start node, फिर उसके सारे पड़ोसी, फिर उनके पड़ोसी। queue इस्तेमाल करता है। बिना weight वाले graph में कम से कम edges वाला रास्ता देता है।",mr:"graph ला level-by-level फिरतो: आधी start node, मग तिचे सर्व शेजारी, मग त्यांचे शेजारी. queue वापरतो. weight नसलेल्या graph मध्ये कमीत कमी edges चा मार्ग देतो."}},
+dfs:{cl:[["Time","O(V+E)"],["Space","O(V)"],["Uses","Stack"],["Weights","Ignored"]],d:{en:"Goes as deep as possible along one path, then backtracks and tries the next. Uses recursion (the call stack). Useful for cycle detection, topological sort and solving mazes.",hi:"एक रास्ते पर जितना हो सके गहराई तक जाता है, फिर वापस लौटकर अगला रास्ता आज़माता है। recursion (call stack) इस्तेमाल करता है। cycle पकड़ने, topological sort और maze हल करने में काम आता है।",mr:"एका मार्गावर शक्य तितके खोलवर जातो, मग मागे येऊन पुढचा मार्ग पाहतो. recursion (call stack) वापरतो. cycle शोधणे, topological sort आणि maze सोडवण्यात उपयोगी."}},
+dijkstra:{cl:[["Time","O(V²)"],["Space","O(V)"],["Weights","≥ 0"],["Finds","Shortest paths"]],d:{en:"Finds the shortest distance from the start node to every other node when all weights are non-negative. Each time it picks the unvisited node with the smallest distance and relaxes its edges.",hi:"जब सारे weights non-negative हों, तब start node से बाकी हर node तक की सबसे छोटी दूरी निकालता है। हर बार सबसे कम distance वाला unvisited node चुनकर उसके edges relax करता है।",mr:"सर्व weights non-negative असताना start node पासून इतर प्रत्येक node पर्यंतचे सर्वात कमी अंतर काढतो. प्रत्येक वेळी सर्वात कमी distance चा unvisited node निवडून त्याचे edges relax करतो."}},
+prim:{cl:[["Time","O(V²)"],["Space","O(V)"],["Grows","One tree"],["Finds","MST"]],d:{en:"Builds a Minimum Spanning Tree by growing one tree from the start node: each time it adds the cheapest edge that connects the tree to a new node.",hi:"start node से एक tree उगाकर Minimum Spanning Tree बनाता है: हर बार वह सबसे सस्ता edge जोड़ता है जो tree को किसी नए node से मिलाता हो।",mr:"start node पासून एक tree वाढवून Minimum Spanning Tree बनवतो: प्रत्येक वेळी tree ला नवीन node शी जोडणारा सर्वात स्वस्त edge जोडतो."}},
+kruskal:{cl:[["Time","O(E log E)"],["Space","O(V)"],["Uses","Union-Find"],["Finds","MST"]],d:{en:"Builds a Minimum Spanning Tree by sorting all edges by weight and adding them one by one, skipping any edge that would form a cycle (checked with Union-Find).",hi:"सभी edges को weight के क्रम में sort करके एक-एक जोड़ता है और जो edge cycle बनाए उसे छोड़ देता है (Union-Find से जाँच), इस तरह Minimum Spanning Tree बनता है।",mr:"सर्व edges ना weight नुसार sort करून एकेक जोडतो आणि cycle तयार करणारा edge सोडून देतो (Union-Find ने तपासणी), यातून Minimum Spanning Tree बनतो."}}});
+const GN=[[40,125],[110,45],[110,205],[180,125],[250,45],[250,205],[308,125]],LET="ABCDEFG",GE=[[0,1],[0,2],[1,2],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6]],WGT={dijkstra:1,prim:1,kruskal:1};
+let GW=[4,2,1,5,8,3,6,7,2],GS=[],gp=-1,gt=null,GEl={};
+const adj=u=>GE.map((e,i)=>e[0]===u?[e[1],i]:e[1]===u?[e[0],i]:null).filter(Boolean).sort((a,b)=>a[0]-b[0]);
+function ggen(name,s0){const n=7,ns=Array(n).fill(0),es=Array(GE.length).fill(0),lab=Array(n).fill(""),S=[],out=[];let ds="";
+  const Lt=i=>LET[i],yn=r=>r?T("yes"):T("no"),ed=i=>Lt(GE[i][0])+Lt(GE[i][1])+"("+GW[i]+")";
+  const P=(l,m,d)=>{if(d!==undefined)ds=d;S.push({l,ns:ns.slice(),es:es.slice(),lab:lab.slice(),ds,m})};
+  if(name==="bfs"){const q=[s0],vis=Array(n).fill(false);vis[s0]=true;ns[s0]=1;
+    const D=()=>`Queue: [${q.map(Lt)}]   Order: [${out.map(Lt)}]`;
+    P(0,`start = ${Lt(s0)} → enqueue, mark in frontier`,D());S[S.length-1].ev={t:"frontier",n:s0};
+    while(q.length){
+      const u=q.shift();ns[u]=2;
+      P(2,`u = dequeue() = ${Lt(u)}  → now processing`,D());S[S.length-1].ev={t:"process",n:u};
+      for(const[v,e]of adj(u)){
+        es[e]=1;
+        P(3,`consider edge ${Lt(u)}–${Lt(v)} (${Lt(v)} ${vis[v]?"already visited":"unvisited"})`,D());
+        S[S.length-1].ev={t:"relax"};
+        if(!vis[v]){
+          vis[v]=true;q.push(v);ns[v]=1;es[e]=2;
+          P(4,`${Lt(v)} not visited → enqueue(${Lt(v)}), accept edge`,D());
+          S[S.length-1].ev={t:"visit",n:v};
+        }else{
+          es[e]=3;
+          P(4,`${Lt(v)} already visited → reject edge (would revisit)`,D());
+          S[S.length-1].ev={t:"reject"};
+        }
+      }
+      adj(u).forEach(([,e])=>{ if(es[e]===3) es[e]=0; });
+      ns[u]=3;out.push(u);
+      P(1,`${Lt(u)} finished  (all neighbours processed)`,D());S[S.length-1].ev={t:"done",n:u};
+    }
+  }
+  else if(name==="dfs"){const vis=Array(n).fill(false),stk=[];
+    const D=()=>`Call stack: [${stk.map(Lt)}]   Order: [${out.map(Lt)}]`;
+    const dfs=u=>{
+      vis[u]=true;stk.push(u);out.push(u);ns[u]=2;
+      P(0,`dfs(${Lt(u)}): mark visited, push frame  (depth ${stk.length})`,D());
+      S[S.length-1].ev={t:"visit",n:u};
+      for(const[v,e]of adj(u)){
+        es[e]=1;
+        P(1,`consider edge ${Lt(u)}–${Lt(v)} (${Lt(v)} ${vis[v]?"already visited":"unvisited"})`,D());
+        S[S.length-1].ev={t:"relax"};
+        if(!vis[v]){
+          es[e]=2; ns[u]=1;
+          P(2,`${Lt(v)} unvisited → recurse dfs(${Lt(v)})`,D());
+          S[S.length-1].ev={t:"visit",n:v};
+          dfs(v);
+          ns[u]=2;
+          P(1,`returned to ${Lt(u)}  (backtrack from ${Lt(v)})`,D());
+          S[S.length-1].ev={t:"backtrack",n:u};
+        }else{
+          es[e]=3;
+          P(2,`${Lt(v)} already visited → skip edge (no cycle)`,D());
+          S[S.length-1].ev={t:"reject"};
+        }
+      }
+      adj(u).forEach(([,e])=>{ if(es[e]===3) es[e]=0; });
+      ns[u]=3;stk.pop();
+      P(1,`${Lt(u)} finished, pop frame`,D());S[S.length-1].ev={t:"done",n:u};
+    };
+    dfs(s0);
+  }
+  else if(name==="dijkstra"){const INF=1e9,d=Array(n).fill(INF),pe=Array(n).fill(-1),done=Array(n).fill(false);d[s0]=0;lab.fill("∞");lab[s0]="0";
+    const D=()=>"dist: "+d.map((x,i)=>Lt(i)+"="+(x===INF?"∞":x)).join("  ");P(0,`dist[all] = ∞, dist[${Lt(s0)}] = 0`,D());
+    for(;;){let u=-1;for(let i=0;i<n;i++)if(!done[i]&&d[i]<INF&&(u<0||d[i]<d[u]))u=i;if(u<0)break;
+      ns[u]=2;P(2,`u = ${Lt(u)}  (smallest dist = ${d[u]})`);done[u]=true;P(3,`${Lt(u)} is visited: its distance ${d[u]} is final`);
+      for(const[v,e]of adj(u)){if(done[v])continue;es[e]=1;const nd=d[u]+GW[e];
+        P(5,`${d[u]} + ${GW[e]} = ${nd}  <  dist[${Lt(v)}] = ${d[v]===INF?"∞":d[v]} ?  ${yn(nd<d[v])}`);
+        S[S.length-1].ev={t:"relax"};
+        if(nd<d[v]){if(pe[v]>=0)es[pe[v]]=0;d[v]=nd;pe[v]=e;lab[v]=""+nd;es[e]=2;if(!ns[v])ns[v]=1;P(5,`dist[${Lt(v)}] = ${nd}  (via ${Lt(u)})`,D())}else es[e]=pe[v]===e?2:0}
+        if(nd<d[v])S[S.length-1].ev={t:"accept",n:v};
+      ns[u]=3;P(1,`${Lt(u)} finished`,D())}}
+  else if(name==="prim"){const inT=Array(n).fill(false);inT[s0]=true;ns[s0]=3;let tot=0;const D=()=>`MST weight so far: ${tot}`;P(0,`start with ${Lt(s0)} in the tree`,D());
+    for(;;){const c=[];GE.forEach(([a,b],i)=>{if(inT[a]!==inT[b])c.push(i)});if(!c.length)break;
+      c.forEach(i=>es[i]=1);P(2,`edges leaving the tree: ${c.map(ed).join("  ")}`);
+      S[S.length-1].ev={t:"relax"};
+      const b=c.reduce((x,y)=>GW[y]<GW[x]?y:x);c.forEach(i=>es[i]=0);es[b]=2;const v=inT[GE[b][0]]?GE[b][1]:GE[b][0];inT[v]=true;ns[v]=3;tot+=GW[b];
+      P(3,`lightest = ${ed(b)}  → add ${Lt(v)} to the tree`,D());
+      S[S.length-1].ev={t:"accept",n:v}}}
+  else{const par=[...Array(n).keys()],find=x=>par[x]===x?x:find(par[x]),idx=GE.map((_,i)=>i).sort((a,b)=>GW[a]-GW[b]||a-b),inM=Array(n).fill(false);let tot=0;const D=()=>`MST weight so far: ${tot}`;
+    P(0,`sorted: ${idx.map(ed).join("  ")}`,D());
+    for(const i of idx){const[a,b]=GE[i];es[i]=1;ns[a]=ns[b]=2;P(1,`next edge ${ed(i)}`);
+      S[S.length-1].ev={t:"relax"};const ra=find(a),rb=find(b);
+      P(2,`find(${Lt(a)}) = ${Lt(ra)},  find(${Lt(b)}) = ${Lt(rb)}  →  different ? ${yn(ra!==rb)}`);
+      if(ra!==rb){par[ra]=rb;es[i]=2;tot+=GW[i];inM[a]=inM[b]=true;P(3,`add ${ed(i)} to the MST, union`,D())}else{es[i]=3;P(4,`same component → it would make a cycle, skip`)}
+      S[S.length-1].ev = (ra!==rb) ? {t:"accept"} : {t:"reject"};
+      ns[a]=inM[a]?3:0;ns[b]=inM[b]?3:0}}
+  P(-1,"✔ "+T("done"));S[S.length-1].ev={t:"done"};return S}
+//GG-end
+function gbuild(){const g=$("gsvg");g.innerHTML="";GEl={e:[],w:[],n:[],t:[],l:[]};
+  const mk=(t,a)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);g.appendChild(e);return e};
+  GE.forEach(([a,b])=>GEl.e.push(mk("line",{x1:GN[a][0],y1:GN[a][1],x2:GN[b][0],y2:GN[b][1],"stroke-linecap":"round"})));
+  GE.forEach(([a,b])=>GEl.w.push(mk("text",{x:(GN[a][0]+GN[b][0])/2+(a+b)%2*8-4,y:(GN[a][1]+GN[b][1])/2-6,"text-anchor":"middle"})));
+  GN.forEach(([x,y],i)=>{GEl.n.push(mk("circle",{cx:x,cy:y,r:17}));const t=mk("text",{x,y:y+5,"text-anchor":"middle"});t.textContent=LET[i];GEl.t.push(t);GEl.l.push(mk("text",{x,y:y-24,"text-anchor":"middle"}))})}
+// Derive the frontier (queue/stack) + visit order at step p from the event stream.
+// Works for BFS (queue), DFS (stack). Other algorithms show a light frontier.
+function gpanel(p){
+  const title=$("gpTitle"),frontier=$("gpFrontier"),orderEl=$("gpOrder"),otitle=$("gpOrderTitle"),note=$("gpNote");
+  const name=algo;
+  $("gpanel").hidden = !(algo==="bfs"||algo==="dfs");
+  const isBFS=name==="bfs",isDFS=name==="dfs";
+  if(!isBFS&&!isDFS){
+    // generic: show visited-order for Dijkstra/Prim/Kruskal based on node states
+    title.parentElement.hidden=true;
+    title.textContent="";
+    frontier.innerHTML="";
+    orderEl.innerHTML="";
+    otitle.textContent="";
+    note.textContent="";
+    return;
+  }
+  title.parentElement.hidden=false;
+  title.textContent=isBFS?"Queue (front → rear)":"Call stack (bottom → top)";
+  otitle.textContent="Visit order";
+  note.textContent=isBFS?"BFS: nodes leave the queue and enqueue their unvisited neighbours.":"DFS: deepest node on top; when it finishes, we pop and backtrack.";
+  // Rebuild frontier by replaying events up to p
+  const q=[];          // queue for BFS
+  const stack=[];      // stack for DFS
+  const order=[];
+  const seen=new Set();
+  for(let i=0;i<=p;i++){
+    const s=GS[i];const e=s&&s.ev;if(!e)continue;
+    if(e.t==="frontier"){ q.push(e.n); seen.add(e.n); }
+    else if(e.t==="visit"){
+      if(isBFS){ if(!seen.has(e.n)){ q.push(e.n); seen.add(e.n); } }
+      else { stack.push(e.n); order.push(e.n); seen.add(e.n); }
+    }
+    else if(e.t==="process"){
+      // BFS: node is dequeued
+      const idx=q.indexOf(e.n); if(idx>=0)q.splice(idx,1);
+      order.push(e.n); seen.add(e.n);
+    }
+    else if(e.t==="backtrack"){
+      // DFS: u is back on top of stack, and the child it backtracked from is off
+      // leave stack as is; backtrack means we just returned to u
+    }
+    else if(e.t==="done"){
+      if(isDFS){ const idx=stack.lastIndexOf(e.n); if(idx>=0)stack.splice(idx,1); }
+    }
+  }
+  // If we're sitting on a step whose ev is "frontier" but not yet processed, show it
+  const render=(list,cls)=>{
+    if(!list.length)return '<span class="gp-empty">empty</span>';
+    return list.map((n,i)=>{
+      let c="gp-box";
+      if(isBFS){ if(i===0)c+=" front"; if(i===list.length-1&&list.length>1)c+=" rear"; }
+      else{ if(i===list.length-1)c+=" top"; }
+      if(cls)c+=" "+cls;
+      return `<div class="${c}">${LET[n]}</div>`;
+    }).join("");
+  };
+  frontier.innerHTML=render(isBFS?q:stack);
+  orderEl.innerHTML=order.length
+    ? order.map(n=>`<div class="gp-box order">${LET[n]}</div>`).join("")
+    : '<span class="gp-empty">—</span>';
+}
+function grender(p){const s=p<0?{ns:Array(7).fill(0),es:Array(GE.length).fill(0),lab:Array(7).fill(""),ds:"",m:T("init"),l:-2}:GS[p];
+  const EC=["var(--mute)","var(--cmp)","var(--ok)","var(--wr)"],NC=["var(--bar)","var(--cmp)","var(--hole)","var(--ok)"];
+  GEl.e.forEach((e,i)=>{const v=s.es[i];e.style.stroke=EC[v];e.style.strokeWidth=v===2?6:v===3?4:3;e.style.strokeDasharray=v===3?"4 4":"none";e.style.opacity=1});
+  GEl.w.forEach((t,i)=>{t.textContent=WGT[algo]?GW[i]:"";t.style.fill="var(--ink)";t.style.stroke="var(--panel)";t.style.strokeWidth="4px";t.style.paintOrder="stroke"});
+  GEl.n.forEach((c,i)=>c.style.fill=NC[s.ns[i]]);GEl.t.forEach((t,i)=>t.style.fill=s.ns[i]===1?"#1d2433":"#fff");GEl.l.forEach((t,i)=>{t.textContent=s.lab[i];t.style.fill="var(--ink)"});
+  $("gds").textContent=s.ds;$("msg").textContent=s.m;$("gst").textContent=`${Math.max(p+1,0)}/${GS.length}`;
+  const LEG={en:"grey: undiscovered · orange: in frontier · purple: processing · green: done   |   edge — dashed: considering · green: accepted · red: rejected",hi:"grey: अभी नहीं देखा · orange: frontier में · purple: अभी process हो रहा है · green: पूरा   |   edge — dashed: देख रहे हैं · green: स्वीकार · red: अस्वीकार",mr:"grey: अजून पाहिले नाही · orange: frontier मध्ये · purple: आता process होत आहे · green: पूर्ण   |   edge — dashed: पाहत आहोत · green: स्वीकार · red: नाकारले"};
+  if(!$("gleg")){const d=document.createElement("div");d.id="gleg";d.style.cssText="font-size:11px;color:var(--mute);margin-top:4px;line-height:1.5";$("gds").after(d)}
+  $("gleg").textContent=LEG[lang];
+  gpanel(p);
+  codeEl.querySelectorAll(".ln").forEach(e=>e.classList.remove("on"));const ln=$("L"+s.l);if(ln)ln.classList.add("on");gsfx(p)}
+function gstop(){clearTimeout(gt);gt=null;$("gplay").textContent=T("play")}
+function gload(){gstop();$("gs").parentElement.hidden=algo==="kruskal";$("gT").textContent=NAMES[algo];GS=ggen(algo,+$("gs").value||0);gp=-1;
+  codeEl.innerHTML=CODE[algo].map((t,i)=>`<div class="ln" id="L${i}" data-ln="${i+1}">${hl(t)}</div>`).join("");info();gbuild();grender(-1)}
+const gdelay=()=>Math.round(1400/Math.pow(1.3,$("gspd").value-1))+120;
+function gtick(){if(gp>=GS.length-1){gstop();return}grender(++gp);gt=setTimeout(gtick,gdelay())}
+$("gs").innerHTML=[...LET].map((c,i)=>`<option value="${i}">${c}</option>`).join("");$("gs").onchange=gload;
+$("gw").onclick=()=>{GW=GE.map(()=>1+Math.floor(Math.random()*9));gload()};
+$("gplay").onclick=()=>{if(gt){gstop();return}if(gp>=GS.length-1){gp=-1;grender(-1)}$("gplay").textContent=T("pause");gtick()};
+$("gnext").onclick=()=>{gstop();if(gp<GS.length-1)grender(++gp)};$("gprev").onclick=()=>{gstop();if(gp>=0)grender(--gp)};$("greset").onclick=()=>{gstop();gp=-1;grender(-1)};
+function pickTG(){TG=arr[Math.floor(Math.random()*arr.length)];$("tg").value=TG}
+function setCat(c){stop();gstop();rstop();cat=c;
+  mode=c==="graph"?"gr":c==="recursion"?"rec":CATS[c].length?"arr":"ds";
+  $("plang").hidden = !(c==="sorting"||c==="recursion");
+  ["c-arr","dc"].forEach(i=>$(i).hidden=mode!=="arr");
+  $("c-code").hidden=mode==="ds";
+  $("c-ds").hidden=mode!=="ds";
+  $("c-gr").hidden=mode!=="gr";
+  $("c-rec").hidden=mode!=="rec";
+  $("trow").hidden=c!=="searching";
+  tabs.innerHTML="";tabs.hidden=mode==="ds";
+  CATS[c].forEach((k,i)=>{const b=document.createElement("button");b.dataset.k=k;b.innerHTML=NAMES[k].replace(" Sort",'<span class="sf"> Sort</span>');if(!i)b.classList.add("on");
+    b.onclick=()=>{algo=k;tabs.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));if(c==="searching")pickTG();mode==="gr"?gload():mode==="rec"?rload():load()};tabs.appendChild(b)});
+  if(mode==="gr"){algo=CATS[c][0];gload()}
+  else if(mode==="rec"){algo=CATS[c][0];rload()}
+  else if(mode==="arr"){algo=CATS[c][0];if(c==="searching")pickTG();load()}
+  else{algo=c;dsInit()}}
+$("cat").onchange=e=>setCat(e.target.value);
+$("tg").addEventListener("input",e=>e.target.value=e.target.value.replace(/\D/g,""));
+$("tg").addEventListener("keydown",e=>{if(e.key==="Enter")$("tgb").click()});
+$("tgb").onclick=()=>{TG=+$("tg").value||0;load()};
+const PS={
+stack:{Push:["if top == MAX-1: overflow","top = top + 1","a[top] = x"],Pop:["if top == -1: underflow","x = a[top]","top = top - 1","return x"],Peek:["if top == -1: empty","return a[top]"]},
+queue:{Enqueue:["if rear == MAX-1: overflow","rear = rear + 1","a[rear] = x"],Dequeue:["if front > rear: underflow","x = a[front]","front = front + 1","return x"],"Push Front":["if front == 0: overflow (front at start)","front = front - 1","a[front] = x"],"Pop Back":["if front > rear: underflow","x = a[rear]","rear = rear - 1","return x"],Peek:["if front > rear: empty","return a[front]"]},
+linkedlist:{"Insert Head":["node = new Node(x)","node.next = head","head = node"],
+"Insert Tail":["node = new Node(x)","if head == NULL: head = node; return","cur = head","while cur.next != NULL: cur = cur.next","cur.next = node"],
+"Delete Head":["if head == NULL: underflow","temp = head","head = head.next","free(temp)"],
+"Delete Tail":["if head == NULL: underflow","if head.next == NULL: head = NULL; return","cur = head","while cur.next.next != NULL: cur = cur.next","cur.next = NULL"],
+Search:["cur = head","while cur != NULL:","  if cur.value == x: return found","  cur = cur.next","return not found"]},
+dll:{
+"Insert Head":["node = new Node(x)","node.next = head","if head != NULL: head.prev = node","head = node"],
+"Insert Tail":["node = new Node(x)","if head == NULL: head = node; return","cur = head","while cur.next != NULL: cur = cur.next","cur.next = node; node.prev = cur"],
+"Insert Before":["node = new Node(x)","cur = head","while cur != NULL and cur.value != target: cur = cur.next","if cur == NULL: target not found; return","node.next = cur; node.prev = cur.prev","if cur.prev != NULL: cur.prev.next = node","else: head = node","cur.prev = node"],
+"Insert After":["node = new Node(x)","cur = head","while cur != NULL and cur.value != target: cur = cur.next","if cur == NULL: target not found; return","node.prev = cur; node.next = cur.next","if cur.next != NULL: cur.next.prev = node","cur.next = node"],
+"Delete Head":["if head == NULL: underflow","temp = head","head = head.next","if head != NULL: head.prev = NULL","free(temp)"],
+"Delete Tail":["if head == NULL: underflow","if head.next == NULL: head = NULL; return","cur = head","while cur.next.next != NULL: cur = cur.next","cur.next = NULL"],
+Search:["cur = head","while cur != NULL:","  if cur.value == x: return found","  cur = cur.next","return not found"]}};
+let CAP=5;
+let DS=[],DSnew=-1,busy=false,LOG=[],SL=[],ptr={},PE={},SE=[],HL=-1,NEWI=-1,LH=null;
+function dsLog(m,keep=true){$("dsm").textContent=m;if(keep&&m!==T("dsInit")){LOG.unshift(m);LOG.length=Math.min(LOG.length,5)}$("dsl").innerHTML="";LOG.forEach(x=>{const li=document.createElement("li");li.textContent=x;$("dsl").appendChild(li)})}
+function realLL(op,lg){const py=lg==="python",c=lg==="c",cp=lg==="cpp",pt=c||cp,nn={c:"NULL",cpp:"nullptr",java:"null",python:"None"}[lg],ar=pt?"->":".",sc=py?"":";",H=py?"self.head":"head",pd=pt?"Node *":lg==="java"?"Node ":"",
+  eq=a=>py?`${a} is None`:`${a} == ${nn}`,ne=a=>py?`${a} is not None`:`${a} != ${nn}`,ST=(...a)=>{a=a.filter(Boolean);return py?a.join("; "):a.map(x=>x+";").join(" ")},
+  IFL=(k,...b)=>py?`if ${k}: ${ST(...b)}`:`if (${k}) { ${ST(...b)} }`,WH=k=>py?`while ${k}:`:`while (${k}) {`,
+  pr={c:'printf("Underflow\\n")',cpp:'cout << "Underflow" << endl',java:'System.out.println("Underflow")',python:'print("Underflow")'}[lg],
+  fr=x=>c?`free(${x})`:cp?`delete ${x}`:null,NEW=`${pd}node = ${c?"newNode(x)":py?"Node(x)":"new Node(x)"}${sc}`,nx=a=>a+ar+"next",L=[];
+  const A=(t,p,i=0)=>L.push([(i?"    ":"")+t,p]),cm=py?"# temp is garbage collected":"// temp is garbage collected";
+  const TV=c?"1":py?"True":"true",FV=c?"0":py?"False":"false";
+  const spec={
+   "Insert Head":{n:"insertHead",r:"void",a:1,b:()=>{A(NEW,0);A(`${nx("node")} = ${H}${sc}`,1);A(`${H} = node${sc}`,2)}},
+   "Insert Tail":{n:"insertTail",r:"void",a:1,b:()=>{A(NEW,0);A(IFL(eq(H),`${H} = node`,"return"),1);A(`${pd}cur = ${H}${sc}`,2);A(WH(ne(nx("cur"))),3);A(`cur = ${nx("cur")}${sc}`,-1,1);if(!py)A("}",-1);A(`${nx("cur")} = node${sc}`,4)}},
+   "Delete Head":{n:"deleteHead",r:"void",a:0,b:()=>{A(IFL(eq(H),pr,"return"),0);A(`${pd}temp = ${H}${sc}`,1);A(`${H} = ${nx(H)}${sc}`,2);A(fr("temp")?fr("temp")+sc:cm,3)}},
+   "Delete Tail":{n:"deleteTail",r:"void",a:0,b:()=>{A(IFL(eq(H),pr,"return"),0);A(IFL(eq(nx(H)),fr("head"),`${H} = ${nn}`,"return"),1);A(`${pd}cur = ${H}${sc}`,2);A(WH(ne(nx(nx("cur")))),3);A(`cur = ${nx("cur")}${sc}`,-1,1);if(!py)A("}",-1);
+      A(ST(fr("last")?`${pd}last = ${nx("cur")}`:"",`${nx("cur")} = ${nn}`,fr("last")),4)}},
+   Search:{n:"search",r:c?"int":cp?"bool":"boolean",a:1,b:()=>{A(`${pd}cur = ${H}${sc}`,0);A(WH(ne("cur")),1);A(IFL(`cur${ar}value == x`,"return "+TV),2,1);A(`cur = ${nx("cur")}${sc}`,3,1);if(!py)A("}",-1);A(`return ${FV}${sc}`,4)}}}[op];
+  const NODE={c:["typedef struct Node {","    int value;","    struct Node *next;","} Node;","Node *head = NULL;","Node *newNode(int x) { Node *n = malloc(sizeof(Node)); n->value = x; n->next = NULL; return n; }"],
+   cpp:["struct Node {","    int value;","    Node *next;","    Node(int v) : value(v), next(nullptr) {}","};","Node *head = nullptr;"],
+   java:["class Node {","    int value;","    Node next;","    Node(int v) { value = v; }","}","Node head = null;"],
+   python:["class Node:","    def __init__(self, v):","        self.value = v","        self.next = None","","class LinkedList:","    def __init__(self):","        self.head = None"]}[lg];
+  spec.b();const src=[...NODE,"",py?`    def ${spec.n.replace(/[A-Z]/g,m=>"_"+m.toLowerCase())}(self${spec.a?", x":""}):`:`${spec.r} ${spec.n}(${spec.a?"int x":""}) {`],map=[],pf=py?"        ":"    ";
+  L.forEach(([t,p])=>{src.push(pf+t);if(p>=0)map[p]=src.length-1});if(!py)src.push("}");return{src,map}}
+function realDLL(op,lg){
+  const py=lg==="python",c=lg==="c",cp=lg==="cpp",pt=c||cp;
+  const nn={c:"NULL",cpp:"nullptr",java:"null",python:"None"}[lg];
+  const ar=pt?"->":".", sc=py?"":";", H=py?"self.head":"head", pd=pt?"Node *":lg==="java"?"Node ":"";
+  const eq=a=>py?`${a} is None`:`${a} == ${nn}`;
+  const ne=a=>py?`${a} is not None`:`${a} != ${nn}`;
+  const ST=(...a)=>{a=a.filter(Boolean);return py?a.join("; "):a.map(x=>x+";").join(" ")};
+  const IFL=(k,...b)=>py?`if ${k}: ${ST(...b)}`:`if (${k}) { ${ST(...b)} }`;
+  const WH=k=>py?`while ${k}:`:`while (${k}) {`;
+  const fr=x=>c?`free(${x})`:cp?`delete ${x}`:null;
+  const pr={c:'printf("Underflow\\n")',cpp:'cout << "Underflow" << endl',java:'System.out.println("Underflow")',python:'print("Underflow")'}[lg];
+  const NEW=`${pd}node = ${c?"newNode(x)":py?"Node(x)":"new Node(x)"}${sc}`;
+  const nx=a=>a+ar+"next", pv=a=>a+ar+"prev";
+  const TV=c?"1":py?"True":"true", FV=c?"0":py?"False":"false";
+  const L=[]; const A=(t,p,i=0)=>L.push([(i?"    ":"")+t,p]);
+
+  const spec={
+    "Insert Head":{n:"insertHead",r:"void",a:1,b:()=>{
+      A(NEW,0);
+      A(`${nx("node")} = ${H}${sc}`,1);
+      A(IFL(ne(H),`${pv(H)} = node`),2);
+      A(`${H} = node${sc}`,3);
+    }},
+    "Insert Tail":{n:"insertTail",r:"void",a:1,b:()=>{
+      A(NEW,0);
+      A(IFL(eq(H),`${H} = node`,"return"),1);
+      A(`${pd}cur = ${H}${sc}`,2);
+      A(WH(ne(nx("cur"))),3);
+      A(`cur = ${nx("cur")}${sc}`,-1,1);
+      if(!py)A("}",-1);
+      A(ST(`${nx("cur")} = node`,`${pv("node")} = cur`),4);
+    }},
+    "Insert Before":{n:"insertBefore",r:"void",a:2,b:()=>{
+      A(NEW,0);
+      A(`${pd}cur = ${H}${sc}`,1);
+      A(WH(`${ne("cur")} && cur${ar}value != target`),2);
+      A(`cur = ${nx("cur")}${sc}`,-1,1);
+      if(!py)A("}",-1);
+      A(IFL(eq("cur"),`print("target not found")`,"return"),3);
+      A(ST(`${nx("node")} = cur`,`${pv("node")} = ${pv("cur")}`),4);
+      A(IFL(ne(pv("cur")),`${nx(pv("cur"))} = node`),5);
+      A(`else: ${H} = node`,-1,0);
+      A(`${pv("cur")} = node${sc}`,6);
+    }},
+    "Insert After":{n:"insertAfter",r:"void",a:2,b:()=>{
+      A(NEW,0);
+      A(`${pd}cur = ${H}${sc}`,1);
+      A(WH(`${ne("cur")} && cur${ar}value != target`),2);
+      A(`cur = ${nx("cur")}${sc}`,-1,1);
+      if(!py)A("}",-1);
+      A(IFL(eq("cur"),`print("target not found")`,"return"),3);
+      A(ST(`${pv("node")} = cur`,`${nx("node")} = ${nx("cur")}`),4);
+      A(IFL(ne(nx("cur")),`${pv(nx("cur"))} = node`),5);
+      A(`${nx("cur")} = node${sc}`,6);
+    }},
+    "Delete Head":{n:"deleteHead",r:"void",a:0,b:()=>{
+      A(IFL(eq(H),pr,"return"),0);
+      A(`${pd}temp = ${H}${sc}`,1);
+      A(`${H} = ${nx(H)}${sc}`,2);
+      A(IFL(ne(H),`${pv(H)} = ${nn}`),3);
+      A(fr("temp")?fr("temp")+sc:(py?"# temp is garbage collected":"// temp is garbage collected"),4);
+    }},
+    "Delete Tail":{n:"deleteTail",r:"void",a:0,b:()=>{
+      A(IFL(eq(H),pr,"return"),0);
+      A(IFL(eq(nx(H)),`${H} = ${nn}`,"return"),1);
+      A(`${pd}cur = ${H}${sc}`,2);
+      A(WH(ne(nx(nx("cur")))),3);
+      A(`cur = ${nx("cur")}${sc}`,-1,1);
+      if(!py)A("}",-1);
+      A(ST(`${nx("cur")} = ${nn}`),4);
+    }},
+    Search:{n:"search",r:c?"int":cp?"bool":"boolean",a:1,b:()=>{
+      A(`${pd}cur = ${H}${sc}`,0);
+      A(WH(ne("cur")),1);
+      A(IFL(`cur${ar}value == x`,"return "+TV),2,1);
+      A(`cur = ${nx("cur")}${sc}`,3,1);
+      if(!py)A("}",-1);
+      A(`return ${FV}${sc}`,4);
+    }}
+  }[op];
+
+  const NODE={
+    c:["typedef struct Node {","    int value;","    struct Node *prev;","    struct Node *next;","} Node;","Node *head = NULL;","Node *newNode(int x) { Node *n = malloc(sizeof(Node)); n->value = x; n->prev = n->next = NULL; return n; }"],
+    cpp:["struct Node {","    int value;","    Node *prev;","    Node *next;","    Node(int v) : value(v), prev(nullptr), next(nullptr) {}","};","Node *head = nullptr;"],
+    java:["class Node {","    int value;","    Node prev;","    Node next;","    Node(int v) { value = v; }","}","Node head = null;"],
+    python:["class Node:","    def __init__(self, v):","        self.value = v","        self.prev = None","        self.next = None","","class DoublyLinkedList:","    def __init__(self):","        self.head = None"]
+  }[lg];
+
+  spec.b();
+  const head=py?`    def ${spec.n.replace(/[A-Z]/g,m=>"_"+m.toLowerCase())}(self${spec.a?", x":""}${spec.a===2?", target":""}):`:`${spec.r} ${spec.n}(${spec.a===1?"int x":spec.a===2?"int target, int x":""}) {`;
+  const src=[...NODE,"",head];
+  const map=[];
+  const pf=py?"        ":"    ";
+  L.forEach(([t,p])=>{src.push(pf+t);if(p>=0)map[p]=src.length-1});
+  if(!py)src.push("}");
+  return {src,map};
+}
+function showPseudo(op){curOp=op;let src=PS[cat][op],lg="pseudo";CMD=null;
+  if(plang!=="pseudo"){
+    const r=cat==="linkedlist"?realLL(op,plang):cat==="dll"?realDLL(op,plang):realDS(cat,op,plang);
+    src=r.src;CMD=r.map;lg=plang;
+  }
+  $("dsch").textContent="Algorithm — "+op;$("dsc").innerHTML=src.map((t,i)=>`<div class="ln" id="D${i}" data-ln="${i+1}">${lg==="pseudo"?hl(t):hl(t,lg)}</div>`).join("")}
+function dline(l){curL=l;document.querySelectorAll("#dsc .ln").forEach(e=>e.classList.remove("on"));const r=CMD&&l>=0?CMD[l]:l,e=$("D"+r);if(e)e.classList.add("on")}
+function slBuild(){const b=$("dsv");b.className="ds "+(cat==="stack"?"sk":"qu");b.innerHTML="";b.style.height=cat==="stack"?(CAP*44)+"px":"";b.style.setProperty("--n",CAP);SE=[];PE={};
+  for(let i=0;i<CAP;i++){const e=document.createElement("div");e.className="sl";const x=document.createElement("i");x.textContent=i;e.appendChild(x);e.appendChild(document.createElement("span"));
+    if(cat==="stack")e.style.bottom=(i*44)+"px";else e.style.left=`calc(var(--qp)*${i} + 30px)`;b.appendChild(e);SE.push(e)}
+  Object.keys(ptr).forEach(k=>{const p=document.createElement("div");p.className="ptr";p.dataset.k=k;p.innerHTML='<span class="pl"></span><b class="d"></b>';b.appendChild(p);PE[k]=p});slRender()}
+function slRender(fl){const live=i=>cat==="stack"?i<=ptr.top:(i>=ptr.front&&i<=ptr.rear);
+  SE.forEach((e,i)=>{const v=SL[i];e.className="sl"+(v==null?"":live(i)?" f":" gh")+(i===HL?" hl":"")+(i===NEWI?" pop":"");e.lastChild.textContent=v==null?"":v});
+  Object.keys(ptr).forEach(k=>{const p=PE[k],v=ptr[k];p.querySelector(".pl").textContent=`${k} = ${v}`;
+    if(cat==="stack")p.style.bottom=(v*44+10)+"px";else p.style.left=v<0?"26px":`calc(var(--qp)*${v} + 30px + (var(--qs))/2)`;
+    if(fl&&fl.k===k){const d=p.querySelector(".d");d.textContent=fl.d>0?"+1":"−1";p.classList.remove("inc","dec");void p.offsetWidth;p.classList.add(fl.d>0?"inc":"dec")}})}
+function lRender(hl){const b=$("dsv"),n=DS.length;b.className="ds linkedlist";b.style.height="";b.innerHTML="";
+  const nul=()=>{const z=document.createElement("div");z.className="nul";z.textContent="NULL";return z};
+  if(!n){b.innerHTML='<span class="hd0">HEAD</span><span class="ar">→</span>';b.appendChild(nul());return}
+  DS.forEach((v,i)=>{const e=document.createElement("div");e.className="nd lnode"+(hl&&hl.i===i?" "+hl.c:"")+(i===DSnew?" pop":"");
+    e.innerHTML=`<b class="dt">${v}</b><b class="nx"><i></i></b>`;
+    const tg=[i===0?"HEAD":"",hl&&hl.i===i&&hl.c==="cmp"?"cur":""].filter(Boolean).join(" · ");
+    if(tg){const m=document.createElement("em");m.textContent=tg+" ▼";e.appendChild(m)}
+    const t=document.createElement("u");t.textContent="["+i+"]";e.appendChild(t);b.appendChild(e);
+    const a=document.createElement("span");a.className="ar";a.textContent="→";b.appendChild(a)});
+  b.appendChild(nul());const g=document.createElement("div");g.className="lgd";g.textContent="node = [ data | next ● ]   ●→ points to the next node";b.appendChild(g)}
+function dllRender(hl){
+  const b=$("dsv"),n=DS.length;
+  b.className="ds linkedlist dll";
+  b.style.height="";b.innerHTML="";
+  const nul=()=>{const z=document.createElement("div");z.className="nul";z.textContent="NULL";return z};
+  if(!n){b.innerHTML='<span class="hd0">HEAD</span><span class="ar">⇄</span>';b.appendChild(nul());return}
+  DS.forEach((v,i)=>{
+    const e=document.createElement("div");
+    e.className="nd lnode dlnode"+(hl&&hl.i===i?" "+hl.c:"")+(i===DSnew?" pop":"");
+    e.innerHTML=`<b class="pv"><i></i></b><b class="dt">${v}</b><b class="nx"><i></i></b>`;
+    const tg=[i===0?"HEAD":"",i===n-1?"TAIL":"",hl&&hl.i===i&&hl.c==="cmp"?"cur":""].filter(Boolean).join(" · ");
+    if(tg){const m=document.createElement("em");m.textContent=tg+" ▼";e.appendChild(m)}
+    const t=document.createElement("u");t.textContent="["+i+"]";e.appendChild(t);
+    b.appendChild(e);
+    const a=document.createElement("span");a.className="ar";a.textContent="⇄";b.appendChild(a);
+  });
+  b.appendChild(nul());
+  const g=document.createElement("div");g.className="lgd";g.textContent="node = [ ◄ prev | data | next ► ]   ⇄ = links in both directions";
+  b.appendChild(g);
+}
+let TR=[],TB=null,tp=-1,tt=null,FL=null,curOp="",curL=-1,CMD=null,logged=false;
+function realDS(c,op,lg){const S=c==="stack",K=op==="Push"||op==="Enqueue"?"add":op==="Pop"||op==="Dequeue"||op==="Pop Back"?"rem":op==="Push Front"?"addF":"peek",py=lg==="python",p=S?"top":"rear",q=S?"top":"front",
+  g=K==="add"?`${p} == MAX - 1`:K==="addF"?"front == 0":S?"top == -1":"front > rear",msg=K==="add"||K==="addF"?"Overflow":K==="rem"?"Underflow":"Empty",rv=K==="add"||K==="addF"?"":" -1";
+  let b=K==="add"?[`${p} = ${p} + 1`,`a[${p}] = x`]:K==="addF"?["front = front - 1","a[front] = x"]:K==="rem"?[(py?"":"int ")+`x = a[${op==="Pop Back"?"rear":q}]`,S?"top = top - 1":op==="Pop Back"?"rear = rear - 1":"front = front + 1","return x"]:[`return a[${q}]`];
+  const pr={c:`printf("${msg}\\n")`,cpp:`cout << "${msg}" << endl`,java:`System.out.println("${msg}")`,python:`print("${msg}")`}[lg],f=op.toLowerCase().replace(/\s+/g,"_"),add=K==="add"||K==="addF";
+  const head=py?`def ${f}(self${add?", x":""}):`:`${add?"void":"int"} ${f}(${add?"int x":""}) {`,guard=py?`if ${g}: ${pr}; return${rv}`:`if (${g}) { ${pr}; return${rv}; }`;
+  const sf=t=>py?t.replace(/\b(top|rear|front|a)\b/g,"self.$1"):t;
+  const src=[head,...[guard,...b].map(t=>"    "+sf(t)+(py?"":";").replace(/^;$/,";"))];if(!py)src.push("}");
+  if(!py)src[1]=src[1].replace(/;$/,"");
+  return{src,map:add?[1,2,3]:K==="rem"?[1,2,3,4]:K==="addF"?[1,2,3]:[1,2]}}
+function stepSfx(q,dir,last){if(!q)return;
+  if(dir<0){tone(q.fl?(q.fl.d>0?392:523):330,.12,"sine",.12);return}
+  if(last){if(TR.err)BAD();else{dsSfx(curOp);setTimeout(OKS,260)}return}
+  if(q.fl)tone(q.fl.d>0?523:392,.12,"triangle",.14);
+  else if(q.NEWI>=0)tone(659,.13,"triangle",.14);
+  else if(q.HL>=0)tone(587,.11,"sine",.12);
+  else tone(440,.09,"sine",.11)}
+function tapply(S,fl){SL=S.SL.slice();ptr={...S.ptr};HL=S.HL;NEWI=S.NEWI;slRender(fl)}
+function tgo(j,snd){const from=tp;tp=j;const S=j<0?TB:TR[j],q=j<0?null:TR[j];
+  const fl=j===from+1?S.fl:(j===from-1&&TR[from]&&TR[from].fl?{k:TR[from].fl.k,d:-TR[from].fl.d}:null);
+  tapply(S,fl);dline(q?q.l:-1);dsLog(q?q.m:"▶ "+curOp+": start",false);
+  $("dsch").textContent=`Algorithm — ${curOp}  ·  ${j+1}/${TR.length}`;$("tprev").disabled=j<0;$("tnext").disabled=j>=TR.length-1;
+  if(snd){if(j<from)stepSfx(TR[from],-1);else stepSfx(q,1,j===TR.length-1)}if(q&&j===TR.length-1&&!logged){logged=true;dsLog(q.m,true)}}
+function pauseT(){clearTimeout(tt);tt=null;busy=false;$("tplay").textContent=T("play")}
+function tauto(){clearTimeout(tt);if(tp>=TR.length-1){pauseT();return}busy=true;$("tplay").textContent=T("pause");tt=setTimeout(()=>{tgo(tp+1,true);tauto()},tp<0?0:850)}
+function seq(st,opName=window.opName){if(cat==="linkedlist"||cat==="dll")return seqLL(st,opName);
+  clearTimeout(tt);TR=[];TR.err=st.length===1;TB={SL:SL.slice(),ptr:{...ptr},HL:-1,NEWI:-1,fl:null};logged=false;
+  st.forEach(q=>{HL=-1;NEWI=-1;FL=null;const m=q.f?q.f():q.m;TR.push({SL:SL.slice(),ptr:{...ptr},HL,NEWI,fl:FL,l:q.l,m,s:q.s})});
+  $("tbar").hidden=false;tp=-1;tgo(-1);pauseT()}
+$("tplay").textContent=T("play");
+$("tplay").onclick=()=>{if(busy){pauseT();return}if(tp>=TR.length-1)tgo(-1);tauto()};
+$("tnext").onclick=()=>{pauseT();if(tp<TR.length-1)tgo(tp+1,true)};
+$("tprev").onclick=()=>{pauseT();if(tp>=0)tgo(tp-1,true)};
+$("dlang").onchange=e=>{plang=e.target.value;try{localStorage.setItem("dsa-plang",plang)}catch(x){}$("plang").value=plang;showPseudo(curOp);dline(curL);if(TR.length)$("dsch").textContent=`Algorithm — ${curOp}  ·  ${tp+1}/${TR.length}`};
+function maxUI(){const n=CAP,S=cat==="stack",o=cat==="linkedlist"||cat==="dll";$("szrow").hidden=$("maxn").hidden=o;if(o)return;$("dsz").value=n;$("szv").textContent="MAX = "+n;
+  $("maxn").textContent={en:`MAX = ${n}: the array a[0..${n-1}] has ${n} slots, so the largest index is MAX − 1 = ${n-1}. ${S?"Stack is full when top == MAX − 1.":"Queue is full when rear == MAX − 1."}`,
+  hi:`MAX = ${n}: array a[0..${n-1}] में ${n} खाने हैं, इसलिए सबसे बड़ा index MAX − 1 = ${n-1} है। ${S?"top == MAX − 1 होने पर Stack भर जाता है।":"rear == MAX − 1 होने पर Queue भर जाती है।"}`,
+  mr:`MAX = ${n}: array a[0..${n-1}] मध्ये ${n} खाने आहेत, म्हणून सर्वात मोठा index MAX − 1 = ${n-1}. ${S?"top == MAX − 1 झाल्यावर Stack भरतो.":"rear == MAX − 1 झाल्यावर Queue भरते."}`}[lang]}
+$("dsz").oninput=()=>{if(busy)pauseT();CAP=+$("dsz").value;dsInit()};
+function dsInit(){maxUI();clearTimeout(tt);TR=[];tp=-1;$("tbar").hidden=true;$("dlang").hidden=false;$("dlang").value=plang;busy=false;LOG=[];DSnew=-1;HL=-1;NEWI=-1;$("dsT").textContent=NAMES[cat];info();
+  $("dsb").innerHTML="";OPS[cat].forEach(o=>{const b=document.createElement("button");b.textContent=o[0];b.onclick=()=>dsDo(o[0]);$("dsb").appendChild(b)});
+  $("trow2").hidden = cat!=="dll";{const c=document.createElement("button");c.textContent="Clear";c.onclick=()=>{if(!busy){dsSfx("rem");dsInit()}};$("dsb").appendChild(c)}
+  if(cat==="linkedlist"){DS=[3,7,5];lRender()}
+  else if(cat==="dll"){DS=[3,7,5];dllRender()}
+  else{SL=Array(CAP).fill(null);ptr=cat==="stack"?{top:-1}:{front:0,rear:-1};slBuild()}
+  showPseudo(OPS[cat][0][0]);dsLog(T("dsInit"))}
+function seqLL(st, opName = (typeof window !== "undefined" ? window.opName : "")){busy=true;let i=0;const go=()=>{if(i>=st.length){busy=false;return}
+    HL=-1;NEWI=-1;LH=null;const q=st[i++];dline(q.l);if(cat==="linkedlist")lRender();else if(cat==="dll")dllRender();else slRender();
+    const m=q.f?q.f():q.m;if(q.s)dsSfx(opName);if(m)dsLog(m,i===st.length);setTimeout(go,850)};go()}
+function dsDo(op){if(busy)return;if(cat!=="linkedlist"&&cat!=="dll"&&TR.length&&tp<TR.length-1){pauseT();tgo(TR.length-1)}showPseudo(op);dline(-1);const opName=op;if(typeof window!=="undefined")window.opName=op;const v=$("dv").value.trim(),x=+v,nm=NAMES[cat],need=OPS[cat].find(o=>o[0]===op)[1],Y=T("yes"),N=T("no"),st=[];let foundF=false;
+  const tv=$("tg2")?$("tg2").value.trim():"",target=+tv;
+  if(need&&(v===""||x>9999)){dsLog(T("needv"));return}
+  if(need===2&&(tv===""||Number.isNaN(target)||target>9999)){dsLog(T("needv"));return}
+  const fl=(k,d)=>{ptr[k]+=d;FL={k,d};slRender({k,d})};
+  if(cat==="dll"){
+    const n=DS.length,hl=(i,c="cmp")=>dllRender({i,c}),rmv=i=>{hl(i,"out");setTimeout(()=>{DS.splice(i,1);dllRender()},320)};
+    const clearVals=()=>{$("dv").value="";if($("tg2"))$("tg2").value=""};
+    if((op==="Insert Head"||op==="Insert Tail"||op==="Insert Before"||op==="Insert After")&&n>=8){
+      st.push({l:0,m:`${nm} ${T("full")}`});
+    }
+    else if(op==="Insert Head"){
+      st.push({l:0,m:`node = new Node(${x})`},
+        {l:1,m:`node.next = head  (head = ${DS[0]??"NULL"})`},
+        {l:2,m:`head.prev = node  (linking backwards)`},
+        {l:3,f:()=>{DS.unshift(x);DSnew=0;dllRender();clearVals();return `head = node  →  head = ${x}`}});
+    }
+    else if(op==="Insert Tail"){
+      st.push({l:0,m:`node = new Node(${x})`});
+      if(!n)st.push({l:1,f:()=>{DS.push(x);DSnew=0;dllRender();clearVals();return `head == NULL ? ${Y}  →  head = node`}});
+      else{
+        st.push({l:1,m:`head == NULL ? ${N}`},{l:2,f:()=>{hl(0);return "cur = head"}});
+        for(let k=0;k<n;k++)st.push({l:3,f:()=>{hl(k);return `cur = node ${k} (${DS[k]}),  cur.next != NULL ? ${k<n-1?Y:N}`}});
+        st.push({l:4,f:()=>{DS.push(x);DSnew=DS.length-1;dllRender();clearVals();return `cur.next = node; node.prev = cur  →  ${x} added at the tail`}});
+      }
+    }
+    else if(op==="Insert Before"||op==="Insert After"){
+      const hit=DS.indexOf(target);
+      st.push({l:0,m:`node = new Node(${x})`},{l:1,f:()=>{hl(0);return "cur = head"}});
+      if(hit<0){
+        st.push({l:2,m:`cur.value != ${target} → walk until NULL`});
+        for(let k=0;k<n;k++)st.push({l:2,f:()=>{hl(k);return `cur = node ${k} (${DS[k]}) ≠ ${target}`}});
+        st.push({l:3,m:`cur == NULL  →  target ${target} not found  ✘`});
+        st.push({l:2,m:`node is discarded`});
+      }else{
+        for(let k=0;k<=hit;k++)st.push({l:2,f:()=>{hl(k);return k<hit?`cur = node ${k} (${DS[k]}) ≠ ${target}`:`cur = node ${k} (${DS[k]}) == ${target}  ✔  stop`}});
+        if(op==="Insert Before"){
+          st.push({l:4,m:`node.next = cur; node.prev = cur.prev`},
+            {l:5,f:()=>{const i=hit;DS.splice(i,0,x);DSnew=i;dllRender();clearVals();return `cur.prev.next = node  (or head = node if cur was head)`}},
+            {l:6,m:`cur.prev = node  →  inserted before ${target}`});
+        }else{
+          st.push({l:4,m:`node.prev = cur; node.next = cur.next`},
+            {l:5,m:`cur.next.prev = node  (if cur.next exists)`},
+            {l:6,f:()=>{const i=hit+1;DS.splice(i,0,x);DSnew=i;dllRender();clearVals();return `cur.next = node  →  inserted after ${target}`}});
+        }
+      }
+    }
+    else if(op==="Delete Head"){
+      if(!n)st.push({l:0,m:`${nm} ${T("empty")}`});
+      else st.push({l:0,m:`head == NULL ? ${N}`},
+        {l:1,f:()=>{hl(0);return `temp = head (${DS[0]})`}},
+        {l:2,m:`head = head.next  →  head = ${DS[1]??"NULL"}`},
+        {l:3,m:`head.prev = NULL  (new head loses its back-link)`},
+        {l:4,f:()=>{rmv(0);return `free(temp)  →  ${DS[0]} removed`}});
+    }
+    else if(op==="Delete Tail"){
+      if(!n)st.push({l:0,m:`${nm} ${T("empty")}`});
+      else if(n===1)st.push({l:0,m:`head == NULL ? ${N}`},{l:1,f:()=>{rmv(0);return `head.next == NULL ? ${Y}  →  head = NULL`}});
+      else{
+        st.push({l:0,m:`head == NULL ? ${N}`},{l:1,m:`head.next == NULL ? ${N}`},{l:2,f:()=>{hl(0);return "cur = head"}});
+        for(let k=0;k<=n-2;k++)st.push({l:3,f:()=>{hl(k);return `cur = node ${k},  cur.next.next != NULL ? ${k<n-2?Y:N}`}});
+        st.push({l:4,f:()=>{rmv(n-1);return `cur.next = NULL  →  ${DS[n-1]} removed from tail`}});
+      }
+    }
+    else if(op==="Search"){
+      if(!n)st.push({l:0,m:`cur = head = NULL`},{l:4,m:W("nf",x)});
+      else{
+        st.push({l:0,m:"cur = head"});let hit=-1;
+        for(let k=0;k<n&&hit<0;k++){const e=DS[k]===x;if(e)hit=k;st.push({l:2,f:()=>{hl(k,e?"ok":"cmp");return `cur.value == ${x} ?  ${DS[k]} == ${x}  →  ${e?Y:N}`}})}
+        foundF=hit>=0;
+        st.push(hit>=0?{l:2,f:()=>{hl(hit,"ok");return W("fnd",x,hit)}}:{l:4,m:W("nf",x)});
+      }
+    }
+  }
+  else if(cat==="linkedlist"){const n=DS.length,hl=(i,c="cmp")=>lRender({i,c}),rmv=i=>{hl(i,"out");setTimeout(()=>{DS.splice(i,1);lRender()},320)};
+    if((op==="Insert Head"||op==="Insert Tail")&&n>=8)st.push({l:0,m:`${nm} ${T("full")}`});
+    else if(op==="Insert Head")st.push({l:0,m:`node = new Node(${x})`},{l:1,m:`node.next = head  (head = ${DS[0]??"NULL"})`},{l:2,f:()=>{DS.unshift(x);DSnew=0;lRender();$("dv").value="";return `head = node  →  head = ${x}`}});
+    else if(op==="Insert Tail"){st.push({l:0,m:`node = new Node(${x})`});
+      if(!n)st.push({l:1,f:()=>{DS.push(x);DSnew=0;lRender();$("dv").value="";return `head == NULL ? ${Y}  →  head = node`}});
+      else{st.push({l:1,m:`head == NULL ? ${N}`},{l:2,f:()=>{hl(0);return "cur = head"}});
+        for(let k=0;k<n;k++)st.push({l:3,f:()=>{hl(k);return `cur = node ${k} (${DS[k]}),  cur.next != NULL ? ${k<n-1?Y:N}`}});
+        st.push({l:4,f:()=>{DS.push(x);DSnew=DS.length-1;lRender();$("dv").value="";return `cur.next = node  →  ${x} added at the tail`}})}}
+    else if(op==="Delete Head"){if(!n)st.push({l:0,m:`${nm} ${T("empty")}`});
+      else st.push({l:0,m:`head == NULL ? ${N}`},{l:1,f:()=>{hl(0);return `temp = head (${DS[0]})`}},{l:2,m:`head = head.next  →  head = ${DS[1]??"NULL"}`},{l:3,f:()=>{rmv(0);return `free(temp)  →  ${DS[0]} removed`}})}
+    else if(op==="Delete Tail"){if(!n)st.push({l:0,m:`${nm} ${T("empty")}`});
+      else if(n===1)st.push({l:0,m:`head == NULL ? ${N}`},{l:1,f:()=>{rmv(0);return `head.next == NULL ? ${Y}  →  head = NULL`}});
+      else{st.push({l:0,m:`head == NULL ? ${N}`},{l:1,m:`head.next == NULL ? ${N}`},{l:2,f:()=>{hl(0);return "cur = head"}});
+        for(let k=0;k<=n-2;k++)st.push({l:3,f:()=>{hl(k);return `cur = node ${k},  cur.next.next != NULL ? ${k<n-2?Y:N}`}});
+        st.push({l:4,f:()=>{rmv(n-1);return `cur.next = NULL  →  ${DS[n-1]} removed`}})}}
+    else if(op==="Search"){if(!n)st.push({l:0,m:`cur = head = NULL`,},{l:4,m:W("nf",x)});
+      else{st.push({l:0,m:"cur = head"});let hit=-1;
+        for(let k=0;k<n&&hit<0;k++){const e=DS[k]===x;if(e)hit=k;st.push({l:2,f:()=>{hl(k,e?"ok":"cmp");return `cur.value == ${x} ?  ${DS[k]} == ${x}  →  ${e?Y:N}`}})}
+        foundF=hit>=0;st.push(hit>=0?{l:2,f:()=>{hl(hit,"ok");return W("fnd",x,hit)}}:{l:4,m:W("nf",x)})}}}
+  else{const S1=cat==="stack",P=S1?"top":"rear",F=S1?"top":"front",cnt=S1?ptr.top+1:ptr.rear-ptr.front+1,
+    fullBack=ptr[P]===CAP-1,fullFront=!S1&&ptr.front===0;
+    if(op==="Push"||op==="Enqueue"){
+      if(fullBack)st.push({l:0,m:`${P} == MAX − 1 (${CAP-1}) ? ${Y}  →  ${nm} ${T("full")}`});
+      else st.push({l:0,m:`${P} == MAX − 1 (${CAP-1}) ? ${N}`},{l:1,f:()=>{fl(P,1);return `${P} = ${P} + 1  →  ${P} = ${ptr[P]}`}},{l:2,f:()=>{SL[ptr[P]]=x;NEWI=ptr[P];slRender();$("dv").value="";return `a[${ptr[P]}] = ${x}`}})}
+    else if(op==="Push Front"){
+      if(fullFront)st.push({l:0,m:`front == 0 ? ${Y}  →  ${nm} ${T("full")}`});
+      else st.push({l:0,m:`front == 0 ? ${N}`},{l:1,f:()=>{fl("front",-1);return `front = front − 1  →  front = ${ptr.front}`}},{l:2,f:()=>{SL[ptr.front]=x;NEWI=ptr.front;slRender();$("dv").value="";return `a[${ptr.front}] = ${x}`}})}
+    else if(op==="Pop Back"){
+      if(cnt<=0)st.push({l:0,m:`front > rear ? ${Y}  →  ${nm} ${T("empty")}`});
+      else{const i=ptr.rear,val=SL[i];st.push({l:0,m:`front > rear ? ${N}`},{l:1,f:()=>{HL=i;slRender();return `x = a[${i}] = ${val}`}},
+        {l:2,f:()=>{fl("rear",-1);return `rear = rear − 1  →  rear = ${ptr.rear}`}},{l:3,m:`return ${val}  ✔  (${val} removed from the back)`})}}
+    else if(op==="Pop"||op==="Dequeue"){
+      if(cnt<=0)st.push({l:0,m:S1?`top == -1 ? ${Y}  →  ${nm} ${T("empty")}`:`front > rear ? ${Y}  →  ${nm} ${T("empty")}`});
+      else{const i=ptr[F],val=SL[i];st.push({l:0,m:S1?`top == -1 ? ${N}`:`front > rear ? ${N}`},{l:1,f:()=>{HL=i;slRender();return `x = a[${i}] = ${val}`}},
+        {l:2,f:()=>{fl(F,S1?-1:1);return S1?`top = top − 1  →  top = ${ptr.top}`:`front = front + 1  →  front = ${ptr.front}`}},{l:3,m:`return ${val}  ✔  (${val} removed; the old value just stays in memory)`})}}
+    else{if(cnt<=0)st.push({l:0,m:`${nm} ${T("empty")}`});else{const i=S1?ptr.top:ptr.front;st.push({l:0,m:`${S1?"top == -1":"front > rear"} ? ${N}`},{l:1,f:()=>{HL=i;slRender();return `return a[${i}] = ${SL[i]}  (nothing is removed)`}})}}}
+  const ins=/^(Push|Enqueue|Insert)/.test(op),pp=op==="Pop"||op==="Dequeue"||op==="Pop Back";
+  st.forEach((q,i)=>{q.k=i;const bad=q.m&&(q.m.includes(T("full"))||q.m.includes(T("empty")));
+    q.s=bad?"err":pp?(i===2?"rem":"tick"):i===st.length-1?(ins?"add":op==="Search"?(foundF?"ok":"nf"):op==="Peek"?"ok":/^Delete/.test(op)?"rem":"tick"):"tick"});
+  seq(st, opName)}
+$("dv").addEventListener("input",e=>e.target.value=e.target.value.replace(/\D/g,""));
+$("dv").addEventListener("keydown",e=>{if(e.key==="Enter"){const o=OPS[cat].find(o=>o[1]);dsDo(o[0])}});
+if(innerWidth>820)$("ab").open=true;
+arr=rand(8);statics();setCat("sorting");
+if($("tg2"))$("tg2").addEventListener("input",e=>e.target.value=e.target.value.replace(/\D/g,""));
+// homepage boot
+buildHome();
+$("goHome").onclick=()=>showView("home");
+$("goHome").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();showView("home")}});
+showView("home");
+let lw=$("wrap").clientWidth;addEventListener("resize",()=>{const w=$("wrap").clientWidth;if(w!==lw&&mode==="arr"){lw=w;build();show(pos,false)}});
+</script>
+</body>
+</html>

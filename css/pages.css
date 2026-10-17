@@ -1,0 +1,69 @@
+/* --- About & Contact Pages Styles --- */
+.page-container{max-width:860px;margin:0 auto;padding:40px 20px 60px;display:flex;flex-direction:column;gap:32px}
+
+.page-header{text-align:center;max-width:640px;margin:0 auto 12px}
+.page-header h1{font-size:32px;margin:0 0 8px;letter-spacing:-.01em}
+.page-header p{color:var(--mute);font-size:16px;margin:0}
+
+/* Info & Cards Grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.info-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.info-card h3{margin:0;font-size:17px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.info-card p{margin:0;color:var(--mute);font-size:14px;line-height:1.6}
+.info-card .card-icon{width:28px;height:28px;color:var(--hole)}
+
+/* Feature Highlights */
+.features-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+.features-list li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;color:var(--ink)}
+.features-list li::before{content:"✦";color:var(--ok);font-size:16px;line-height:1.4}
+
+/* Developer Profile Box */
+.author-card{background:linear-gradient(135deg,var(--panel),var(--code));border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;gap:20px;align-items:center;position:relative;overflow:hidden}
+.author-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--hole),var(--ok));display:flex;align-items:center;justify-content:center;font:700 24px "JetBrains Mono",monospace;color:#fff;flex-shrink:0}
+.author-meta h2{margin:0 0 4px;font-size:20px}
+.author-meta p{margin:0 0 10px;color:var(--mute);font-size:14px}
+.author-links{display:flex;gap:10px;flex-wrap:wrap}
+.badge-link{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:5px 12px;border-radius:8px;font:600 12px "JetBrains Mono",monospace;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.badge-link:hover{border-color:var(--hole);color:var(--hole);transform:translateY(-1px)}
+
+/* Contact Form */
+.contact-form{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:18px;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font:600 13px "JetBrains Mono",monospace;color:var(--mute)}
+.form-group input,
+.form-group textarea,
+.form-group select{
+  border:1px solid var(--line);background:var(--code);color:var(--ink);
+  padding:10px 14px;border-radius:10px;font:14px inherit;width:100%;box-sizing:border-box;
+  transition:border-color .2s,box-shadow .2s;
+}
+.form-group textarea{resize:vertical;min-height:120px;font-family:inherit}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+  outline:none;border-color:var(--hole);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--hole) 20%,transparent);
+}
+
+.submit-btn{
+  background:var(--ok);color:#fff;border:1px solid var(--ok);border-radius:10px;
+  padding:12px 24px;font:700 15px inherit;cursor:pointer;align-self:flex-start;
+  display:inline-flex;align-items:center;gap:8px;transition:transform .15s,filter .2s;
+}
+.submit-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.submit-btn:active{transform:translateY(0)}
+
+.form-status{
+  padding:12px 16px;border-radius:10px;font:600 14px inherit;
+  display:none;align-items:center;gap:8px;
+}
+.form-status.success{display:flex;background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);border:1px solid var(--ok)}
+.form-status.error{display:flex;background:color-mix(in srgb,var(--wr) 18%,transparent);color:var(--wr);border:1px solid var(--wr)}
+
+@media(max-width:640px){
+  .form-row{grid-template-columns:1fr}
+  .page-container{padding:24px 14px 40px}
+  .author-card{flex-direction:column;text-align:center}
+  .author-links{justify-content:center}
+}
