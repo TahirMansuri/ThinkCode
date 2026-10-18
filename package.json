@@ -1,0 +1,21 @@
+{
+  "name": "ds-emulation",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "js/cpp-tracer.js",
+  "scripts": {
+    "build": "rm -rf www && mkdir -p www && cp -R index.html css js assets favicon.ico profilepic.jpeg cpp-tracer.js www/",
+    "sync": "npm run build && npx cap sync android",
+    "open:android": "npm run sync && npx cap open android",
+    "build:apk": "npm run sync && cd android && JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew assembleDebug && cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ThinkCode-debug.apk",
+    "build:release": "npm run sync && cd android && JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew assembleRelease && cd .. && cp android/app/build/outputs/apk/release/app-release.apk ThinkCode-release.apk"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  }
+}

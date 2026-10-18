@@ -30,7 +30,7 @@ function maxUI(){
 }
 
 function dsInit(){
-  maxUI();clearTimeout(tt);TR=[];tp=-1;$("tbar").hidden=true;$("dlang").hidden=false;$("dlang").value=plang;busy=false;LOG=[];DSnew=-1;HL=-1;NEWI=-1;
+  maxUI();clearTimeout(tt);TR=[];tp=-1;$("tbar").hidden=true;$("dlang").hidden=false;$("dlang").value=plang;if(typeof updateDlangLogo==="function")updateDlangLogo(plang);busy=false;LOG=[];DSnew=-1;HL=-1;NEWI=-1;
   $("dsT").textContent=NAMES[cat];info();
   $("dsb").innerHTML="";
   OPS[cat].forEach(o=>{

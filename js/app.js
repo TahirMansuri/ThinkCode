@@ -6,8 +6,96 @@ let PTE={}, TG=0, mode="arr", cat="sorting", algo="bubble", arr=[], steps=[], po
 let CMAP=null;
 let row, codeEl;
 
-// --- Multi-View Navigation (SPA View Switcher) ---
-function showView(v, lang){
+// --- Multi-View Navigation (SPA View Switcher with History & Back-Swipe Support) ---
+let currentView = "home";
+
+const VIEW_TITLES = {
+  home: "ThinkCode — Interactive Data Structures & Algorithms",
+  app: "ThinkCode — Algorithm Visualizer",
+  tracer: "ThinkCode — Live Code Tracer",
+  about: "ThinkCode — About",
+  contact: "ThinkCode — Contact & Feedback"
+};
+
+function getHashView(){
+  const h = (location.hash || "").replace(/^#\/?/, "").toLowerCase();
+  if(!h) return null;
+  if(h === "home") return "home";
+  if(h === "visualizer" || h === "app") return "app";
+  if(h === "tracer" || h === "code-tracer") return "tracer";
+  if(h === "about") return "about";
+  if(h === "contact") return "contact";
+  return null;
+}
+
+const navHistory = [];
+
+function showExitModal() {
+  const modal = $("exitModal");
+  if (!modal) return;
+  modal.style.display = "flex";
+  void modal.offsetWidth;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function hideExitModal() {
+  const modal = $("exitModal");
+  if (!modal) return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+  setTimeout(() => {
+    if (!modal.classList.contains("show")) {
+      modal.style.display = "none";
+    }
+  }, 220);
+}
+
+function confirmExitApp() {
+  hideExitModal();
+  if (window.AndroidApp && typeof window.AndroidApp.closeApp === "function") {
+    window.AndroidApp.closeApp();
+  } else if (window.navigator && window.navigator.app && typeof window.navigator.app.exitApp === "function") {
+    window.navigator.app.exitApp();
+  } else if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App && typeof window.Capacitor.Plugins.App.exitApp === "function") {
+    window.Capacitor.Plugins.App.exitApp();
+  }
+}
+
+function handleAndroidBack() {
+  const exitModal = $("exitModal");
+  // 1. If exit modal is open, dismiss it
+  if (exitModal && (exitModal.classList.contains("show") || exitModal.style.display === "flex")) {
+    hideExitModal();
+    return;
+  }
+
+  // 2. If any dialog/popup is open, close it
+  const openDialogs = document.querySelectorAll("dialog[open], .modal.show, .popup.show");
+  if (openDialogs.length > 0) {
+    openDialogs.forEach(d => {
+      if (typeof d.close === "function") d.close();
+      d.classList.remove("show");
+    });
+    return;
+  }
+
+  // 3. If currently NOT on homepage, navigate back!
+  if (currentView !== "home") {
+    let target = navHistory.pop();
+    if (!target || target === currentView) {
+      target = "home";
+    }
+    showView(target, null, true);
+    return;
+  }
+
+  // 4. If currently ON homepage, show exit confirmation dialog!
+  showExitModal();
+}
+
+function showView(v, lang, fromHistory = false){
+  if(v === "visualizer") v = "app";
   const views = {
     home: $("home"),
     app: $("app"),
@@ -15,6 +103,42 @@ function showView(v, lang){
     about: $("about"),
     contact: $("contact")
   };
+
+  if(!views[v]) v = "home";
+
+  if(!fromHistory && currentView && currentView !== v){
+    if(navHistory.length === 0 || navHistory[navHistory.length - 1] !== currentView){
+      navHistory.push(currentView);
+    }
+  }
+
+  // Manage browser history for smooth back gestures on mobile & browser back button
+  if(!fromHistory){
+    const targetHash = (v === "home") ? "" : ("#" + v);
+    const targetUrl = (v === "home")
+      ? (location.pathname + location.search)
+      : (location.pathname + location.search + targetHash);
+
+    if(v !== currentView || !history.state){
+      try {
+        history.pushState({ view: v, lang: lang || null }, "", targetUrl);
+      } catch(e) {
+        if(location.hash !== targetHash) location.hash = targetHash;
+      }
+    }
+  }
+
+  currentView = v;
+
+  // Stop running algorithm animations/audio if leaving visualizer
+  if(v !== "app"){
+    if(typeof timer !== "undefined" && timer && typeof stop === "function") stop();
+    if(typeof tTimer !== "undefined" && tTimer && typeof treeStop === "function") treeStop();
+  }
+
+  if(VIEW_TITLES[v]){
+    document.title = VIEW_TITLES[v];
+  }
 
   Object.entries(views).forEach(([k, el])=>{
     if(el) el.hidden = (k !== v);
@@ -25,9 +149,15 @@ function showView(v, lang){
   });
 
   if(v === "tracer"){
+    const initFn = (typeof initTracerUI === "function" ? initTracerUI : (typeof window !== "undefined" ? window.initTracerUI : null));
+    if (typeof initFn === "function") initFn();
     const fn = (typeof onLanguageChange === "function" ? onLanguageChange : (typeof window !== "undefined" ? window.onLanguageChange : null));
     if (lang && typeof fn === "function") {
       fn(lang);
+    } else if (typeof fn === "function") {
+      const curLangSel = document.getElementById("langSel");
+      const curLang = curLangSel ? curLangSel.value : "python";
+      fn(curLang || "python");
     } else if (typeof initPyodideTracer === "function") {
       initPyodideTracer();
     }
@@ -36,7 +166,76 @@ function showView(v, lang){
   window.scrollTo({top:0, behavior: RM ? "auto" : "smooth"});
 }
 
+// Mobile swipe-back & browser back/forward event listeners
+window.addEventListener("popstate", e => {
+  const exitModal = $("exitModal");
+  if (exitModal && (exitModal.classList.contains("show") || exitModal.style.display === "flex")) {
+    hideExitModal();
+    return;
+  }
+  const stateView = e.state && e.state.view;
+  const hashView = getHashView();
+  const targetView = stateView || hashView || "home";
+  const targetLang = (e.state && e.state.lang) || null;
+  if (targetView === "home" && currentView === "home") {
+    showExitModal();
+    return;
+  }
+  showView(targetView, targetLang, true);
+});
+
+window.addEventListener("hashchange", () => {
+  const hashView = getHashView() || "home";
+  if(hashView !== currentView){
+    showView(hashView, null, true);
+  }
+});
+
+window.handleAndroidBack = handleAndroidBack;
+window.showExitModal = showExitModal;
+window.hideExitModal = hideExitModal;
+window.confirmExitApp = confirmExitApp;
+
+document.addEventListener("backbutton", e => {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+  handleAndroidBack();
+});
+
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    const exitModal = $("exitModal");
+    if (exitModal && (exitModal.classList.contains("show") || exitModal.style.display === "flex")) {
+      hideExitModal();
+    }
+  }
+});
+
+
 // --- Theme Switcher ---
+function isDarkTheme(t){
+  if(t==="dark"||t==="midnight") return true;
+  if(t==="light"||t==="paper") return false;
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function updateThemeToggleButtons(t){
+  const isDark=isDarkTheme(t);
+  const icon=isDark?"☀️":"🌙";
+  const title=isDark?"Switch to light theme":"Switch to dark theme";
+  document.querySelectorAll(".theme-toggle-btn").forEach(btn=>{
+    btn.textContent=icon;
+    btn.setAttribute("title",title);
+    btn.setAttribute("aria-label",title);
+  });
+}
+
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute("data-theme")||"auto";
+  const isDark=isDarkTheme(cur);
+  const next=isDark?"light":"dark";
+  applyTheme(next);
+}
+
 function applyTheme(v){
   const root=document.documentElement;
   if(v==="auto") root.removeAttribute("data-theme");
@@ -45,6 +244,7 @@ function applyTheme(v){
   document.querySelectorAll(".theme-select").forEach(sel=>{
     sel.value=v;
   });
+  updateThemeToggleButtons(v);
 }
 
 function initTheme(){
@@ -175,9 +375,12 @@ function bindEvents(){
   });
   sndUI();
 
-  // Theme select across all views
+  // Theme select & mobile toggle button across all views
   document.querySelectorAll(".theme-select").forEach(sel=>{
     sel.onchange=e=>applyTheme(e.target.value);
+  });
+  document.querySelectorAll(".theme-toggle-btn").forEach(btn=>{
+    btn.onclick=toggleTheme;
   });
   initTheme();
 
@@ -282,11 +485,30 @@ function bindEvents(){
   if($("tplay")) $("tplay").onclick=()=>{if(busy){pauseT();return}if(tp>=TR.length-1)tgo(-1);tauto()};
   if($("tnext")) $("tnext").onclick=()=>{pauseT();if(tp<TR.length-1)tgo(tp+1,true)};
   if($("tprev")) $("tprev").onclick=()=>{pauseT();if(tp>=0)tgo(tp-1,true)};
+  function updateDlangLogo(val){
+    const el = $("dlangLogo");
+    if(!el) return;
+    if(val === "cpp"){
+      el.src = "assets/cpp-logo.svg";
+      el.alt = "C++";
+      el.style.display = "inline-block";
+    } else if(val === "python"){
+      el.src = "assets/python-logo.svg";
+      el.alt = "Python";
+      el.style.display = "inline-block";
+    } else {
+      el.style.display = "none";
+    }
+  }
+  window.updateDlangLogo = updateDlangLogo;
+
   if($("dlang")){
+    updateDlangLogo(window.plang);
     $("dlang").onchange=e=>{
       window.plang=e.target.value;
       try{localStorage.setItem("dsa-plang",window.plang)}catch(x){}
       if($("plang")) $("plang").value=window.plang;
+      updateDlangLogo(window.plang);
       showPseudo(curOp);dline(curL);
       if(TR.length)$("dsch").textContent=`Algorithm — ${curOp}  ·  ${tp+1}/${TR.length}`;
     };
@@ -328,6 +550,18 @@ function bindEvents(){
     $("goHome").onclick=()=>showView("home");
     $("goHome").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();showView("home")}});
   }
+
+  // Exit Confirmation Modal button bindings
+  const exitModal = $("exitModal");
+  const exitCancelBtn = $("exitCancelBtn");
+  const exitConfirmBtn = $("exitConfirmBtn");
+  if(exitCancelBtn) exitCancelBtn.onclick = hideExitModal;
+  if(exitConfirmBtn) exitConfirmBtn.onclick = confirmExitApp;
+  if(exitModal){
+    exitModal.onclick = e => {
+      if(e.target === exitModal) hideExitModal();
+    };
+  }
 }
 
 // --- App Initialization Boot ---
@@ -342,7 +576,20 @@ function initApp(){
   arr=rand(8);
   statics();
   setCat("sorting");
-  showView("home");
+
+  const initialHashView = getHashView();
+  if(initialHashView && initialHashView !== "home"){
+    try {
+      history.replaceState({ view: "home" }, "", location.pathname + location.search);
+      history.pushState({ view: initialHashView }, "", "#" + initialHashView);
+    } catch(e){}
+    showView(initialHashView, null, true);
+  } else {
+    try {
+      history.replaceState({ view: "home" }, "", location.pathname + location.search);
+    } catch(e){}
+    showView("home", null, true);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", initApp);

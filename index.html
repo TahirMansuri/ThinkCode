@@ -17,11 +17,11 @@
 
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/home.css">
-  <link rel="stylesheet" href="css/visualizer.css">
-  <link rel="stylesheet" href="css/pages.css">
-  <link rel="stylesheet" href="css/tracer.css">
+  <link rel="stylesheet" href="css/base.css?v=2.5.2">
+  <link rel="stylesheet" href="css/home.css?v=2.5.2">
+  <link rel="stylesheet" href="css/visualizer.css?v=2.5.2">
+  <link rel="stylesheet" href="css/pages.css?v=2.5.2">
+  <link rel="stylesheet" href="css/tracer.css?v=2.5.2">
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js" async></script>
 </head>
 
@@ -31,6 +31,7 @@
   <div id="home" class="view">
     <!-- Top Theme & Sound Controls -->
     <div class="home-theme-bar">
+      <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
       <select class="lang theme-select" aria-label="Theme">
         <option value="auto">🌓 Auto</option>
         <option value="light">☀️ Light</option>
@@ -38,7 +39,7 @@
         <option value="midnight">🌌 Midnight</option>
         <option value="paper">📜 Paper</option>
       </select>
-      <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      <button class="sbtn snd-btn header-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
     </div>
 
     <!-- ==================== TECH CYBER HERO ==================== -->
@@ -48,7 +49,7 @@
 
       <div class="hero-content">
         <div class="terminal-badge">
-          <img src="assets/icon.svg" style="width:16px;height:16px;border-radius:4px" alt="ThinkCode Icon">
+          <img src="assets/icon.svg" width="16" height="16" style="width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;border-radius:4px;flex-shrink:0;pointer-events:none" alt="ThinkCode Icon">
           <span class="pulse-dot"></span>
           <span class="mono-tag">THINKCODE::ENGINE_ACTIVE</span>
           <span class="badge-divider">/</span>
@@ -91,10 +92,10 @@
             <span class="btn-text">⚡ Initialize Visualizer</span>
           </button>
           <button class="tech-btn-ghost" data-nav="tracer" data-lang="cpp" style="border-color:var(--ok);color:var(--ok)">
-            <span>[ ⚡ C++ Tracer ]</span>
+            <span class="tech-btn-inner"><img src="assets/cpp-logo.svg" alt="C++" class="tech-btn-logo"> C++ Tracer</span>
           </button>
           <button class="tech-btn-ghost" data-nav="tracer" data-lang="python">
-            <span>[ 🐍 Python Tracer ]</span>
+            <span class="tech-btn-inner"><img src="assets/python-logo.svg" alt="Python" class="tech-btn-logo"> Python Tracer</span>
           </button>
           <button class="tech-btn-ghost" data-nav="about">
             <span>[ View Source &amp; Theory ]</span>
@@ -158,9 +159,9 @@
 
     <div class="home-langs">
       <span class="lang-chip">C</span>
-      <span class="lang-chip">C++</span>
+      <span class="lang-chip"><img src="assets/cpp-logo.svg" alt="C++" class="chip-lang-logo"> C++</span>
       <span class="lang-chip">Java</span>
-      <span class="lang-chip">Python</span>
+      <span class="lang-chip"><img src="assets/python-logo.svg" alt="Python" class="chip-lang-logo"> Python</span>
       <span class="lang-chip muted">more soon</span>
     </div>
 
@@ -168,8 +169,8 @@
       <button class="quick-btn" data-quick="bubble">🎲 Random array → Bubble Sort</button>
       <button class="quick-btn" data-quick="bfs">🧭 Run BFS from A</button>
       <button class="quick-btn" data-quick="tree">🌿 Tree Level-Order (BFS)</button>
-      <button class="quick-btn" data-quick="tracer-cpp">⚡ C++ Code Tracer (Instant)</button>
-      <button class="quick-btn" data-quick="tracer-python">🐍 Python Code Tracer &amp; Compiler</button>
+      <button class="quick-btn" data-quick="tracer-cpp"><img src="assets/cpp-logo.svg" alt="C++" class="quick-btn-logo"> C++ Code Tracer (Instant)</button>
+      <button class="quick-btn" data-quick="tracer-python"><img src="assets/python-logo.svg" alt="Python" class="quick-btn-logo"> Python Code Tracer &amp; Compiler</button>
     </div>
 
     <footer class="home-footer site-foot">
@@ -184,7 +185,8 @@
   <div id="app" class="view" hidden>
     <header>
       <div class="hd">
-        <h1 id="goHome" class="brand-link" role="button" tabindex="0" title="Back to home"><img src="assets/icon.svg" class="brand-logo-img" alt="ThinkCode Logo" style="pointer-events:none"><span>ThinkCode</span></h1>
+        <h1 id="goHome" class="brand-link" role="button" tabindex="0" title="Back to home"><img src="assets/icon.svg" width="24" height="24" class="brand-logo-img" alt="ThinkCode Logo" style="width:24px;height:24px;max-width:24px;max-height:24px;object-fit:contain;border-radius:6px;flex-shrink:0;pointer-events:none"><span>ThinkCode</span></h1>
+        <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
 
         <nav class="nav-links">
           <button class="nav-btn" data-nav="home">Home</button>
@@ -217,7 +219,7 @@
           <option value="midnight">🌌 Midnight</option>
           <option value="paper">📜 Paper</option>
         </select>
-        <button class="sbtn snd-btn" id="snd" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+        <button class="sbtn snd-btn header-snd-btn" id="snd" aria-label="Sound on/off" title="Sound on/off">🔊</button>
       </div>
       <div class="tabs" id="tabs"></div>
     </header>
@@ -260,6 +262,7 @@
             <label style="display:flex;gap:8px;align-items:center;color:var(--mute)"><span>Size</span><input
                 type="range" id="dsz" min="3" max="10" value="5"></label>
             <b id="szv" class="chip"></b>
+            <button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
           </div>
           <div id="maxn" style="font-size:12.5px;color:var(--mute);margin-top:6px"></div>
           <div id="dsv" class="ds"></div>
@@ -272,13 +275,16 @@
           <div
             style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 6px">
             <h2 id="dsch" class="chip" style="margin:0"></h2>
-            <select class="lang" id="dlang" aria-label="Programming language">
-              <option value="pseudo">Pseudo</option>
-              <option value="c">C</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
-              <option value="python">Python</option>
-            </select>
+            <div style="display:flex;align-items:center;gap:8px">
+              <img id="dlangLogo" src="assets/cpp-logo.svg" alt="" class="dlang-logo" style="display:none">
+              <select class="lang" id="dlang" aria-label="Programming language">
+                <option value="pseudo">Pseudo</option>
+                <option value="c">C</option>
+                <option value="cpp">C++</option>
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+              </select>
+            </div>
           </div>
           <div id="dsc"></div>
           <ul id="dsl"></ul>
@@ -307,7 +313,7 @@
             <button id="rreset">Reset</button>
           </div>
           <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="rspd" min="1" max="10"
-                value="4"></label></div>
+                value="4"></label><button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button></div>
         </div>
 
         <!-- Graph Card -->
@@ -334,7 +340,7 @@
             <button id="greset" data-i="reset"></button>
           </div>
           <div class="ctl"><label><span data-i="speed"></span> <input type="range" id="gspd" min="1" max="10"
-                value="4"></label></div>
+                value="4"></label><button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button></div>
         </div>
 
         <!-- Binary Tree Visualizer Card -->
@@ -376,6 +382,7 @@
           </div>
           <div class="ctl">
             <label><span data-i="speed"></span> <input type="range" id="treeSpd" min="1" max="10" value="4"></label>
+            <button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
           </div>
         </div>
 
@@ -420,6 +427,7 @@
             <label><span data-i="speed"></span> <input type="range" id="spd" min="1" max="10" value="4"></label>
             <label><span data-i="size"></span> <input type="range" id="size" min="4" max="14" value="8"></label>
             <button id="rand" data-i="rand"></button>
+            <button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
           </div>
         </div>
 
@@ -444,7 +452,8 @@
   <div id="tracer" class="view" hidden>
     <header>
       <div class="hd">
-        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" class="brand-logo-img" alt="ThinkCode Logo" style="pointer-events:none"><span>ThinkCode</span></h1>
+        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" width="24" height="24" class="brand-logo-img" alt="ThinkCode Logo" style="width:24px;height:24px;max-width:24px;max-height:24px;object-fit:contain;border-radius:6px;flex-shrink:0;pointer-events:none"><span>ThinkCode</span></h1>
+        <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
 
         <nav class="nav-links">
           <button class="nav-btn" data-nav="home">Home</button>
@@ -461,22 +470,23 @@
           <option value="midnight">🌌 Midnight</option>
           <option value="paper">📜 Paper</option>
         </select>
-        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+        <button class="sbtn snd-btn header-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
       </div>
     </header>
 
     <div class="tracer-container">
       <div class="tracer-header-bar">
         <div class="tracer-title-group">
-          <h2 id="tracerMainTitle"><span>🐍</span> Python Code Tracer & Execution Engine</h2>
-          <p id="tracerDescText">Inspect local variables, call stack frames, and output step-by-step in Python 3.12 (Pyodide).</p>
+          <h2 id="tracerMainTitle"><img id="tracerTitleLogo" src="assets/python-logo.svg" alt="Python" class="tracer-title-logo" width="26" height="26"> <span id="tracerTitleText">Python Code Tracer &amp; Execution Engine</span></h2>
+          <p id="tracerDescText">Inspect local variables and output step-by-step in Python 3.12 (Pyodide).</p>
         </div>
         <div class="tracer-actions-group">
-          <label style="display:flex;align-items:center;gap:6px;font:700 13px 'JetBrains Mono',monospace;color:var(--ink);background:var(--code);padding:5px 12px;border-radius:8px;border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+          <label class="tracer-lang-picker">
+            <img id="tracerSelLogo" src="assets/python-logo.svg" alt="" class="tracer-sel-logo" width="18" height="18">
             <span>Language:</span>
             <select id="langSel" class="lang" style="padding:3px 8px;font-weight:700;font-size:13px;border-radius:6px;cursor:pointer;color:var(--ink)">
-              <option value="python">🐍 Python</option>
-              <option value="cpp">⚡ C++</option>
+              <option value="python">Python</option>
+              <option value="cpp">C++</option>
             </select>
           </label>
           <label style="display:flex;align-items:center;gap:6px;font:600 13px 'JetBrains Mono',monospace;color:var(--mute)">
@@ -516,40 +526,45 @@ for i in range(3):
           </div>
           <textarea id="pyStdin" rows="2" placeholder="input() values, one per line" class="tracer-textarea stdin-box"></textarea>
 
-          <div class="tracer-ctl">
-            <button class="main-run" id="pyRunBtn" disabled>▶ Run & Trace</button>
-            <button id="pyPrevBtn">◀ Back</button>
-            <button id="pyPlayBtn">▶ Play</button>
-            <button id="pyNextBtn">Next ▶</button>
-            <button id="pyResetBtn">Reset</button>
-          </div>
-
-          <div class="tracer-progress-row">
-            <span class="tracer-step-counter" id="pyStepCounter">0 / 0</span>
-            <input type="range" id="pyScrub" min="-1" max="0" value="-1" aria-label="Step Scrubber">
-            <label style="display:flex;align-items:center;gap:6px;font:600 12px 'JetBrains Mono',monospace;color:var(--mute)">
-              Speed <input type="range" id="pySpd" min="1" max="10" value="4" style="width:70px">
-            </label>
+          <div class="tracer-src-footer">
+            <button class="main-run" id="pyRunBtn" disabled>▶ Run &amp; Trace</button>
           </div>
         </div>
 
-        <!-- Right Column: Step Inspection, Variables, Call Stack, & Output -->
-        <div class="tracer-card">
-          <div id="pyInfo" class="tracer-info-banner">Click [Run & Trace] to compile and analyze code.</div>
+        <!-- Right Column: Step Inspection, Variables, & Output -->
+        <div class="tracer-card" id="tracerExecCard">
+          <div id="pyInfo" class="tracer-info-banner">Click [Run &amp; Trace] to compile and analyze code.</div>
 
-          <div class="tracer-card-title">Live Execution Trace</div>
+          <div class="tracer-card-title tracer-trace-title">
+            <span>Live Execution Trace</span>
+            <span class="tracer-step-counter" id="pyStepCounterTop">0 / 0</span>
+          </div>
+
           <div id="pyCodeView" class="code-view-container"></div>
 
-          <div class="tracer-card-title">Variables Watch Table</div>
+          <div class="tracer-card-title" style="margin-top:14px">Variables Watch Table</div>
           <div class="vars-table-wrapper">
             <table id="pyVars" class="vars-table">
               <tr><td colspan="2" class="var-empty-text">Variables will appear here during execution.</td></tr>
             </table>
           </div>
 
-          <div class="tracer-card-title">Call Stack (Active Frames)</div>
-          <div id="pyStack" class="stack-container">
-            <span class="tp-empty">(Call Stack is empty — press Next or Play to begin)</span>
+          <!-- Stepping & Execution Controls: Below Variables Watch Table on desktop, Fixed at Screen Bottom on mobile -->
+          <div class="tracer-exec-bar" id="tracerExecBar">
+            <div class="tracer-progress-row">
+              <span class="tracer-step-counter" id="pyStepCounter">0 / 0</span>
+              <input type="range" id="pyScrub" min="-1" max="0" value="-1" aria-label="Step Scrubber">
+              <label style="display:flex;align-items:center;gap:6px;font:600 12px 'JetBrains Mono',monospace;color:var(--mute);white-space:nowrap">
+                Speed <input type="range" id="pySpd" min="1" max="10" value="4" style="width:65px">
+              </label>
+              <button class="sbtn snd-btn mobile-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+            </div>
+            <div class="tracer-ctl tracer-exec-ctl">
+              <button class="main" id="pyPlayBtn" title="Auto play / pause">▶ Play</button>
+              <button id="pyPrevBtn" title="Previous step (Back)">◀ Back</button>
+              <button id="pyNextBtn" title="Next step">Next ▶</button>
+              <button id="pyResetBtn" title="Reset to start">Reset</button>
+            </div>
           </div>
 
           <div class="tracer-card-title">Standard Output (Console)</div>
@@ -579,7 +594,8 @@ for i in range(3):
   <div id="about" class="view" hidden>
     <header>
       <div class="hd">
-        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" class="brand-logo-img" alt="ThinkCode Logo" style="pointer-events:none"><span>ThinkCode</span></h1>
+        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" width="24" height="24" class="brand-logo-img" alt="ThinkCode Logo" style="width:24px;height:24px;max-width:24px;max-height:24px;object-fit:contain;border-radius:6px;flex-shrink:0;pointer-events:none"><span>ThinkCode</span></h1>
+        <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
 
         <nav class="nav-links">
           <button class="nav-btn" data-nav="home">Home</button>
@@ -596,7 +612,7 @@ for i in range(3):
           <option value="midnight">🌌 Midnight</option>
           <option value="paper">📜 Paper</option>
         </select>
-        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+        <button class="sbtn snd-btn header-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
       </div>
     </header>
 
@@ -623,7 +639,7 @@ for i in range(3):
       <!-- Executive Author Showcase Card -->
       <div class="author-card-pro">
         <div class="author-avatar-wrap">
-          <div class="author-avatar-lg">TM</div>
+          <img src="profilepic.jpeg" alt="Tahir Mansuri" width="92" height="92" class="author-avatar-lg" loading="eager">
           <div class="author-status-dot" title="Active Lead Developer"></div>
         </div>
         <div class="author-content">
@@ -773,7 +789,7 @@ for i in range(3):
         <p>Explore algorithmic workflows visually with sound and memory tracking, or run custom C &amp; C++ programs step-by-step.</p>
         <div class="about-cta-btns">
           <button class="tech-btn-primary" data-nav="app" style="cursor:pointer">🚀 Launch Interactive Visualizer</button>
-          <button class="tech-btn-ghost" data-nav="tracer" style="cursor:pointer">⚡ Open C/C++ Code Tracer</button>
+          <button class="tech-btn-ghost" data-nav="tracer" data-lang="cpp" style="cursor:pointer"><span class="tech-btn-inner"><img src="assets/cpp-logo.svg" alt="C++" class="tech-btn-logo"> Open C/C++ Code Tracer</span></button>
         </div>
       </div>
     </div>
@@ -787,7 +803,8 @@ for i in range(3):
   <div id="contact" class="view" hidden>
     <header>
       <div class="hd">
-        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" class="brand-logo-img" alt="ThinkCode Logo" style="pointer-events:none"><span>ThinkCode</span></h1>
+        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home"><img src="assets/icon.svg" width="24" height="24" class="brand-logo-img" alt="ThinkCode Logo" style="width:24px;height:24px;max-width:24px;max-height:24px;object-fit:contain;border-radius:6px;flex-shrink:0;pointer-events:none"><span>ThinkCode</span></h1>
+        <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
 
         <nav class="nav-links">
           <button class="nav-btn" data-nav="home">Home</button>
@@ -804,7 +821,7 @@ for i in range(3):
           <option value="midnight">🌌 Midnight</option>
           <option value="paper">📜 Paper</option>
         </select>
-        <button class="sbtn snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+        <button class="sbtn snd-btn header-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
       </div>
     </header>
 
@@ -877,10 +894,25 @@ for i in range(3):
   <script src="js/renderers/graphRenderer.js"></script>
   <script src="js/renderers/treeRenderer.js"></script>
 
+  <!-- Exit Confirmation Modal (Android Back Button) -->
+  <div id="exitModal" class="exit-modal-backdrop" aria-hidden="true" style="display:none">
+    <div class="exit-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="exitModalTitle">
+      <div class="exit-modal-icon">
+        <img src="assets/icon.svg" width="38" height="38" alt="ThinkCode Logo">
+      </div>
+      <h3 id="exitModalTitle" class="exit-modal-title">Exit ThinkCode?</h3>
+      <p class="exit-modal-desc">Are you sure you want to close and exit the application?</p>
+      <div class="exit-modal-actions">
+        <button id="exitCancelBtn" type="button" class="exit-btn-cancel">No, Stay</button>
+        <button id="exitConfirmBtn" type="button" class="exit-btn-confirm">Yes, Exit</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 5. UI Views & Main Application Controller -->
   <script src="js/ui/home.js"></script>
   <script src="js/ui/pages.js"></script>
-  <script src="cpp-tracer.js"></script>
+  <script src="js/cpp-tracer.js"></script>
   <script src="js/tracer.js"></script>
   <script src="js/app.js"></script>
 

@@ -250,8 +250,16 @@ int main() {
     const hlEl = $("pyHl") || $("hl");
     const srcEl = $("src");
     if (!hlEl || !srcEl) return;
-    const HL = t => ($("langSel").value === "cpp" ? cppHL : pyHL)(t);
-    hlEl.innerHTML = HL(srcEl.value) + "\n";
+    const isCpp = $("langSel") && $("langSel").value === "cpp";
+    let html = "";
+    try {
+      const HL = (isCpp && typeof cppHL === "function") ? cppHL : (typeof pyHL === "function" ? pyHL : escapeHtml);
+      html = HL(srcEl.value);
+    } catch (e) {
+      console.warn("Syntax highlight error:", e);
+      html = escapeHtml(srcEl.value);
+    }
+    hlEl.innerHTML = html + "\n";
     syncScroll();
   }
 
@@ -438,11 +446,18 @@ int main() {
     const codeView = $("pyCodeView") || $("codeView");
     if (!srcEl || !codeView) return;
 
-    const HL = t => ($("langSel").value === "cpp" ? cppHL : pyHL)(t);
+    const isCpp = $("langSel") && $("langSel").value === "cpp";
+    const HL = (isCpp && typeof cppHL === "function") ? cppHL : (typeof pyHL === "function" ? pyHL : escapeHtml);
     const lines = srcEl.value.split("\n");
     codeView.innerHTML = lines.map((line, i) => {
       const lineNum = i + 1;
-      return `<div class="cl" id="cl${lineNum}"><span class="no">${lineNum}</span>${HL(line) || " "}</div>`;
+      let highlighted = " ";
+      try {
+        highlighted = HL(line) || " ";
+      } catch (e) {
+        highlighted = escapeHtml(line) || " ";
+      }
+      return `<div class="cl" id="cl${lineNum}"><span class="no">${lineNum}</span><span class="cl-code">${highlighted}</span></div>`;
     }).join("");
   }
 
@@ -477,7 +492,7 @@ int main() {
 
     if (!srcEl) return;
 
-    const code = $("src").value, inp = $("stdin").value;
+    const code = srcEl.value, inp = (stdinEl ? stdinEl.value : "");
 
     try {
       if (!isCpp && pyInstance) {
@@ -485,8 +500,16 @@ int main() {
         pyInstance.globals.set("STDIN", inp);
       }
 
-      const res = $("langSel").value === "cpp" ? traceCpp(code, inp)
-                : JSON.parse(pyInstance.runPython("run_traced(SRC, STDIN)"));
+      let res;
+      if (isCpp) {
+        if (typeof traceCpp !== "function") {
+          throw new Error("C++ execution engine is not loaded yet. Please ensure js/cpp-tracer.js is available.");
+        }
+        res = traceCpp(code, inp);
+      } else {
+        if (!pyInstance) throw new Error("Python runtime is not ready yet.");
+        res = JSON.parse(pyInstance.runPython("run_traced(SRC, STDIN)"));
+      }
 
       traceSteps = res.steps || [];
       traceErr = res.error;
@@ -514,11 +537,21 @@ int main() {
       }
 
       renderTraceStep(-1);
+
+      if (window.innerWidth <= 900) {
+        const execCard = $("tracerExecCard") || $("pyCodeView");
+        if (execCard) {
+          execCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
     } catch (e) {
       console.error("Tracer execution error:", e);
       if (errEl) {
         errEl.textContent = `⚠ Execution Error: ${e.message}`;
         errEl.classList.add("show");
+        if (window.innerWidth <= 900) {
+          errEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
     }
   }
@@ -530,13 +563,13 @@ int main() {
     const stackEl = $("pyStack");
     const outEl = $("pyOut");
     const infoEl = $("info");
-    const stepCounter = $("pyStepCounter");
     const scrubber = $("pyScrub");
-
     if (scrubber) scrubber.value = String(i);
-    if (stepCounter) {
-      stepCounter.textContent = `${Math.max(0, i + 1)} / ${traceSteps.length}`;
-    }
+
+    const stepText = `${traceSteps.length === 0 ? 0 : Math.max(0, i + 1)} / ${traceSteps.length}`;
+    document.querySelectorAll(".tracer-step-counter").forEach(el => {
+      el.textContent = stepText;
+    });
 
     const s = traceSteps[i];
 
@@ -558,7 +591,11 @@ int main() {
     const lineEl = document.getElementById("cl" + s.line);
     if (lineEl) {
       lineEl.classList.add("on");
-      lineEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      try {
+        lineEl.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      } catch (e) {
+        lineEl.scrollIntoView(false);
+      }
     }
 
     // Previous variables to detect changes for animation
@@ -670,6 +707,9 @@ int main() {
     const stdinEl = $("stdin");
     const presetSel = $("pyPresetSelect");
     const titleEl = $("tracerMainTitle");
+    const titleLogo = $("tracerTitleLogo");
+    const titleText = $("tracerTitleText");
+    const selLogo = $("tracerSelLogo");
     const descEl = $("tracerDescText");
     const termLabel = $("tracerTerminalLabel");
     const runBtn = $("pyRunBtn");
@@ -707,11 +747,19 @@ int main() {
         `;
         presetSel.value = "loop";
       }
-      if (titleEl) titleEl.innerHTML = `<span>⚡</span> C++ Code Tracer & Execution Engine`;
-      if (descEl) descEl.textContent = `Inspect local variables, call stack frames, and output step-by-step in C++ (Interactive Browser Interpreter).`;
+      if (titleLogo) {
+        titleLogo.src = "assets/cpp-logo.svg";
+        titleLogo.alt = "C++";
+      }
+      if (titleText) titleText.textContent = "C++ Code Tracer & Execution Engine";
+      if (selLogo) {
+        selLogo.src = "assets/cpp-logo.svg";
+        selLogo.alt = "C++";
+      }
+      if (descEl) descEl.textContent = `Inspect local variables and output step-by-step in C++ (Interactive Browser Interpreter).`;
       if (termLabel) termLabel.textContent = `c++ - stdout`;
 
-      updatePyStatus("ready", "⚡ C++ Engine Ready (Instant)");
+      updatePyStatus("ready", "C++ Engine Ready (Instant)");
       if (runBtn) {
         runBtn.disabled = false;
         runBtn.textContent = "▶ Run & Trace";
@@ -737,8 +785,16 @@ for i in range(3):
         `;
         presetSel.value = "loop";
       }
-      if (titleEl) titleEl.innerHTML = `<span>🐍</span> Python Code Tracer & Execution Engine`;
-      if (descEl) descEl.textContent = `Inspect local variables, call stack frames, and output step-by-step in Python 3.12 (Pyodide).`;
+      if (titleLogo) {
+        titleLogo.src = "assets/python-logo.svg";
+        titleLogo.alt = "Python";
+      }
+      if (titleText) titleText.textContent = "Python Code Tracer & Execution Engine";
+      if (selLogo) {
+        selLogo.src = "assets/python-logo.svg";
+        selLogo.alt = "Python";
+      }
+      if (descEl) descEl.textContent = `Inspect local variables and output step-by-step in Python 3.12 (Pyodide).`;
       if (termLabel) termLabel.textContent = `python3 - stdout`;
 
       if (pyInstance) {
@@ -773,9 +829,11 @@ for i in range(3):
     if (resetBtn) resetBtn.onclick = () => { traceStop(); traceGo(-1); };
 
     if (langSel) {
-      langSel.onchange = e => {
+      const handleLangChange = e => {
         onLanguageChange(e.target.value);
       };
+      langSel.onchange = handleLangChange;
+      langSel.addEventListener("input", handleLangChange);
     }
 
     if (scrubber) {
@@ -786,14 +844,17 @@ for i in range(3):
     }
 
     if (presetSel) {
-      presetSel.onchange = e => {
-        const isCpp = langSel && langSel.value === "cpp";
+      const handlePresetChange = e => {
+        const curLangSel = $("langSel");
+        const isCpp = curLangSel && curLangSel.value === "cpp";
         const presets = isCpp ? CPP_PRESETS : TRACER_PRESETS;
-        const preset = presets[e.target.value];
-        if (preset && srcEl) {
-          srcEl.value = preset.src;
-          const stdinEl = $("stdin");
-          if (stdinEl) stdinEl.value = preset.stdin || "";
+        const presetKey = e && e.target ? e.target.value : presetSel.value;
+        const preset = presets[presetKey];
+        const curSrcEl = $("src");
+        if (preset && curSrcEl) {
+          curSrcEl.value = preset.src;
+          const curStdinEl = $("stdin");
+          if (curStdinEl) curStdinEl.value = preset.stdin || "";
           drawEd();
           buildTracerCodeView();
           traceSteps = [];
@@ -801,13 +862,27 @@ for i in range(3):
           renderTraceStep(-1);
         }
       };
+      presetSel.onchange = handlePresetChange;
+      presetSel.addEventListener("input", handlePresetChange);
     }
 
     // Hook up live syntax-highlighted editor input, scroll & tab indentation
     if (srcEl) {
-      srcEl.addEventListener("input", drawEd);
-      srcEl.addEventListener("scroll", syncScroll);
+      const handleInput = () => {
+        drawEd();
+        buildTracerCodeView();
+      };
+      srcEl.addEventListener("input", handleInput);
+      srcEl.addEventListener("scroll", syncScroll, { passive: true });
+      srcEl.addEventListener("touchmove", syncScroll, { passive: true });
+      srcEl.addEventListener("keyup", syncScroll, { passive: true });
+      srcEl.addEventListener("click", syncScroll, { passive: true });
       srcEl.addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          runTracerCode();
+          return;
+        }
         if (e.key === "Tab") {
           e.preventDefault();
           const start = this.selectionStart;
@@ -819,6 +894,7 @@ for i in range(3):
             this.selectionStart = this.selectionEnd = start + 4;
           }
           drawEd();
+          buildTracerCodeView();
         }
       });
     }
@@ -827,9 +903,11 @@ for i in range(3):
     buildTracerCodeView();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTracerUI);
+  } else {
     initTracerUI();
-  });
+  }
 
   if (typeof window !== "undefined") {
     window.initPyodideTracer = initPyodideTracer;

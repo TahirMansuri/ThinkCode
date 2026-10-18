@@ -73,17 +73,18 @@ function traceCpp(src, stdin, limit = 2000) {
     if (t.v === "(" && t.k === "op") { const e = pe(); ex(")"); return e; }
     E(`unexpected '${t.v}'`, t.line, "SyntaxError");
   }
+  function pInit() { if (is("{")) { nx(); const L = []; if (!is("}")) { do { if (is("}")) break; L.push(pInit()); } while (is(",") && nx()); } ex("}"); return { k: "list", items: L }; } return pAssign(); }
   function pDecl() {
     const l = pk().line, ty = parseType(), ds = [];
     do {
       if (is("*")) E("pointers are not supported yet", pk().line, "NotSupported");
       if (is("&")) nx();
       const n = nx(); if (n.k !== "id") E("expected a variable name", n.line, "SyntaxError");
-      let size = null, init = null, list = null;
-      if (is("[")) { nx(); size = is("]") ? -1 : pe(); ex("]"); }
-      if (is("(") && ty.vec) { nx(); size = pe(); ex(")"); }
-      else if (is("=")) { nx(); if (is("{")) { nx(); list = []; if (!is("}")) { do { if (is("}")) break; list.push(pAssign()); } while (is(",") && nx()); } ex("}"); } else init = pAssign(); }
-      ds.push({ n: n.v, size, init, list });
+      let dims = [], init = null;
+      while (is("[")) { nx(); dims.push(is("]") ? -1 : pe()); ex("]"); }
+      if (is("(") && ty.vec) { nx(); dims = [pe()]; ex(")"); }
+      else if (is("=")) { nx(); init = pInit(); }
+      ds.push({ n: n.v, dims, init });
     } while (is(",") && nx());
     ex(";"); return { k: "decl", ty, ds, line: l };
   }
@@ -104,9 +105,20 @@ function traceCpp(src, stdin, limit = 2000) {
           const c = is(";") ? null : pe(); ex(";"); const s = is(")") ? null : pe(); ex(")");
           return { k: "for", i, c, s, b: pStmt(), line: l };
         }
+        case "switch": {
+          nx(); ex("("); const e = pe(); ex(")"); ex("{"); const cases = [];
+          while (!is("}")) {
+            const ct = pk();
+            if (ct.k === "eof") E("missing '}' at the end of switch", l, "SyntaxError");
+            if (is("case")) { nx(); const v = pe(); ex(":"); cases.push({ v, body: [], line: ct.line }); }
+            else if (is("default")) { nx(); ex(":"); cases.push({ v: null, body: [], line: ct.line }); }
+            else { if (!cases.length) E("expected 'case' or 'default' here", ct.line, "SyntaxError"); cases[cases.length - 1].body.push(pStmt()); }
+          }
+          nx(); return { k: "switch", e, cases, line: l };
+        }
         case "return": { nx(); const e = is(";") ? null : pe(); ex(";"); return { k: "ret", e, line: l }; }
         case "break": case "continue": nx(); ex(";"); return { k: t.v, line: l };
-        case "struct": case "class": case "new": case "delete": case "template": case "switch": E(`'${t.v}' is not supported yet in this tracer`, l, "NotSupported");
+        case "struct": case "class": case "new": case "delete": case "template": E(`'${t.v}' is not supported yet in this tracer`, l, "NotSupported");
       }
       if (isType()) return pDecl();
     }
@@ -125,7 +137,7 @@ function traceCpp(src, stdin, limit = 2000) {
       while (!is(")")) {
         const pt = parseType(); if (is("*")) E("pointers are not supported yet", pk().line, "NotSupported");
         const ref = is("&"); if (ref) nx(); const pn = nx().v; let arr = pt.vec;
-        if (is("[")) { nx(); if (!is("]")) pe(); ex("]"); arr = true; }
+        while (is("[")) { nx(); if (!is("]")) pe(); ex("]"); arr = true; }
         params.push({ n: pn, ty: pt.base, ref, arr }); if (!is(")")) ex(",");
       }
       ex(")"); funcs[nm.v] = { ty: ty.base, params, body: pBlock(), line: nm.line };
@@ -138,7 +150,7 @@ function traceCpp(src, stdin, limit = 2000) {
   const look = (n, l) => { for (let s = scope(); s; s = s.p) if (s.m.has(n)) return s.m.get(n); E(`'${n}' was not declared in this scope`, l, "CompileError"); };
   const fd = v => String(Number(v.toPrecision(6)));
   const show = c => c.t === "int" ? String(c.v) : c.t === "double" ? fd(c.v) : c.t === "char" ? "'" + chr(c.v) + "'" : c.t === "bool" ? (c.v ? "true" : "false")
-    : c.t === "string" ? '"' + c.v + '"' : "[" + c.v.map(x => show({ t: c.et, v: x })).join(", ") + "]";
+    : c.t === "string" ? '"' + c.v + '"' : "[" + c.v.map(x => show(c.et === "arr" ? x : { t: c.et, v: x })).join(", ") + "]";
   const frameVars = f => { const o = {}; for (let s = f.scope; s; s = s.p) for (const [k, c] of s.m) if (!(k in o)) o[k] = show(c); return o; };
   function step(line, msg, ret) {
     if (quiet) return;
@@ -184,6 +196,7 @@ function traceCpp(src, stdin, limit = 2000) {
       const a = ev(n.a), i = Math.trunc(ev(n.i).v), len = a.v.length;
       if (a.t !== "arr" && a.t !== "string") E("only arrays, vectors and strings can be indexed", n.line, "CompileError");
       if (i < 0 || i >= len) E(`index ${i} is out of bounds (size ${len})`, n.line, "RuntimeError");
+      if (a.t === "arr" && a.et === "arr") return { get: () => a.v[i], set: () => E("cannot assign a whole row", n.line, "CompileError") };
       if (a.t === "string") return { get: () => ({ t: "char", v: a.v.charCodeAt(i) }), set: x => { a.v = a.v.slice(0, i) + chr(cv("char", x)) + a.v.slice(i + 1); } };
       return { get: () => ({ t: a.et, v: a.v[i] }), set: x => { a.v[i] = cv(a.et, x, n.line); } };
     }
@@ -244,16 +257,20 @@ function traceCpp(src, stdin, limit = 2000) {
     stack.pop(); return rv;
   }
   const cond = (s, l) => { const c = ev(s).v; step(l, "condition is " + (c ? "true" : "false")); return c; };
+  const build = (dims, init, et, l) => {
+    const isL = init && init.k === "list", len = dims[0] === -1 ? (isL ? init.items.length : 0) : Math.trunc(ev(dims[0]).v);
+    if (len < 0 || len > 10000) E("invalid array size " + len, l, "RuntimeError");
+    const v = Array.from({ length: len }, (_, i) => dims.length > 1 ? build(dims.slice(1), isL ? init.items[i] : null, et, l)
+      : isL && i < init.items.length ? cv(et, ev(init.items[i]), l) : et === "string" ? "" : 0);
+    return { t: "arr", et: dims.length > 1 ? "arr" : et, v };
+  };
   function exec(s) {
     switch (s.k) {
       case "blk": { const f = F(), old = f.scope; f.scope = mk(old); try { for (const x of s.ss) { const r = exec(x); if (r) return r; } } finally { f.scope = old; } return; }
       case "decl": {
         for (const d of s.ds) {
           const base = s.ty.base, et = base === "auto" ? "int" : base; let c;
-          if (s.ty.vec || d.size !== null) {
-            const L = d.list || [], len = d.size == null || d.size === -1 ? L.length : Math.trunc(ev(d.size).v);
-            c = { t: "arr", et, v: Array.from({ length: len }, (_, i) => i < L.length ? cv(et, ev(L[i]), s.line) : et === "string" ? "" : 0) };
-          } else { const x = d.init ? ev(d.init) : D(et, et === "string" ? "" : 0), t = base === "auto" ? x.t : base; c = { t, v: cv(t, x, s.line) }; }
+          if (s.ty.vec || d.dims.length) { c = build(d.dims.length ? d.dims : [-1], d.init, et, s.line); } else { const x = d.init ? ev(d.init) : D(et, et === "string" ? "" : 0), t = base === "auto" ? x.t : base; c = { t, v: cv(t, x, s.line) }; }
           scope().m.set(d.n, c);
         }
         step(s.line); return;
@@ -261,6 +278,16 @@ function traceCpp(src, stdin, limit = 2000) {
       case "expr": ev(s.e); step(s.line); return;
       case "if": { const c = cond(s.c, s.line); return exec(c ? s.a : s.b || { k: "nop" }); }
       case "while": for (;;) { if (!cond(s.c, s.line)) break; const r = exec(s.b); if (r) { if (r.k === "break") break; if (r.k === "ret") return r; } } return;
+      case "switch": {
+        const x = ev(s.e); step(s.line, `switch (${show(x)})`);
+        let i = s.cases.findIndex(c => c.v && ev(c.v).v === x.v), dflt = false;
+        if (i < 0) { i = s.cases.findIndex(c => !c.v); dflt = true; }
+        if (i < 0) return;
+        step(s.cases[i].line, dflt ? "no case matches -> default" : "case matches");
+        const f = F(), old = f.scope; f.scope = mk(old);
+        try { for (; i < s.cases.length; i++) for (const st of s.cases[i].body) { const r = exec(st); if (r) return r.k === "break" ? undefined : r; } } finally { f.scope = old; }
+        return;
+      }
       case "do": for (;;) { const r = exec(s.b); if (r) { if (r.k === "break") break; if (r.k === "ret") return r; } if (!cond(s.c, s.line)) break; } return;
       case "for": {
         const f = F(), old = f.scope; f.scope = mk(old);
@@ -278,7 +305,7 @@ function traceCpp(src, stdin, limit = 2000) {
         f.scope = mk(old);
         try {
           for (const x of items) {
-            f.scope.m.set(s.n, { t: s.ty.base === "auto" ? et : s.ty.base, v: x }); step(s.line, `${s.n} = ${show({ t: et, v: x })}`);
+            f.scope.m.set(s.n, et === "arr" ? x : { t: s.ty.base === "auto" ? et : s.ty.base, v: x }); step(s.line, `${s.n} = ${show(et === "arr" ? x : { t: et, v: x })}`);
             const r = exec(s.b); if (r) { if (r.k === "break") break; if (r.k === "ret") return r; }
           }
         } finally { f.scope = old; } return;
@@ -303,7 +330,7 @@ const CPP_KW = /^(auto|bool|break|case|char|class|const|continue|default|do|doub
 const CPP_BI = /^(cout|cin|endl|printf|scanf|sqrt|pow|abs|max|min|swap|size|push_back|main)$/;
 function cppHL(code) {
   const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  return code.replace(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|^#.*$)|("(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|([\s\S])/gm,
+  return code.replace(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|^\s*#.*$)|("(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|([\s\S])/gm,
     (m, c, s, n, w, o) => c ? `<span class="c">${esc(c)}</span>` : s ? `<span class="s">${esc(s)}</span>` : n ? `<span class="n">${n}</span>`
       : w ? (CPP_KW.test(w) ? `<span class="k">${w}</span>` : CPP_BI.test(w) ? `<span class="b">${w}</span>` : w) : esc(o));
 }
@@ -315,4 +342,3 @@ if (typeof window !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { traceCpp, cppHL };
 }
-
