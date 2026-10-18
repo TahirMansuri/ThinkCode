@@ -10,13 +10,13 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 /* Paper — warm, low-glare light */
 :root[data-theme="paper"]{--bg:#f4ecd8;--panel:#fbf6e9;--ink:#2b2a26;--mute:#7a7364;--line:#ddcfb0;--bar:#9a8fb5;--cmp:#e0982b;--wr:#c74a2b;--hole:#7d5bbd;--ok:#1f8f7c;--code:#f7f0dd;--act:#fbe9b8}
 
-html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%;overflow-x:hidden}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans Devanagari",system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans Devanagari",system-ui,sans-serif;overflow-x:hidden;width:100%;max-width:100vw}
 button{touch-action:manipulation}
 [hidden]{display:none!important}
 
-.view{min-height:100vh}
+.view{min-height:100vh;width:100%;max-width:100vw;overflow-x:hidden;box-sizing:border-box}
 
 /* Global Nav / Header */
 header{padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:var(--panel)}
