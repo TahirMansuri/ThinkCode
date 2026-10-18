@@ -380,6 +380,14 @@
 .tile .tb{font:600 11px "JetBrains Mono",monospace;color:var(--ok);letter-spacing:.02em}
 .tile.soon{opacity:.55;cursor:default;pointer-events:none}
 .tile.soon .tb{color:var(--mute)}
+.tile.tile-accent{
+  background:linear-gradient(135deg,var(--panel),color-mix(in srgb,var(--hole) 10%,var(--panel)));
+  border-color:color-mix(in srgb,var(--hole) 45%,transparent);
+}
+.tile.tile-accent:hover{
+  border-color:var(--hole);
+  box-shadow:0 6px 20px color-mix(in srgb,var(--hole) 25%,transparent);
+}
 
 .home-langs{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
 .lang-chip{border:1px solid var(--line);background:var(--panel);padding:4px 12px;border-radius:999px;font:600 12px "JetBrains Mono",monospace;color:var(--ink);display:inline-flex;align-items:center;gap:6px}

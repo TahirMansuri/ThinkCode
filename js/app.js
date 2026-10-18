@@ -13,6 +13,7 @@ const VIEW_TITLES = {
   home: "ThinkCode — Interactive Data Structures & Algorithms",
   app: "ThinkCode — Algorithm Visualizer",
   tracer: "ThinkCode — Live Code Tracer",
+  practicals: "ThinkCode — University DS Practicals & Lab Manual",
   about: "ThinkCode — About",
   contact: "ThinkCode — Contact & Feedback"
 };
@@ -23,6 +24,7 @@ function getHashView(){
   if(h === "home") return "home";
   if(h === "visualizer" || h === "app") return "app";
   if(h === "tracer" || h === "code-tracer") return "tracer";
+  if(h === "practicals" || h === "lab" || h === "manual") return "practicals";
   if(h === "about") return "about";
   if(h === "contact") return "contact";
   return null;
@@ -100,6 +102,7 @@ function showView(v, lang, fromHistory = false){
     home: $("home"),
     app: $("app"),
     tracer: $("tracer"),
+    practicals: $("practicals"),
     about: $("about"),
     contact: $("contact")
   };
@@ -147,6 +150,11 @@ function showView(v, lang, fromHistory = false){
   document.querySelectorAll(".nav-btn").forEach(btn=>{
     btn.classList.toggle("active", (btn.dataset.nav === v || btn.dataset.view === v));
   });
+
+  if(v === "practicals"){
+    const initPrac = (typeof initPracticalsUI === "function" ? initPracticalsUI : (typeof window !== "undefined" ? window.initPracticalsUI : null));
+    if (typeof initPrac === "function") initPrac();
+  }
 
   if(v === "tracer"){
     const initFn = (typeof initTracerUI === "function" ? initTracerUI : (typeof window !== "undefined" ? window.initTracerUI : null));

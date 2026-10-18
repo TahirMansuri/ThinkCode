@@ -17,12 +17,14 @@ const HOMETILES=[
   {k:"recursion", n:"Recursion",      t:"Call stack, frame-by-frame execution",      b:"1 algorithm",
    svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20c4 0 4-16 8-16 3 0 4 3 4 6"/><circle cx="20" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>'},
   {k:"tree",      n:"Tree",           t:"BFS Level-order, Pre, In & Post-order",     b:"4 traversals",
-   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M11 7l-4 9M13 7l4 9"/></svg>'}
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M11 7l-4 9M13 7l4 9"/></svg>'},
+  {k:"practicals",n:"Lab Practicals", t:"BCA, BSc & Engineering Solved Codes in 4 Langs", b:"16 practicals",
+   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/></svg>'}
 ];
 
 function buildHome(){
   const g=$("homeGrid");if(!g)return;
-  g.innerHTML=HOMETILES.map(T=>`<button class="tile${T.soon?" soon":""}" data-k="${T.k}" ${T.soon?'disabled aria-disabled="true"':''}>
+  g.innerHTML=HOMETILES.map(T=>`<button class="tile${T.soon?" soon":""}${T.k==="practicals"?" tile-accent":""}" data-k="${T.k}" ${T.soon?'disabled aria-disabled="true"':''}>
     <span class="ti">${T.svg}</span>
     <span class="tn">${T.n}</span>
     <span class="ts">${T.t}</span>
@@ -30,7 +32,14 @@ function buildHome(){
   </button>`).join("");
   g.querySelectorAll(".tile").forEach(b=>{
     if(b.disabled)return;
-    b.onclick=()=>{showView("app");setCat(b.dataset.k)};
+    b.onclick=()=>{
+      if(b.dataset.k === "practicals"){
+        showView("practicals");
+      } else {
+        showView("app");
+        setCat(b.dataset.k);
+      }
+    };
   });
   document.querySelectorAll(".quick-btn").forEach(q=>{
     q.onclick=()=>runQuick(q.dataset.quick);
@@ -62,6 +71,7 @@ function initHero3D(){
 }
 
 function runQuick(k){
+  if(k==="practicals"){showView("practicals");return}
   if(k==="bubble"){showView("app");setCat("sorting");arr=rand(8);load();play();return}
   if(k==="bfs"){showView("app");setCat("graph");const s=$("gs");if(s)s.value="0";gload();return}
   if(k==="tree"){showView("app");setCat("tree");const ts=$("tree-algo");if(ts)ts.value="bfs";tload();play();return}

@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/visualizer.css?v=2.5.2">
   <link rel="stylesheet" href="css/pages.css?v=2.5.2">
   <link rel="stylesheet" href="css/tracer.css?v=2.5.2">
+  <link rel="stylesheet" href="css/practicals.css?v=2.5.2">
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js" async></script>
 </head>
 
@@ -90,6 +91,9 @@
           <button class="tech-btn-primary" data-nav="app">
             <span class="btn-shimmer"></span>
             <span class="btn-text">⚡ Initialize Visualizer</span>
+          </button>
+          <button class="tech-btn-ghost" data-nav="practicals" style="border-color:var(--hole);color:var(--hole)">
+            <span>📚 Academic Practicals Hub</span>
           </button>
           <button class="tech-btn-ghost" data-nav="tracer" data-lang="cpp" style="border-color:var(--ok);color:var(--ok)">
             <span class="tech-btn-inner"><img src="assets/cpp-logo.svg" alt="C++" class="tech-btn-logo"> C++ Tracer</span>
@@ -166,6 +170,7 @@
     </div>
 
     <div class="home-quick">
+      <button class="quick-btn" data-nav="practicals" style="border-color:var(--hole);color:var(--hole);font-weight:700">📚 Academic Practicals Hub (BCA / BSc / B.Tech)</button>
       <button class="quick-btn" data-quick="bubble">🎲 Random array → Bubble Sort</button>
       <button class="quick-btn" data-quick="bfs">🧭 Run BFS from A</button>
       <button class="quick-btn" data-quick="tree">🌿 Tree Level-Order (BFS)</button>
@@ -192,6 +197,7 @@
           <button class="nav-btn" data-nav="home">Home</button>
           <button class="nav-btn active nav-app-btn" data-nav="app">Visualizer</button>
           <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="practicals">Lab Practicals</button>
           <button class="nav-btn" data-nav="about">About</button>
           <button class="nav-btn" data-nav="contact">Contact</button>
         </nav>
@@ -459,6 +465,7 @@
           <button class="nav-btn" data-nav="home">Home</button>
           <button class="nav-btn" data-nav="app">Visualizer</button>
           <button class="nav-btn active" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="practicals">Lab Practicals</button>
           <button class="nav-btn" data-nav="about">About</button>
           <button class="nav-btn" data-nav="contact">Contact</button>
         </nav>
@@ -590,7 +597,186 @@ for i in range(3):
     </footer>
   </div>
 
-  <!-- ==================== VIEW 4: ABOUT PAGE ==================== -->
+  <!-- ==================== VIEW 4: ACADEMIC PRACTICALS HUB (LAB MANUAL) ==================== -->
+  <div id="practicals" class="view" hidden>
+    <header>
+      <div class="hd">
+        <h1 data-nav="home" class="brand-link" style="cursor:pointer" title="Back to home">
+          <img src="assets/icon.svg" width="24" height="24" class="brand-logo-img" alt="ThinkCode Logo" style="width:24px;height:24px;max-width:24px;max-height:24px;object-fit:contain;border-radius:6px;flex-shrink:0;pointer-events:none">
+          <span>ThinkCode</span>
+        </h1>
+        <button class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+
+        <nav class="nav-links">
+          <button class="nav-btn" data-nav="home">Home</button>
+          <button class="nav-btn" data-nav="app">Visualizer</button>
+          <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn active" data-nav="practicals">Lab Practicals</button>
+          <button class="nav-btn" data-nav="about">About</button>
+          <button class="nav-btn" data-nav="contact">Contact</button>
+        </nav>
+
+        <select class="lang theme-select" aria-label="Theme">
+          <option value="auto">🌓 Auto</option>
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="midnight">🌌 Midnight</option>
+          <option value="paper">📜 Paper</option>
+        </select>
+        <button class="sbtn snd-btn header-snd-btn" aria-label="Sound on/off" title="Sound on/off">🔊</button>
+      </div>
+    </header>
+
+    <div class="practicals-container">
+      <!-- Hero Filter Bar -->
+      <div class="practicals-hero-bar">
+        <div class="practicals-hero-header">
+          <div class="practicals-title-box">
+            <div class="practicals-badge-tag">
+              <span class="pulse-dot"></span>
+              <span>ACADEMIC CURRICULUM REPOSITORY</span>
+            </div>
+            <h2 class="practicals-title">📚 University DS Practicals &amp; Lab Manual</h2>
+            <p class="practicals-sub">Complete, syllabus-aligned practical solutions for BCA, BSc CS/IT, and Engineering with instant step-tracing and viva preparation.</p>
+          </div>
+
+          <div class="practicals-top-actions">
+            <div class="practicals-search-wrap">
+              <input type="text" id="practicalsSearchInput" class="practicals-search-input" placeholder="Search practicals, topics, keywords..." autocomplete="off" spellcheck="false">
+              <span class="practicals-search-icon">🔍</span>
+            </div>
+            <button id="practicalsSavedFilter" class="btn-saved-filter" title="Show only bookmarked practicals">⭐ Saved (0)</button>
+          </div>
+        </div>
+
+        <div class="practicals-filters-row">
+          <div class="course-tabs-group">
+            <span class="filter-label">Course:</span>
+            <button class="course-tab-btn active" data-course="all">All Courses</button>
+            <button class="course-tab-btn" data-course="BCA">🎓 BCA</button>
+            <button class="course-tab-btn" data-course="BSc">🔬 BSc CS/IT</button>
+            <button class="course-tab-btn" data-course="B.Tech">⚙️ B.Tech / BE</button>
+          </div>
+
+          <div class="category-pills-group">
+            <span class="filter-label">Topic:</span>
+            <button class="category-pill active" data-cat="all">All Topics</button>
+            <button class="category-pill" data-cat="Searching">🔍 Searching</button>
+            <button class="category-pill" data-cat="Sorting">📊 Sorting</button>
+            <button class="category-pill" data-cat="Stack">🥞 Stack</button>
+            <button class="category-pill" data-cat="Queue">🚶 Queue</button>
+            <button class="category-pill" data-cat="Linked List">🔗 Linked List</button>
+            <button class="category-pill" data-cat="Tree">🌳 Tree</button>
+            <button class="category-pill" data-cat="Graph">🕸️ Graph</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Screen View Switcher -->
+      <div class="mobile-view-tabs">
+        <button class="mobile-view-tab-btn active" data-view-mode="list">📋 Topics List</button>
+        <button class="mobile-view-tab-btn" data-view-mode="detail">💻 Code &amp; Viva</button>
+      </div>
+
+      <!-- Master-Detail Layout -->
+      <div class="practicals-layout show-list" id="practicalsLayout">
+        <!-- Left List Pane -->
+        <div class="practicals-list-pane">
+          <div class="list-pane-header">
+            <span class="list-pane-title">ACADEMIC TOPICS</span>
+            <span class="list-pane-count" id="practicalsCountBadge">0 / 0</span>
+          </div>
+          <div class="practicals-items-scroll" id="practicalsListScroll">
+            <!-- Injected by js/ui/practicals.js -->
+          </div>
+        </div>
+
+        <!-- Right Detail Pane -->
+        <div class="practicals-detail-pane" id="practicalsDetailPane">
+          <div class="practical-detail-header">
+            <div class="practical-detail-title-group">
+              <h3 class="practical-detail-title" id="practicalDetailTitle">Select a Practical</h3>
+              <div class="practical-aim-box">
+                <span class="practical-aim-label">AIM:</span>
+                <span id="practicalDetailAim">Problem statement will appear here.</span>
+              </div>
+              <div class="practical-meta-chips" id="practicalComplexityChips">
+                <!-- Chips injected dynamically -->
+              </div>
+            </div>
+            <button id="practicalBookmarkLg" class="btn-bookmark-lg" title="Save this practical for quick access">☆ Save Practical</button>
+          </div>
+
+          <!-- Language Toolbar & Actions -->
+          <div class="practical-code-toolbar">
+            <div class="lang-switch-tabs">
+              <button class="lang-tab-btn active" data-lang="c">🇨 C</button>
+              <button class="lang-tab-btn" data-lang="cpp">🇨++ C++</button>
+              <button class="lang-tab-btn" data-lang="java">☕ Java</button>
+              <button class="lang-tab-btn" data-lang="python">🐍 Python</button>
+            </div>
+
+            <div class="code-actions-group">
+              <button id="practicalRunBtn" class="btn-action-primary" title="Execute step-by-step in ThinkCode Live Tracer">
+                <span>⚡ Run / Trace</span>
+              </button>
+              <button id="practicalVizBtn" class="btn-action-visualizer" style="display:none" title="Launch Interactive Algorithm Animation">
+                <span>🎮 Visualizer</span>
+              </button>
+              <button id="practicalCopyBtn" class="btn-action-tool" title="Copy code to clipboard">
+                <span>📋 Copy Code</span>
+              </button>
+              <button id="practicalDownloadBtn" class="btn-action-tool" title="Download source code file">
+                <span>💾 Download</span>
+              </button>
+              <button id="practicalShareBtn" class="btn-action-tool" title="Share code via WhatsApp or Email">
+                <span>📤 Share</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Window -->
+          <div class="practical-code-card">
+            <div class="code-card-header">
+              <div class="code-card-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span id="practicalCodeLangBadge">C (C11 / GCC)</span>
+              <span>READ-ONLY VERIFIED CODE</span>
+            </div>
+            <pre class="practical-code-viewer" id="practicalCodeViewer">// Code will load here...</pre>
+          </div>
+
+          <!-- Terminal Sample I/O Box -->
+          <div class="practical-terminal-box">
+            <div class="terminal-box-header">
+              <span>🖥️ EXPECTED SAMPLE INPUT &amp; OUTPUT (FOR LAB JOURNAL)</span>
+            </div>
+            <pre class="terminal-box-content" id="practicalTerminalContent"></pre>
+          </div>
+
+          <!-- Viva-Voce Questions -->
+          <div class="viva-section">
+            <div class="viva-section-title">
+              <span>🎯 Lab Viva-Voce Key Questions &amp; Answers</span>
+            </div>
+            <div class="viva-cards-grid" id="practicalVivaGrid">
+              <!-- Viva cards injected dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-foot">
+      <div class="home-foot-tagline">ThinkCode Academic Lab Manual — Engineered for Computer Science Excellence.</div>
+      <div class="home-foot-byline">
+        <span class="byline-tag">Lead Dev: <span class="byline-name">Tahir Mansuri</span></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== VIEW 5: ABOUT PAGE ==================== -->
   <div id="about" class="view" hidden>
     <header>
       <div class="hd">
@@ -601,6 +787,7 @@ for i in range(3):
           <button class="nav-btn" data-nav="home">Home</button>
           <button class="nav-btn" data-nav="app">Visualizer</button>
           <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="practicals">Lab Practicals</button>
           <button class="nav-btn active" data-nav="about">About</button>
           <button class="nav-btn" data-nav="contact">Contact</button>
         </nav>
@@ -810,6 +997,7 @@ for i in range(3):
           <button class="nav-btn" data-nav="home">Home</button>
           <button class="nav-btn" data-nav="app">Visualizer</button>
           <button class="nav-btn" data-nav="tracer">Code Tracer</button>
+          <button class="nav-btn" data-nav="practicals">Lab Practicals</button>
           <button class="nav-btn" data-nav="about">About</button>
           <button class="nav-btn active" data-nav="contact">Contact</button>
         </nav>
@@ -876,6 +1064,7 @@ for i in range(3):
   <script src="js/data/i18n.js"></script>
   <script src="js/data/info.js"></script>
   <script src="js/data/languages.js"></script>
+  <script src="js/data/practicals.js"></script>
 
   <!-- 2. Audio Engine -->
   <script src="js/audio.js"></script>
@@ -912,6 +1101,7 @@ for i in range(3):
   <!-- 5. UI Views & Main Application Controller -->
   <script src="js/ui/home.js"></script>
   <script src="js/ui/pages.js"></script>
+  <script src="js/ui/practicals.js"></script>
   <script src="js/cpp-tracer.js"></script>
   <script src="js/tracer.js"></script>
   <script src="js/app.js"></script>
