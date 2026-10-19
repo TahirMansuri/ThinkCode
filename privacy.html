@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ThinkCode</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --bg: #0f1420;
+            --panel: #171e2e;
+            --card: #1f283c;
+            --ink: #e8ecf5;
+            --mute: #9aa5be;
+            --line: #2a354c;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+            --ok: #2fd6b6;
+            --hole: #a855f7;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --panel: #ffffff;
+                --card: #f1f5f9;
+                --ink: #0f172a;
+                --mute: #64748b;
+                --line: #e2e8f0;
+                --accent: #4f46e5;
+                --accent-glow: rgba(79, 70, 229, 0.1);
+                --ok: #0d9488;
+                --hole: #9333ea;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.65;
+            padding: 32px 16px 80px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--panel) 0%, var(--card) 100%);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 36px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--accent);
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .meta {
+            color: var(--mute);
+            font-size: 14px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .content-card {
+            background-color: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 36px 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 32px 0 12px;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--ink);
+            font-size: 15px;
+        }
+
+        ul {
+            margin: 12px 0 20px 24px;
+            color: var(--ink);
+            font-size: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .highlight-box strong {
+            color: var(--accent);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 36px;
+            font-size: 13px;
+            color: var(--mute);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <span class="badge">Privacy Disclosure</span>
+        <h1>Privacy Policy for ThinkCode</h1>
+        <div class="meta">
+            <span><strong>Application:</strong> ThinkCode</span>
+            <span><strong>Package:</strong> com.igc.thinkcode</span>
+            <span><strong>Last Updated:</strong> October 2026</span>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h2>1. Introduction</h2>
+        <p>
+            Welcome to <strong>ThinkCode</strong> ("we", "our", or "us"). We are committed to protecting your privacy.
+            This Privacy Policy explains how information is handled when you use the ThinkCode mobile application and web visualization platform.
+        </p>
+        <p>
+            ThinkCode is an interactive educational platform designed for computer science students, educators, and software engineers to visualize data structures, simulate algorithms, and trace C++ execution.
+        </p>
+
+        <div class="highlight-box">
+            <strong>Key Summary:</strong> ThinkCode operates primarily as a client-side offline educational tool. 
+            <strong>We do not collect, store, sell, or transmit any Personally Identifiable Information (PII) to external servers.</strong>
+        </div>
+
+        <h2>2. Information We Collect</h2>
+        <p>We respect your privacy and minimize data handling strictly to essential local device functionality:</p>
+        <ul>
+            <li><strong>No Personal Identification Data:</strong> We do not ask for or collect your name, email address, phone number, physical address, biometric data, or government IDs.</li>
+            <li><strong>No Sensitive Permissions:</strong> ThinkCode does not request access to your device camera, microphone, contacts, SMS, photos, or physical GPS location.</li>
+            <li><strong>Local State & Preferences:</strong> User settings (such as dark/light/midnight theme selection, custom algorithm code inputs, visualizer playback speeds, and practicals bookmarks) are stored strictly on your local device storage using standard browser/WebView sandboxed local storage (<code>localStorage</code>). This data never leaves your device.</li>
+        </ul>
+
+        <h2>3. Internet Access & Network Usage</h2>
+        <p>
+            ThinkCode requests standard internet access permission solely for loading core web assets (such as web font definitions, external syntax libraries, and web-based documentation links) and verifying remote webview assets. No user telemetry, analytics, profiling, or behavioral tracking data is sent across the network.
+        </p>
+
+        <h2>4. Third-Party Services</h2>
+        <p>
+            The application is built using the open-source Capacitor framework and distributed through the Google Play Store. These platforms may process non-identifiable technical data as part of standard operating system operations:
+        </p>
+        <ul>
+            <li><strong>Google Play Services:</strong> Used by your Android device for secure application installation, update delivery, and standard anonymized operating system crash reports (subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>).</li>
+            <li><strong>GitHub Pages:</strong> Used to host official public documentation and web visualization mirrors (subject to <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub's Privacy Statement</a>).</li>
+        </ul>
+
+        <h2>5. Children's Privacy (COPPA & GDPR-K Compliance)</h2>
+        <p>
+            ThinkCode is an educational utility suitable for students and learners of all ages. Because ThinkCode does not collect, retain, or share any personal information whatsoever, it fully complies with the United States Children's Online Privacy Protection Act (COPPA) and international child privacy regulations.
+        </p>
+        <p>
+            If a parent or guardian believes that any personal information has inadvertently been provided, please contact us immediately, and we will ensure no such data exists or is retained.
+        </p>
+
+        <h2>6. Data Retention & Deletion</h2>
+        <p>
+            Because all configuration and code traces are saved purely in local sandboxed storage on your device:
+        </p>
+        <ul>
+            <li>You can erase all stored data at any time by clearing the app data in Android <strong>Settings &gt; Apps &gt; ThinkCode &gt; Storage &gt; Clear Storage</strong>.</li>
+            <li>Uninstalling the ThinkCode application immediately removes all locally cached files and preferences from your device.</li>
+        </ul>
+
+        <h2>7. Security Practices</h2>
+        <p>
+            We prioritize the security of our users. Because all algorithm emulations and code execution parsing run locally within your device's isolated runtime sandbox, your custom code and inputs are protected against unauthorized network interception.
+        </p>
+
+        <h2>8. Changes to This Privacy Policy</h2>
+        <p>
+            We may update our Privacy Policy periodically to reflect technological improvements or regulatory updates. Any changes will be published directly to this page with an updated "Last Updated" date.
+        </p>
+
+        <h2>9. Contact Us</h2>
+        <p>
+            If you have any questions, suggestions, or concerns regarding this Privacy Policy or ThinkCode, feel free to contact the developer:
+        </p>
+        <ul>
+            <li><strong>Developer:</strong> Tahir Mansuri</li>
+            <li><strong>Email:</strong> <a href="mailto:tprocks786@gmail.com">tprocks786@gmail.com</a></li>
+            <li><strong>GitHub Repository:</strong> <a href="https://github.com/TahirMansuri/ThinkCode" target="_blank" rel="noopener">https://github.com/TahirMansuri/ThinkCode</a></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 ThinkCode &bull; Developed by Tahir Mansuri &bull; All Rights Reserved.
+    </div>
+</div>
+
+</body>
+</html>
